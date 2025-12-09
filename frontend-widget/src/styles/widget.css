@@ -306,8 +306,12 @@
 
 .pdbot-bubble-content {
   word-wrap: break-word;
-  white-space: pre-wrap;
   line-height: 1.6;
+}
+
+/* Markdown content should not preserve whitespace like chat text */
+.pdbot-bubble-content.pdbot-markdown {
+  white-space: normal;
 }
 
 .pdbot-cursor {

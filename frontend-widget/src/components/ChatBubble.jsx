@@ -10,6 +10,8 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import LikeDislikeButtons from './LikeDislikeButtons.jsx';
 import RegenButton from './RegenButton.jsx';
 import DetailsModal from './DetailsModal.jsx';
@@ -105,9 +107,29 @@ function ChatBubble({
       )}
       
       <div className={`pdbot-bubble ${isUser ? 'pdbot-bubble-user' : 'pdbot-bubble-bot'}`}>
-        {/* Message content */}
-        <div className="pdbot-bubble-content">
-          {displayedText}
+        {/* Message content (markdown for bot messages) */}
+        <div className={`pdbot-bubble-content ${isBot ? 'pdbot-markdown' : ''}`}>
+          {isBot ? (
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                table: ({node, ...props}) => (
+                  <div className="pdbot-table-wrapper">
+                    <table className="pdbot-markdown-table" {...props} />
+                  </div>
+                ),
+                code: ({node, inline, ...props}) => (
+                  inline
+                    ? <code className="pdbot-inline-code" {...props} />
+                    : <pre className="pdbot-code-block"><code {...props} /></pre>
+                )
+              }}
+            >
+              {(displayedText || '').trim()}
+            </ReactMarkdown>
+          ) : (
+            displayedText
+          )}
           {isTyping && <span className="pdbot-cursor">▊</span>}
         </div>
         
