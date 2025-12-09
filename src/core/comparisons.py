@@ -1,6 +1,7 @@
 """
-Comparison Response Templates for PDBOT v2.5.0-patch4
+Comparison Response Templates for PDBOT v3.3.0
 Dynamic limits pulled from src/data/approval_limits.json (single source of truth).
+Single forum queries return individual limit; multi-forum returns table.
 """
 
 import json

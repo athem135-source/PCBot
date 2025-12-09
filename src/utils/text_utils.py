@@ -248,6 +248,218 @@ def split_into_sentences(text: str) -> List[str]:
     return [p.strip() for p in parts if p.strip()]
 
 
+# =============================================================================
+# PRECISION CHUNKING v3.3.0 - For Munawar Test Optimization
+# =============================================================================
+
+# Noise patterns to remove during chunking
+NOISE_PATTERNS = [
+    r"^(Page\s+)?\d+(\s+of\s+\d+)?$",  # Page numbers
+    r"^Manual for Development Projects",  # Headers
+    r"^Planning Commission",  # Headers
+    r"^(Table|Figure|Annexure|Appendix)\s+[\d\w\-]+",  # Table/figure titles
+    r"^[\d\s\.,\-\(\)]+$",  # Numeric-only garbage
+    r"^Chapter\s+\d+",  # Chapter headers
+    r"^Section\s+\d+",  # Section headers
+    r"^\d+\.\d+(\.\d+)?\s*$",  # Section numbers only
+]
+
+
+def clean_chunk_text(text: str) -> str:
+    """
+    Clean text for chunking: remove headers, page numbers, table titles, noise.
+    v3.3.0: Stricter cleaning for precision retrieval.
+    """
+    if not text:
+        return ""
+    
+    lines = text.split("\n")
+    cleaned = []
+    
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        
+        # Skip noise patterns
+        skip = False
+        for pattern in NOISE_PATTERNS:
+            if re.match(pattern, line, re.IGNORECASE):
+                skip = True
+                break
+        
+        if skip:
+            continue
+        
+        # Skip very short lines (likely labels/numbers)
+        if len(line) < 10 and not any(c.isalpha() for c in line):
+            continue
+        
+        cleaned.append(line)
+    
+    result = " ".join(cleaned)
+    # Normalize whitespace
+    result = re.sub(r"\s+", " ", result).strip()
+    return result
+
+
+def chunk_precision_sentences(
+    text: str,
+    min_words: int = 12,
+    max_words: int = 70,
+    neighbor_context: int = 1
+) -> List[str]:
+    """
+    v3.3.0 Precision Chunking for Munawar Test optimization.
+    
+    Creates tight 1-3 sentence chunks with:
+    - Max 70 words per chunk (default)
+    - Min 12 words to avoid garbage
+    - ±1 neighbor sentence for context (same topic only)
+    - Removal of all noise (headers, page numbers, table titles)
+    
+    Args:
+        text: Raw text to chunk
+        min_words: Minimum words per chunk (filter short garbage)
+        max_words: Maximum words per chunk (prevents over-context)
+        neighbor_context: How many neighbor sentences to include (0-1)
+    
+    Returns:
+        List of precision chunks
+    """
+    # Step 1: Clean the text
+    cleaned = clean_chunk_text(text)
+    if not cleaned or len(cleaned) < 20:
+        return []
+    
+    # Step 2: Split into sentences
+    sentences = split_into_sentences(cleaned)
+    if not sentences:
+        return []
+    
+    # Step 3: Build precision chunks (1-3 sentences, max 70 words)
+    chunks = []
+    i = 0
+    
+    while i < len(sentences):
+        buffer = []
+        word_count = 0
+        
+        # Add current sentence
+        current = sentences[i].strip()
+        if not current:
+            i += 1
+            continue
+        
+        current_words = len(current.split())
+        buffer.append(current)
+        word_count = current_words
+        
+        # Try to add next sentence if under word limit and same topic
+        if i + 1 < len(sentences) and neighbor_context > 0:
+            next_sent = sentences[i + 1].strip()
+            next_words = len(next_sent.split())
+            
+            # Only add if: (1) under word limit, (2) not too long itself
+            if word_count + next_words <= max_words and next_words <= 50:
+                # Check topic continuity (shared keywords)
+                if _same_topic(current, next_sent):
+                    buffer.append(next_sent)
+                    word_count += next_words
+                    i += 1  # Skip next sentence since we included it
+        
+        # Create chunk
+        chunk_text = " ".join(buffer).strip()
+        chunk_word_count = len(chunk_text.split())
+        
+        # Only add if meets minimum word count
+        if chunk_word_count >= min_words:
+            chunks.append(chunk_text)
+        
+        i += 1
+    
+    return chunks
+
+
+def _same_topic(sent1: str, sent2: str) -> bool:
+    """
+    Check if two sentences are on the same topic.
+    Uses keyword overlap to determine continuity.
+    """
+    # Extract significant words (length >= 4, not common)
+    stopwords = {"this", "that", "with", "from", "have", "been", "will", "shall", "would", "could", "should", "their", "which", "where", "when", "what", "these", "those"}
+    
+    def get_keywords(text):
+        words = re.findall(r"\b[a-zA-Z]{4,}\b", text.lower())
+        return set(w for w in words if w not in stopwords)
+    
+    kw1 = get_keywords(sent1)
+    kw2 = get_keywords(sent2)
+    
+    if not kw1 or not kw2:
+        return False
+    
+    # Overlap ratio
+    overlap = len(kw1 & kw2)
+    min_len = min(len(kw1), len(kw2))
+    
+    # At least 20% overlap or 2+ shared keywords
+    return overlap >= 2 or (min_len > 0 and overlap / min_len >= 0.2)
+
+
+def trim_answer_to_limit(answer: str, max_words: int = 70) -> str:
+    """
+    Trim answer to word limit, preserving sentence boundaries.
+    v3.3.0: For answer composer post-processing.
+    
+    Args:
+        answer: Raw answer text
+        max_words: Maximum words allowed (default 70)
+    
+    Returns:
+        Trimmed answer ending at sentence boundary
+    """
+    if not answer:
+        return ""
+    
+    words = answer.split()
+    if len(words) <= max_words:
+        return answer
+    
+    # Take first max_words words
+    truncated = " ".join(words[:max_words])
+    
+    # Try to end at sentence boundary
+    last_period = truncated.rfind(".")
+    last_question = truncated.rfind("?")
+    last_exclaim = truncated.rfind("!")
+    
+    last_boundary = max(last_period, last_question, last_exclaim)
+    
+    if last_boundary > len(truncated) * 0.5:  # At least halfway through
+        return truncated[:last_boundary + 1].strip()
+    
+    # No good boundary, just add period
+    return truncated.rstrip(".!?,;") + "."
+
+
+def format_single_citation(page: int, doc_name: str = "Manual for Development Projects 2024") -> str:
+    """
+    Format a single, clean citation.
+    v3.3.0: Ensures consistent citation format.
+    
+    Args:
+        page: Page number
+        doc_name: Document title
+    
+    Returns:
+        Formatted citation string: "Source: Manual 2024, p.XX"
+    """
+    if page and page > 0:
+        return f"Source: {doc_name}, p.{page}"
+    return f"Source: {doc_name}"
+
+
 def extract_exact_quotes(query: str, chunks: List[str], max_quotes: int = 5) -> List[str]:
     """Return sentences that contain the exact (case-insensitive) query substring."""
     q = (query or "").strip().lower()

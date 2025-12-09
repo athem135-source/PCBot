@@ -1,9 +1,12 @@
 """
-PDBot RAG Pipeline v3.2.0 (v2.1.0)
-Sentence-level chunking, strict reranking, numeric boost.
-Multi-class classifier integration for retrieval optimization.
-Groq for reranking fallback.
-Zero hardcoding. All answers from PDF only.
+PDBot RAG Pipeline v3.3.0
+Munawar Test optimized: precision chunking, strict reranking, 70-word answers.
+- Sentence-level chunking: 1-3 sentences, max 70 words
+- Stricter word filter: 12-120 words per chunk
+- Reranker threshold: 0.33 (up from 0.32)
+- Multi-class classifier integration for retrieval optimization
+- Groq for reranking fallback
+- Zero hardcoding. All answers from PDF only.
 """
 from __future__ import annotations
 
@@ -143,8 +146,13 @@ def _clean_text(text: str) -> str:
 
 def _split_into_chunks(text: str) -> List[str]:
     """
-    Sentence-level chunking: 40-55 words per chunk.
-    Never breaks mid-sentence. Uses NLTK tokenizer.
+    v3.3.0 Precision Chunking for Munawar Test optimization.
+    
+    Sentence-level chunking: 1-3 sentences, max 70 words per chunk.
+    - Never breaks mid-sentence
+    - Removes headers, page numbers, table titles, noise
+    - Uses ±1 neighbor sentence for context (same topic only)
+    - Strict word limits to prevent over-context
     """
     text = _clean_text(text)
     if not text or len(text) < 20:
@@ -163,44 +171,73 @@ def _split_into_chunks(text: str) -> List[str]:
         # Fallback regex
         sentences = re.split(r"(?<=[.!?])\s+(?=[A-Z])", text)
     
-    # Recombine into 40-55 word chunks
+    # v3.3.0: Precision chunking - 1-3 sentences, max 70 words
     chunks = []
-    buffer = []
-    word_count = 0
+    i = 0
     
-    for sent in sentences:
-        sent = sent.strip()
-        if not sent:
+    while i < len(sentences):
+        buffer = []
+        word_count = 0
+        
+        # Add current sentence
+        current = sentences[i].strip()
+        if not current:
+            i += 1
             continue
         
-        sent_words = len(sent.split())
+        current_words = len(current.split())
+        buffer.append(current)
+        word_count = current_words
         
-        # If adding this sentence exceeds 55 words and we have content
-        if word_count + sent_words > 55 and word_count >= 40:
-            chunk_text = " ".join(buffer).strip()
-            if chunk_text:
-                chunks.append(chunk_text)
-            buffer = []
-            word_count = 0
+        # Try to add next sentence if under 70 words and same topic
+        if i + 1 < len(sentences):
+            next_sent = sentences[i + 1].strip()
+            next_words = len(next_sent.split())
+            
+            # Only add if under 70 word limit and not too long itself
+            if word_count + next_words <= 70 and next_words <= 45:
+                # Check for topic continuity (shared keywords)
+                if _same_topic_sentences(current, next_sent):
+                    buffer.append(next_sent)
+                    word_count += next_words
+                    i += 1  # Skip next since included
         
-        buffer.append(sent)
-        word_count += sent_words
-        
-        # If we're in the sweet spot, finalize
-        if 40 <= word_count <= 55:
-            chunk_text = " ".join(buffer).strip()
-            if chunk_text:
-                chunks.append(chunk_text)
-            buffer = []
-            word_count = 0
-    
-    # Remaining buffer
-    if buffer:
+        # Create chunk
         chunk_text = " ".join(buffer).strip()
-        if chunk_text and len(chunk_text.split()) >= 5:
+        
+        # Only add if meets minimum (12 words) - filter garbage
+        if len(chunk_text.split()) >= 12:
             chunks.append(chunk_text)
+        
+        i += 1
     
     return chunks
+
+
+def _same_topic_sentences(sent1: str, sent2: str) -> bool:
+    """
+    Check if two sentences are on the same topic using keyword overlap.
+    v3.3.0: For precision neighbor context.
+    """
+    stopwords = {"this", "that", "with", "from", "have", "been", "will", "shall", 
+                 "would", "could", "should", "their", "which", "where", "when", 
+                 "what", "these", "those", "also", "such", "other"}
+    
+    def get_keywords(text):
+        words = re.findall(r"\b[a-zA-Z]{4,}\b", text.lower())
+        return set(w for w in words if w not in stopwords)
+    
+    kw1 = get_keywords(sent1)
+    kw2 = get_keywords(sent2)
+    
+    if not kw1 or not kw2:
+        return False
+    
+    overlap = len(kw1 & kw2)
+    min_len = min(len(kw1), len(kw2))
+    
+    # At least 2 shared keywords or 20% overlap
+    return overlap >= 2 or (min_len > 0 and overlap / min_len >= 0.2)
 
 
 def ingest_pdf_sentence_level(
@@ -281,13 +318,13 @@ def search_sentences(
     **kwargs
 ) -> List[Dict[str, Any]]:
     """
-    v2.1.0 Retrieval pipeline with classifier hints:
+    v3.3.0 Retrieval pipeline optimized for Munawar Test metrics:
     1. Initial retrieval: 40 chunks from Qdrant
-    2. Post-filter: reject <5 or >130 words
+    2. Post-filter: reject <12 or >120 words (stricter precision)
     3. Numeric boost: +0.25 for Rs/million/billion/cost/approval/allocation
     4. Query-number boost: +0.15 if query has numbers and chunk has numbers
     5. Classification hints: boost chunks matching query type
-    6. Reranker: keep TOP 2 with score >= 0.32
+    6. Reranker: keep TOP 2 with score >= 0.33 (stricter threshold)
     7. Groq rerank fallback if cross-encoder fails
     8. Fallback: if none survive, use highest vector chunk
     
@@ -360,8 +397,8 @@ def search_sentences(
         if score < min_score:
             continue
         
-        # Post-filter: reject <5 or >130 words
-        if word_count < 5 or word_count > 130:
+        # v3.3.0: Stricter post-filter: reject <12 or >120 words
+        if word_count < 12 or word_count > 120:
             continue
         
         chunks.append({
@@ -426,7 +463,7 @@ def search_sentences(
         
         chunk["score"] = min(1.0, chunk["score"] + boost)
     
-    # Step 3: Rerank with cross-encoder (keep TOP 2, threshold 0.32)
+    # Step 3: Rerank with cross-encoder (keep TOP 2, threshold 0.33)
     reranker = get_reranker()
     rerank_success = False
     
@@ -440,8 +477,8 @@ def search_sentences(
             # Sort by rerank score
             chunks = sorted(chunks, key=lambda x: x.get("rerank_score", 0), reverse=True)
             
-            # Filter by threshold 0.32 and keep top 2
-            filtered = [c for c in chunks if c.get("rerank_score", 0) >= 0.32][:top_k]
+            # v3.3.0: Filter by stricter threshold 0.33 and keep top 2
+            filtered = [c for c in chunks if c.get("rerank_score", 0) >= 0.33][:top_k]
             
             if filtered:
                 chunks = filtered
@@ -531,7 +568,8 @@ No explanation, just the array:"""
         
         # Sort and filter
         chunks = sorted(chunks, key=lambda x: x.get("groq_rerank_score", 0), reverse=True)
-        filtered = [c for c in chunks if c.get("groq_rerank_score", 0) >= 0.32][:top_k]
+        # v3.3.0: Stricter threshold 0.33
+        filtered = [c for c in chunks if c.get("groq_rerank_score", 0) >= 0.33][:top_k]
         
         return filtered if filtered else [chunks[0]] if chunks else []
     

@@ -1,9 +1,9 @@
 """
-PDBOT Widget API Server v2.5.0
+PDBOT Widget API Server v3.3.0
 ==============================
 
 A lightweight Flask API that bridges the React widget to the PDBOT RAG pipeline.
-This is the primary frontend API (Streamlit is now legacy).
+Munawar Test optimized: precision chunking, 70-word answers, Groq force-enable.
 
 Features:
   - Contextual memory (session-based chat history)
@@ -13,7 +13,7 @@ Features:
   - Clarification prompts for vague queries
   - Source and passage tracking
   - Feedback collection
-  - Admin status endpoint
+  - Admin status endpoint with Groq controls
   - Statistics dashboard endpoint
   - Production WSGI server (waitress)
   - Localtunnel for mobile access
@@ -26,9 +26,11 @@ Endpoints:
   GET  /health - Health check
   GET  /admin/status - Backend status for admin panel
   GET  /admin/statistics - Detailed usage statistics
+  GET  /admin/groq-status - Groq API status
+  POST /admin/groq-toggle - Toggle force Groq mode
 
 @author M. Hassan Arif Afridi
-@version 2.5.0
+@version 3.3.0
 """
 
 import os
@@ -136,28 +138,82 @@ def get_groq_client():
             print("[Widget API] Warning: GROQ_API_KEY not set")
     return groq_client
 
-def generate_groq_response(query: str, context: str) -> str:
-    """Generate response using Groq API"""
+def generate_groq_response(query: str, context: str, page: int = 0) -> str:
+    """
+    v3.3.0: Generate response using Groq API with strict formatting.
+    Same guardrails as local model - 45-70 words, direct answer first.
+    """
     client = get_groq_client()
     if not client:
         return "⚠️ Groq API not available. Please set GROQ_API_KEY environment variable."
     
     try:
-        system_prompt = """You are PDBOT, an AI assistant for Pakistan's Planning & Development Division.
-Answer questions based ONLY on the provided context from the Manual for Development Projects 2024.
-Be concise, accurate, and cite page numbers when possible.
-If the context doesn't contain the answer, say so clearly."""
+        # v3.3.0: Strict system prompt matching local model
+        system_prompt = """You are PDBOT, the official assistant for the Manual for Development Projects 2024.
+Your answers must ALWAYS follow these rules:
+
+1. Length: 45-70 words maximum.
+2. Use ONLY the retrieved context. No outside knowledge.
+3. Give the direct answer FIRST, no background theory.
+4. No warnings, no disclaimers, no template markers.
+5. If numbers exist in the context, extract them completely.
+6. If answer truly not found, say: "Not found in the Manual."
+
+Always end with one line:
+Source: Manual for Development Projects 2024, p.<page>"""
+
+        # v3.3.0: Strict user prompt
+        user_prompt = f"""Context from the Manual:
+{context[:2500]}
+
+Question: {query}
+
+Answer in 45-70 words. Extract numbers if present. Direct answer first:"""
 
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {query}"}
+                {"role": "user", "content": user_prompt}
             ],
-            max_tokens=500,
-            temperature=0.3
+            max_tokens=200,  # Reduced from 500 to prevent over-explanation
+            temperature=0.2   # Lower temp for more focused answers
         )
-        return response.choices[0].message.content
+        
+        answer = response.choices[0].message.content or ""
+        
+        # v3.3.0: Apply same sanitization - trim to 70 words
+        import re
+        
+        # Remove existing citations (we'll add clean one)
+        answer = re.sub(r"\n*Source:.*$", "", answer, flags=re.IGNORECASE | re.MULTILINE)
+        
+        # Remove filler phrases
+        fillers = [
+            r"^(?:According to the (?:provided )?(?:context|manual|text),?\s*)",
+            r"^(?:Based on the (?:provided )?(?:context|manual|text),?\s*)",
+        ]
+        for filler in fillers:
+            answer = re.sub(filler, "", answer, flags=re.IGNORECASE)
+        
+        # Trim to 70 words
+        words = answer.split()
+        if len(words) > 70:
+            answer = " ".join(words[:70])
+            if not answer.rstrip().endswith(('.', '!', '?')):
+                answer = answer.rstrip(".!?,;") + "."
+        
+        answer = answer.strip()
+        
+        # Add clean citation
+        doc_name = "Manual for Development Projects 2024"
+        if page and page > 0:
+            answer += f"\n\nSource: {doc_name}, p.{page}"
+        else:
+            answer += f"\n\nSource: {doc_name}"
+        
+        return answer
+        
     except Exception as e:
         print(f"[Groq API] Error: {e}")
         return f"⚠️ Groq API error: {str(e)}"
@@ -676,15 +732,19 @@ def chat():
         if conversation_context:
             full_context = f"{conversation_context}\n\n---\n\nRelevant information from Manual:\n{rag_context}"
         
+        # Extract page from first source for citation
+        first_page = sources[0].get('page', 0) if sources else 0
+        
         # GROQ MODE: Use Groq API for responses
-        if use_groq:
-            answer = generate_groq_response(query, full_context)
+        # v3.3.0: Check global force Groq mode OR request-level use_groq
+        if use_groq or FORCE_GROQ_MODE:
+            answer = generate_groq_response(query, full_context, page=first_page)
             response_mode = 'groq'
         else:
             # Generate answer using local model
             # Use higher max_new_tokens to avoid truncation
             llm = get_model()
-            answer = llm.generate_response(query, full_context, max_new_tokens=200)
+            answer = llm.generate_response(query, full_context, max_new_tokens=200, page=first_page)
             response_mode = 'local'
         
         # Clean up answer
@@ -892,9 +952,29 @@ def admin_status():
     except:
         ollama_status = "not running"
     
+    # v3.3.0: Check Groq status
+    groq_status = "unknown"
+    groq_api_key = os.environ.get('GROQ_API_KEY', '')
+    if not groq_api_key:
+        groq_status = "no_api_key"
+    elif GROQ_AVAILABLE:
+        try:
+            import requests
+            headers = {"Authorization": f"Bearer {groq_api_key}", "Content-Type": "application/json"}
+            test_payload = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
+            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=test_payload, timeout=5)
+            if resp.status_code == 200:
+                groq_status = "connected"
+            else:
+                groq_status = f"error: {resp.status_code}"
+        except Exception as e:
+            groq_status = f"error: {str(e)[:30]}"
+    else:
+        groq_status = "library_not_installed"
+    
     return jsonify({
         'status': 'ok',
-        'version': '2.5.0',
+        'version': '3.3.0',
         'uptime': datetime.now().isoformat(),
         'memory_mb': round(memory_mb, 2),
         'active_sessions': active_sessions,
@@ -902,6 +982,8 @@ def admin_status():
         'max_memory_per_session': MAX_MEMORY_MESSAGES,
         'qdrant_status': qdrant_status,
         'ollama_status': ollama_status,
+        'groq_status': groq_status,
+        'groq_available': GROQ_AVAILABLE and bool(groq_api_key),
         'qdrant_url': os.getenv("QDRANT_URL", "http://localhost:6338"),
         'debug_mode': app.debug,
         'model_loaded': model is not None,
@@ -989,6 +1071,83 @@ def admin_clear_all_memory():
         return jsonify({
             'success': True,
             'message': f'Cleared {count} sessions from memory'
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# v3.3.0: Groq force-enable state (runtime toggle)
+FORCE_GROQ_MODE = False
+
+
+@app.route('/admin/groq-status', methods=['GET'])
+def admin_groq_status():
+    """
+    Admin endpoint - returns detailed Groq API status.
+    For admin panel Groq force-enable button.
+    """
+    global FORCE_GROQ_MODE
+    
+    groq_api_key = os.environ.get('GROQ_API_KEY', '')
+    status = {
+        'available': GROQ_AVAILABLE,
+        'api_key_set': bool(groq_api_key),
+        'force_mode': FORCE_GROQ_MODE,
+        'connection': 'unknown'
+    }
+    
+    if groq_api_key and GROQ_AVAILABLE:
+        try:
+            import requests
+            headers = {"Authorization": f"Bearer {groq_api_key}", "Content-Type": "application/json"}
+            test_payload = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
+            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=test_payload, timeout=5)
+            if resp.status_code == 200:
+                status['connection'] = 'connected'
+            else:
+                status['connection'] = f'error_{resp.status_code}'
+        except Exception as e:
+            status['connection'] = f'error: {str(e)[:30]}'
+    elif not groq_api_key:
+        status['connection'] = 'no_api_key'
+    else:
+        status['connection'] = 'library_not_installed'
+    
+    return jsonify(status)
+
+
+@app.route('/admin/groq-toggle', methods=['POST'])
+def admin_groq_toggle():
+    """
+    Admin endpoint - toggle force Groq mode.
+    When enabled, all responses use Groq API instead of local Ollama.
+    """
+    global FORCE_GROQ_MODE
+    
+    try:
+        data = request.get_json() or {}
+        enable = data.get('enable', not FORCE_GROQ_MODE)  # Toggle if not specified
+        
+        if enable and not GROQ_AVAILABLE:
+            return jsonify({
+                'success': False,
+                'error': 'Groq library not installed. Run: pip install groq',
+                'force_mode': FORCE_GROQ_MODE
+            }), 400
+        
+        if enable and not os.environ.get('GROQ_API_KEY'):
+            return jsonify({
+                'success': False,
+                'error': 'GROQ_API_KEY not set in environment',
+                'force_mode': FORCE_GROQ_MODE
+            }), 400
+        
+        FORCE_GROQ_MODE = bool(enable)
+        
+        return jsonify({
+            'success': True,
+            'force_mode': FORCE_GROQ_MODE,
+            'message': f"Groq force mode {'enabled' if FORCE_GROQ_MODE else 'disabled'}"
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500

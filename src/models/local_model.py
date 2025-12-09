@@ -1,8 +1,11 @@
 """
-PDBot Local Model v3.3.0 (v2.1.0)
-Mistral-optimized with strict answer formatting.
-Groq fallback for generation when local model fails.
-Multi-class classifier integration.
+PDBot Local Model v3.3.0
+Munawar Test optimized: strict 70-word answers, 1-2 sentences.
+- Answer sanitizer: trim to 70 words max
+- Keep first 1-2 sentences only (not 2-3)
+- Remove all markdown formatting
+- Clean filler phrases
+- Groq fallback with same guardrails
 """
 import os
 import re
@@ -197,78 +200,72 @@ class LocalModel:
 
     def _sanitize_answer(self, text: str, context: str, page: int) -> str:
         """
-        v2.0.8 Answer Sanitizer:
-        - Keep only first 2-3 sentences
-        - Trim to 70 words max
+        v3.3.0 Answer Sanitizer (Munawar Test optimization):
+        - Keep only first 1-2 sentences (not 2-3)
+        - STRICT 70 words max (down from 100)
+        - Remove all markdown formatting
         - Preserve numeric phrases from context
         - Ensure single, clean citation
-        - Remove hallucinated numbers not in context
+        - Remove filler phrases and over-explanation
         """
         if not text:
             return "Not found in the Manual."
         
         doc_name = "Manual for Development Projects 2024"
         
-        # Step 0: Remove any existing ✅ Answer: prefix (will be added by app.py)
-        text = re.sub(r"^[\s\n]*✅\s*Answer:?\s*", "", text, flags=re.IGNORECASE)
+        # Step 0: Remove any existing prefixes
+        text = re.sub(r"^[\s\n]*\u2705\s*Answer:?\s*", "", text, flags=re.IGNORECASE)
         text = re.sub(r"^[\s\n]*Answer:?\s*", "", text, flags=re.IGNORECASE)
         
-        # Step 1: Remove any existing citations (we'll add clean one at end)
+        # Step 1: Remove any existing citations
         text = re.sub(r"\n*Source:.*$", "", text, flags=re.IGNORECASE | re.MULTILINE)
         text = re.sub(r"\(Source:.*?\)", "", text, flags=re.IGNORECASE)
         text = re.sub(r"Manual for Development Projects \d{4},?\s*p\.?\s*\d+\.?", "", text)
         
-        # Step 2: Split into sentences and keep first 2-3
-        sentences = re.split(r'(?<=[.!?])\s+', text.strip())
-        sentences = [s.strip() for s in sentences if s.strip() and len(s.strip()) > 5]
+        # Step 2: Remove markdown formatting
+        text = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)  # Bold
+        text = re.sub(r"\*([^*]+)\*", r"\1", text)  # Italic
+        text = re.sub(r"^#+\s*", "", text, flags=re.MULTILINE)  # Headers
+        text = re.sub(r"^[\-\*]\s+", "", text, flags=re.MULTILINE)  # Bullets
         
-        # Keep up to 3 sentences
-        kept_sentences = sentences[:3]
-        answer = " ".join(kept_sentences)
-        
-        # Step 3: Trim to 100 words max (increased from 70 to prevent cut-off)
-        words = answer.split()
-        if len(words) > 100:
-            answer = " ".join(words[:100])
-            # Try to end at sentence boundary
-            if not answer.rstrip().endswith(('.', '!', '?')):
-                answer = answer.rstrip() + "."
-        
-        # Step 4: Validate numbers - remove any not in context
-        context_numbers = self._extract_numbers_from_context(context)
-        context_nums_lower = [n.lower() for n in context_numbers]
-        
-        # Find numbers in answer
-        answer_nums = re.findall(r"Rs\.?\s*[\d,.]+(?:\s*(?:million|billion|crore|lakh))?|\d+(?:\.\d+)?\s*(?:million|billion|crore|lakh|percent|%)", answer, re.IGNORECASE)
-        
-        for num in answer_nums:
-            # Check if this number (or similar) exists in context
-            num_lower = num.lower().strip()
-            found = False
-            for ctx_num in context_nums_lower:
-                # Fuzzy match - check if key digits match
-                num_digits = re.sub(r'[^\d.]', '', num_lower)
-                ctx_digits = re.sub(r'[^\d.]', '', ctx_num)
-                if num_digits and ctx_digits and (num_digits in ctx_digits or ctx_digits in num_digits):
-                    found = True
-                    break
-            # If number not found in context, it might be hallucinated - log but don't remove
-            # (some numbers like page refs are ok)
-        
-        # Step 5: Remove common filler phrases
+        # Step 3: Remove common filler phrases FIRST (before sentence splitting)
         filler_phrases = [
             r"^(?:According to the (?:provided )?(?:context|manual|text),?\s*)",
             r"^(?:Based on the (?:provided )?(?:context|manual|text),?\s*)",
             r"^(?:The (?:provided )?(?:context|manual|text) (?:states|mentions|indicates) that\s*)",
             r"^(?:As per the (?:provided )?(?:context|manual),?\s*)",
+            r"^(?:As stated in the (?:context|manual),?\s*)",
+            r"^(?:The manual (?:states|mentions|specifies) that\s*)",
         ]
         for filler in filler_phrases:
-            answer = re.sub(filler, "", answer, flags=re.IGNORECASE)
+            text = re.sub(filler, "", text, flags=re.IGNORECASE)
+        
+        # Step 4: Split into sentences and keep first 1-2 only
+        sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+        sentences = [s.strip() for s in sentences if s.strip() and len(s.strip()) > 8]
+        
+        # v3.3.0: Keep only 1-2 sentences (stricter than before)
+        kept_sentences = sentences[:2]
+        answer = " ".join(kept_sentences)
+        
+        # Step 5: STRICT 70 words max (Munawar Test requirement)
+        words = answer.split()
+        if len(words) > 70:
+            # Trim to 70 words
+            answer = " ".join(words[:70])
+            # Try to end at sentence boundary
+            last_period = answer.rfind(".")
+            last_question = answer.rfind("?")
+            last_boundary = max(last_period, last_question)
+            if last_boundary > len(answer) * 0.6:  # At least 60% through
+                answer = answer[:last_boundary + 1]
+            elif not answer.rstrip().endswith(('.', '!', '?')):
+                answer = answer.rstrip(".!?,;") + "."
         
         # Step 6: Clean up whitespace
         answer = " ".join(answer.split()).strip()
         
-        # Step 7: Add clean citation
+        # Step 7: Add single clean citation
         if page and page > 0:
             citation = f"\n\nSource: {doc_name}, p.{page}"
         else:
