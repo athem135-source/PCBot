@@ -10,7 +10,7 @@
 
 ---
 
-![Version](https://img.shields.io/badge/Version-3.3.2-006600?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-3.3.4-006600?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![React](https://img.shields.io/badge/React-18.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-DC382D?style=for-the-badge)
@@ -47,7 +47,7 @@
 - [Quick Start](#-quick-start)
 - [Evaluation & Metrics](#-evaluation--metrics)
 - [Verification Methodology](#-verification-methodology)
-- [What's New in v3.3.2](#-whats-new-in-v332)
+- [What's New in v3.3.4](#-whats-new-in-v334)
 - [Version History](#-version-history)
 - [Mobile Access](#-mobile-access)
 - [Security](#-security)
@@ -61,7 +61,7 @@
 
 PDBOT is an **enterprise-grade Retrieval-Augmented Generation (RAG) system** developed to provide instant, accurate, and verifiable responses regarding the **Manual for Development Projects 2024** issued by the Government of Pakistan's Ministry of Planning, Development & Special Initiatives.
 
-### 🏆 Key Achievements (v3.3.2)
+### 🏆 Key Achievements (v3.3.4)
 
 | Category | Achievement | Details |
 |----------|-------------|---------|
@@ -153,7 +153,7 @@ https://github.com/athem135-source/PDBOT/raw/main/src/assets/PDBOT.mp4
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        PDBOT v3.3.2 ARCHITECTURE                             │
+│                        PDBOT v3.3.4 ARCHITECTURE                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │    👤 USER (Browser/Mobile)                                                  │
@@ -375,7 +375,13 @@ Responses are verified using multiple leading AI models:
 
 ---
 
-## 🆕 What's New in v3.3.2
+## 🆕 What's New in v3.3.4
+
+### 📸 Enhanced Export Options (v3.3.4)
+- **Full Chat Image Export:** Download entire conversation as PNG (no cropping)
+- **Styled HTML Export:** Professional chat interface design with styling
+- **Text Export:** Plain text format for easy sharing
+- **Fixed Scroll Capture:** Now captures full chat history, not just visible area
 
 ### 🎯 Major RAG Reconstruction (v3.3.0)
 - **Precision Chunking:** 1-3 sentences per chunk, max 70 words
@@ -412,6 +418,7 @@ Responses are verified using multiple leading AI models:
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v3.3.4** | Dec 9, 2025 | Full chat image export, enhanced download options |
 | **v3.3.2** | Dec 9, 2025 | Answer truncation fix, 100-word limit |
 | **v3.3.1** | Dec 9, 2025 | Remove all hardcoded values |
 | **v3.3.0** | Dec 8, 2025 | Major RAG reconstruction, precision chunking |
@@ -429,7 +436,7 @@ Responses are verified using multiple leading AI models:
   Oct 16: Project Start             Nov 5: v2.0 Reranker          Dec 1: v2.2 Widget
   Oct 25: v1.0 Release              Nov 12: v2.1 Numeric          Dec 3: v2.5.0 Smart
   Oct 31: v1.1 Classifier           Nov 20: Enterprise            Dec 8: v3.3.0 RAG
-                                                                   Dec 9: v3.3.2 ← NOW
+                                                                   Dec 9: v3.3.4 ← NOW
 ```
 
 ---
@@ -568,7 +575,7 @@ Permitted: Evaluation, Academic Research, GoP Internal Use (with approval)
 
 ## 🇵🇰
 
-**PDBOT v3.3.2** | Built with ❤️ for Pakistan
+**PDBOT v3.3.4** | Built with ❤️ for Pakistan
 
 **38 Tests | 500+ Queries | 95%+ Accuracy | 100% Safety | 0% Hallucination**
 

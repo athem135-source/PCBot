@@ -1,14 +1,14 @@
 # ============================================
 # PDBOT Widget - Quick Start (PowerShell)
 # Government of Pakistan - Ministry of Planning
-# Version 3.3.2
+# Version 3.3.4
 # ============================================
 
-$Host.UI.RawUI.WindowTitle = "PDBOT Widget v3.3.2"
+$Host.UI.RawUI.WindowTitle = "PDBOT Widget v3.3.4"
 
 Write-Host ""
 Write-Host " ========================================"
-Write-Host "   🤖 PDBOT Widget v3.3.2"
+Write-Host "   🤖 PDBOT Widget v3.3.4"
 Write-Host "   Government of Pakistan"
 Write-Host "   Ministry of Planning, Development"
 Write-Host "   & Special Initiatives"

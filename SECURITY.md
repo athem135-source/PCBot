@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Security](https://img.shields.io/badge/Security-Policy-red?style=for-the-badge&logo=shield&logoColor=white)
-![Version](https://img.shields.io/badge/Version-3.3.2-006600?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-3.3.4-006600?style=for-the-badge)
 
 **PDBOT Security Guidelines & Vulnerability Reporting**
 

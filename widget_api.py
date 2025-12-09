@@ -1,5 +1,5 @@
 """
-PDBOT Widget API Server v3.3.2
+PDBOT Widget API Server v3.3.4
 ==============================
 
 A lightweight Flask API that bridges the React widget to the PDBOT RAG pipeline.

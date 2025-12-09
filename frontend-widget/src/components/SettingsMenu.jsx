@@ -9,7 +9,7 @@
  * - About PDBOT
  * 
  * @author Ministry of Planning, Development & Special Initiatives
- * @version 3.3.2
+ * @version 3.3.4
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -127,7 +127,7 @@ function SettingsMenu({
           <button 
             className="pdbot-menu-item"
             onClick={() => handleAction(() => {
-              alert('PDBOT v3.3.2\\n\\nPlanning & Development Bot\\nMinistry of Planning, Development & Special Initiatives\\nGovernment of Pakistan\\n\\n© 2025');
+              alert('PDBOT v3.3.4\\n\\nPlanning & Development Bot\\nMinistry of Planning, Development & Special Initiatives\\nGovernment of Pakistan\\n\\n© 2025');
             })}
           >
             <span className="pdbot-menu-icon">ℹ️</span>

@@ -1,5 +1,5 @@
 @echo off
-REM PDBOT Cloudflare Tunnel v3.3.2
+REM PDBOT Cloudflare Tunnel v3.3.4
 title PDBOT Tunnel
 cd /d "%~dp0"
 
