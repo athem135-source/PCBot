@@ -354,9 +354,9 @@ Responses are verified using multiple leading AI models:
 
 | Model | Purpose | Verification Type |
 |-------|---------|-------------------|
-| **Gemini 2.0 Flash** | Fact extraction | Cross-reference with source |
-| **ChatGPT-4o** | Logical consistency | Answer coherence check |
-| **Claude Sonnet 4** | Citation accuracy | Page reference validation |
+| **Gemini 3.0** | Fact extraction | Cross-reference with source |
+| **ChatGPT-5.1** | Logical consistency | Answer coherence check |
+| **Claude OPUS 4.5** | Citation accuracy | Page reference validation |
 | **Grok 3** | Edge case testing | Adversarial queries |
 
 #### Stage 3: Consistency Testing
