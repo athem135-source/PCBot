@@ -1,60 +1,18 @@
 """
-Comparison Response Templates for PDBOT v3.3.0
-Dynamic limits pulled from src/data/approval_limits.json (single source of truth).
-Single forum queries return individual limit; multi-forum returns table.
+Comparison Response Templates for PDBOT v3.3.1
+NO HARDCODED LIMITS - All numeric values come from RAG (the actual manual).
+Only structural comparisons (PC forms, federal vs provincial) use templates.
+Limit queries return None to let RAG fetch from the manual.
 """
 
-import json
-import os
-from typing import Optional, Dict
+from typing import Optional
 
-# Load approval limits from JSON to avoid hardcoding in code paths
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
-LIMITS_FILE = os.path.join(DATA_DIR, "approval_limits.json")
 
-def _load_limits() -> Dict[str, Dict[str, str]]:
-    try:
-        with open(LIMITS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        # Fallback with empty dict; upstream should handle missing values
-        return {}
-
-LIMITS = _load_limits()
+# =============================================================================
+# STRUCTURAL COMPARISONS ONLY (no numeric values)
+# =============================================================================
 
 COMPARISON_RESPONSES = {
-    "ddwp_cdwp_ecnec": f"""**Comparison: DDWP vs CDWP vs ECNEC**
-
-| Aspect | DDWP | CDWP | ECNEC |
-|--------|------|------|-------|
-| **Full Name** | {LIMITS.get('DDWP', {}).get('full_name', 'Divisional Development Working Party')} | {LIMITS.get('CDWP', {}).get('full_name', 'Central Development Working Party')} | {LIMITS.get('ECNEC', {}).get('full_name', 'Executive Committee of the National Economic Council')} |
-| **Level** | Divisional/Provincial | Federal | National |
-| **Approval Limit** | {LIMITS.get('DDWP', {}).get('limit_text', '')} | {LIMITS.get('CDWP', {}).get('limit_text', '')} | {LIMITS.get('ECNEC', {}).get('limit_text', '')} |
-| **Chair** | Commissioner/Additional Chief Secretary | Deputy Chairman Planning Commission | Prime Minister/Finance Minister |
-| **Scope** | Provincial/Divisional projects | Federal/large provincial projects | Mega/strategic national projects |
-
-**Key Difference:** Approval authority depends on project cost thresholds.""",
-
-    "ddwp_cdwp": f"""**Comparison: DDWP vs CDWP**
-
-| Aspect | DDWP | CDWP |
-|--------|------|------|
-| **Full Name** | {LIMITS.get('DDWP', {}).get('full_name', 'Divisional Development Working Party')} | {LIMITS.get('CDWP', {}).get('full_name', 'Central Development Working Party')} |
-| **Level** | Divisional/Provincial | Federal |
-| **Approval Limit** | {LIMITS.get('DDWP', {}).get('limit_text', '')} | {LIMITS.get('CDWP', {}).get('limit_text', '')} |
-
-**Key Difference:** DDWP approves smaller provincial projects; CDWP approves larger federal/provincial projects in scope.""",
-
-    "cdwp_ecnec": f"""**Comparison: CDWP vs ECNEC**
-
-| Aspect | CDWP | ECNEC |
-|--------|------|-------|
-| **Full Name** | {LIMITS.get('CDWP', {}).get('full_name', 'Central Development Working Party')} | {LIMITS.get('ECNEC', {}).get('full_name', 'Executive Committee of the National Economic Council')} |
-| **Approval Limit** | {LIMITS.get('CDWP', {}).get('limit_text', '')} | {LIMITS.get('ECNEC', {}).get('limit_text', '')} |
-| **Chair** | Deputy Chairman Planning Commission | Prime Minister/Finance Minister |
-
-**Key Difference:** ECNEC is the highest approval authority; projects above the CDWP ceiling require ECNEC approval.""",
-
     "pc_forms": """**Comparison: PC Proformas**
 
 | Form | Purpose | When Used |
@@ -65,7 +23,9 @@ COMPARISON_RESPONSES = {
 | **PC-IV** | Completion Report | Project completion |
 | **PC-V** | Annual Re-appropriation | Budget revision |
 
-**Key Difference:** PC-I starts the project, PC-III monitors it, PC-IV closes it.""",
+**Key Difference:** PC-I starts the project, PC-III monitors it, PC-IV closes it.
+
+*Source: Manual for Development Projects 2024*""",
 
     "federal_provincial": """**Comparison: Federal vs Provincial Project Approval**
 
@@ -75,82 +35,77 @@ COMPARISON_RESPONSES = {
 | **Approval Authority** | CDWP/ECNEC | PDWP/DDWP |
 | **Oversight** | Planning Commission | Provincial P&D |
 
-**Key Difference:** Federal projects use PSDP funding and go through CDWP/ECNEC."""
+**Key Difference:** Federal projects use PSDP funding and go through CDWP/ECNEC.
+
+*Source: Manual for Development Projects 2024*"""
 }
 
 
-
-# v2.5.0-patch3: Approval Limits Table (for numeric queries)
-APPROVAL_LIMITS_TABLE = f'''**Project Approval Limits by Forum**
-
-| Forum | Full Name | Approval Limit |
-|-------|-----------|----------------|
-| **DDWP** | {LIMITS.get('DDWP', {}).get('full_name', 'Divisional Development Working Party')} | {LIMITS.get('DDWP', {}).get('limit_text', '')} |
-| **PDWP** | {LIMITS.get('PDWP', {}).get('full_name', 'Provincial Development Working Party')} | {LIMITS.get('PDWP', {}).get('limit_text', '')} |
-| **CDWP** | {LIMITS.get('CDWP', {}).get('full_name', 'Central Development Working Party')} | {LIMITS.get('CDWP', {}).get('limit_text', '')} |
-| **ECNEC** | {LIMITS.get('ECNEC', {}).get('full_name', 'Executive Committee of the National Economic Council')} | {LIMITS.get('ECNEC', {}).get('limit_text', '')} |
-
-**Notes:**
-- Projects within provincial limits go to PDWP/DDWP
-- Federal projects between Rs. 2-10 billion go to CDWP
-- Mega projects above Rs. 10 billion require ECNEC approval
-
-*Source: Manual for Development Projects 2024*'''
-def get_comparison_response(query):
-    """Check if query matches a known comparison or limit query."""
+def get_comparison_response(query: str) -> Optional[str]:
+    """
+    v3.3.1: Check if query matches a known STRUCTURAL comparison.
+    
+    IMPORTANT: This function NO LONGER handles limit/threshold queries.
+    All numeric queries (DDWP limit, CDWP threshold, etc.) return None
+    so that the RAG pipeline fetches the actual values from the manual.
+    
+    Only handles:
+    - PC form comparisons (PC-I vs PC-II, etc.)
+    - Federal vs Provincial structure
+    
+    Returns:
+        Template response for structural comparisons, or None for RAG.
+    """
     q_lower = query.lower()
-
-    # v2.5.0-patch5: Specific forum limit queries first (single forum only)
-    # Expanded limit terms to catch more variations
-    limit_terms = ['limit', 'approval', 'threshold', 'cap', 'ceiling', 'budget', 'cost', 'amount', 'approve', 'how much', 'maximum', 'max']
-    mentions = {f: (f.lower() in q_lower) for f in ['ddwp', 'pdwp', 'cdwp', 'ecnec']}
-    forum_count = sum(1 for k, v in mentions.items() if v)
     
-    # Check if this is a limit-related query
-    is_limit_query = any(t in q_lower for t in limit_terms)
+    # ==========================================================
+    # LIMIT/THRESHOLD QUERIES -> Return None, let RAG handle
+    # ==========================================================
+    limit_terms = ['limit', 'approval limit', 'threshold', 'cap', 'ceiling', 
+                   'how much', 'maximum', 'max', 'can approve', 'approval power']
+    forum_terms = ['ddwp', 'pdwp', 'cdwp', 'ecnec', 'nec']
     
-    # Single forum + limit query = return only that forum's limit
-    if is_limit_query and forum_count == 1:
-        if mentions['ddwp']:
-            return f"**DDWP Approval Limit**\n\nThe **Divisional Development Working Party (DDWP)** can approve projects {LIMITS.get('DDWP', {}).get('limit_text', '')}.\n\n*Source: Manual for Development Projects 2024*"
-        if mentions['pdwp']:
-            return f"**PDWP Approval Limit**\n\nThe **Provincial Development Working Party (PDWP)** can approve projects {LIMITS.get('PDWP', {}).get('limit_text', '')}.\n\n*Source: Manual for Development Projects 2024*"
-        if mentions['cdwp']:
-            return f"**CDWP Approval Limit**\n\nThe **Central Development Working Party (CDWP)** can approve projects with cost {LIMITS.get('CDWP', {}).get('limit_text', '')}.\n\n*Source: Manual for Development Projects 2024*"
-        if mentions['ecnec']:
-            return f"**ECNEC Approval Limit**\n\nThe **Executive Committee of the National Economic Council (ECNEC)** approves projects {LIMITS.get('ECNEC', {}).get('limit_text', '')}.\n\n*Source: Manual for Development Projects 2024*"
+    # If query mentions limits AND forums, let RAG handle it
+    has_limit_term = any(t in q_lower for t in limit_terms)
+    has_forum_term = any(t in q_lower for t in forum_terms)
     
-    # Multiple forums or "all" with limit query = return full table
-    if is_limit_query and (forum_count >= 2 or 'all' in q_lower):
-        return APPROVAL_LIMITS_TABLE
-
+    if has_limit_term and has_forum_term:
+        # Return None - RAG will fetch actual values from manual
+        return None
     
-    if all(term in q_lower for term in ["ddwp", "cdwp", "ecnec"]):
-        return COMPARISON_RESPONSES["ddwp_cdwp_ecnec"]
+    # ==========================================================
+    # FORUM COMPARISONS (difference between X and Y) -> Return None
+    # Let RAG provide accurate comparison from manual
+    # ==========================================================
+    comparison_terms = ['difference', 'differ', 'compare', 'vs', 'versus', 'between']
+    has_comparison = any(t in q_lower for t in comparison_terms)
     
-    if "ddwp" in q_lower and "cdwp" in q_lower:
-        return COMPARISON_RESPONSES["ddwp_cdwp"]
+    if has_comparison and has_forum_term:
+        # Return None - RAG will fetch actual comparison from manual
+        return None
     
-    if "cdwp" in q_lower and "ecnec" in q_lower:
-        return COMPARISON_RESPONSES["cdwp_ecnec"]
+    # ==========================================================
+    # PC FORMS COMPARISON -> Use template (structural, not numeric)
+    # ==========================================================
+    pc_terms = ["pc-i", "pc-ii", "pc-iii", "pc-iv", "pc-v", "pc1", "pc2", "pc3", "pc4", "pc5"]
+    pc_matches = sum(1 for term in pc_terms if term in q_lower.replace(" ", ""))
     
-    pc_terms = ["pc-i", "pc-ii", "pc-iii", "pc-iv", "pc-v"]
-    pc_matches = sum(1 for term in pc_terms if term in q_lower)
-    if pc_matches >= 2 or ("pc" in q_lower and "difference" in q_lower):
+    if pc_matches >= 2:
         return COMPARISON_RESPONSES["pc_forms"]
     
-    if ("federal" in q_lower and "provincial" in q_lower):
+    if "pc" in q_lower and has_comparison:
+        return COMPARISON_RESPONSES["pc_forms"]
+    
+    # ==========================================================
+    # FEDERAL VS PROVINCIAL -> Use template (structural)
+    # ==========================================================
+    if "federal" in q_lower and "provincial" in q_lower:
         return COMPARISON_RESPONSES["federal_provincial"]
     
-    entities = []
-    if "ddwp" in q_lower: entities.append("ddwp")
-    if "cdwp" in q_lower: entities.append("cdwp")
-    if "ecnec" in q_lower: entities.append("ecnec")
+    if ("psdp" in q_lower and "adp" in q_lower):
+        return COMPARISON_RESPONSES["federal_provincial"]
     
-    if len(entities) >= 3:
-        return COMPARISON_RESPONSES["ddwp_cdwp_ecnec"]
-    elif len(entities) == 2:
-        key = "_".join(sorted(entities))
-        return COMPARISON_RESPONSES.get(key)
-    
+    # ==========================================================
+    # DEFAULT: Return None, let RAG handle
+    # ==========================================================
     return None
