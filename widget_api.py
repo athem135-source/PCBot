@@ -182,7 +182,7 @@ Answer in 45-70 words. Extract numbers if present. Direct answer first:"""
         
         answer = response.choices[0].message.content or ""
         
-        # v3.3.0: Apply same sanitization - trim to 70 words
+        # v3.3.2: Apply sanitization - allow up to 100 words for complete answers
         import re
         
         # Remove existing citations (we'll add clean one)
@@ -196,11 +196,15 @@ Answer in 45-70 words. Extract numbers if present. Direct answer first:"""
         for filler in fillers:
             answer = re.sub(filler, "", answer, flags=re.IGNORECASE)
         
-        # Trim to 70 words
+        # v3.3.2: Allow up to 100 words to avoid cutting mid-sentence/number
         words = answer.split()
-        if len(words) > 70:
-            answer = " ".join(words[:70])
-            if not answer.rstrip().endswith(('.', '!', '?')):
+        if len(words) > 100:
+            answer = " ".join(words[:100])
+            # Try to end at sentence boundary
+            last_period = answer.rfind(".")
+            if last_period > len(answer) * 0.5:
+                answer = answer[:last_period + 1]
+            elif not answer.rstrip().endswith(('.', '!', '?')):
                 answer = answer.rstrip(".!?,;") + "."
         
         answer = answer.strip()

@@ -240,27 +240,40 @@ class LocalModel:
         for filler in filler_phrases:
             text = re.sub(filler, "", text, flags=re.IGNORECASE)
         
-        # Step 4: Split into sentences and keep first 1-2 only
+        # Step 4: Split into sentences and keep first 2-3
         sentences = re.split(r'(?<=[.!?])\s+', text.strip())
         sentences = [s.strip() for s in sentences if s.strip() and len(s.strip()) > 8]
         
-        # v3.3.0: Keep only 1-2 sentences (stricter than before)
-        kept_sentences = sentences[:2]
+        # v3.3.2: Keep 2-3 sentences to ensure complete answers
+        # (was 1-2 but caused incomplete comparisons)
+        kept_sentences = sentences[:3]
         answer = " ".join(kept_sentences)
         
-        # Step 5: STRICT 70 words max (Munawar Test requirement)
+        # Step 5: Word limit (allow more for complete answers)
+        # Target 70 words but allow up to 100 to avoid cutting mid-sentence/number
         words = answer.split()
-        if len(words) > 70:
-            # Trim to 70 words
-            answer = " ".join(words[:70])
+        if len(words) > 100:
+            # Hard limit at 100 words
+            answer = " ".join(words[:100])
             # Try to end at sentence boundary
             last_period = answer.rfind(".")
             last_question = answer.rfind("?")
             last_boundary = max(last_period, last_question)
-            if last_boundary > len(answer) * 0.6:  # At least 60% through
+            if last_boundary > len(answer) * 0.5:  # At least 50% through
                 answer = answer[:last_boundary + 1]
             elif not answer.rstrip().endswith(('.', '!', '?')):
                 answer = answer.rstrip(".!?,;") + "."
+        elif len(words) > 70:
+            # Between 70-100: try to end at sentence boundary if possible
+            temp = " ".join(words[:70])
+            last_period = temp.rfind(".")
+            last_question = temp.rfind("?")
+            last_boundary = max(last_period, last_question)
+            
+            # Only trim if we have a good boundary, otherwise keep full answer
+            if last_boundary > len(temp) * 0.6:
+                answer = temp[:last_boundary + 1]
+            # else: keep full answer up to 100 words (already under limit)
         
         # Step 6: Clean up whitespace
         answer = " ".join(answer.split()).strip()
