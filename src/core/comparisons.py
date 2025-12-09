@@ -99,22 +99,29 @@ def get_comparison_response(query):
     """Check if query matches a known comparison or limit query."""
     q_lower = query.lower()
 
-    # v2.5.0-patch4: Specific forum limit queries first (single forum only)
-    limit_terms = ['limit', 'approval', 'threshold', 'cap', 'ceiling']
+    # v2.5.0-patch5: Specific forum limit queries first (single forum only)
+    # Expanded limit terms to catch more variations
+    limit_terms = ['limit', 'approval', 'threshold', 'cap', 'ceiling', 'budget', 'cost', 'amount', 'approve', 'how much', 'maximum', 'max']
     mentions = {f: (f.lower() in q_lower) for f in ['ddwp', 'pdwp', 'cdwp', 'ecnec']}
-    if any(t in q_lower for t in limit_terms):
-        count = sum(1 for k, v in mentions.items() if v)
-        if count == 1:
-            if mentions['ddwp']:
-                return f"**DDWP Approval Limit**\n\n{LIMITS.get('DDWP', {}).get('limit_text', '')}"
-            if mentions['pdwp']:
-                return f"**PDWP Approval Limit**\n\n{LIMITS.get('PDWP', {}).get('limit_text', '')}"
-            if mentions['cdwp']:
-                return f"**CDWP Approval Limit**\n\n{LIMITS.get('CDWP', {}).get('limit_text', '')}"
-            if mentions['ecnec']:
-                return f"**ECNEC Approval Limit**\n\n{LIMITS.get('ECNEC', {}).get('limit_text', '')}"
-        elif count >= 2 or 'all' in q_lower:
-            return APPROVAL_LIMITS_TABLE
+    forum_count = sum(1 for k, v in mentions.items() if v)
+    
+    # Check if this is a limit-related query
+    is_limit_query = any(t in q_lower for t in limit_terms)
+    
+    # Single forum + limit query = return only that forum's limit
+    if is_limit_query and forum_count == 1:
+        if mentions['ddwp']:
+            return f"**DDWP Approval Limit**\n\nThe **Divisional Development Working Party (DDWP)** can approve projects {LIMITS.get('DDWP', {}).get('limit_text', '')}.\n\n*Source: Manual for Development Projects 2024*"
+        if mentions['pdwp']:
+            return f"**PDWP Approval Limit**\n\nThe **Provincial Development Working Party (PDWP)** can approve projects {LIMITS.get('PDWP', {}).get('limit_text', '')}.\n\n*Source: Manual for Development Projects 2024*"
+        if mentions['cdwp']:
+            return f"**CDWP Approval Limit**\n\nThe **Central Development Working Party (CDWP)** can approve projects with cost {LIMITS.get('CDWP', {}).get('limit_text', '')}.\n\n*Source: Manual for Development Projects 2024*"
+        if mentions['ecnec']:
+            return f"**ECNEC Approval Limit**\n\nThe **Executive Committee of the National Economic Council (ECNEC)** approves projects {LIMITS.get('ECNEC', {}).get('limit_text', '')}.\n\n*Source: Manual for Development Projects 2024*"
+    
+    # Multiple forums or "all" with limit query = return full table
+    if is_limit_query and (forum_count >= 2 or 'all' in q_lower):
+        return APPROVAL_LIMITS_TABLE
 
     
     if all(term in q_lower for term in ["ddwp", "cdwp", "ecnec"]):
