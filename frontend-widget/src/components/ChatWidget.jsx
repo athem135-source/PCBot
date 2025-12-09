@@ -35,7 +35,7 @@ import {
   saveWidgetState,
   loadWidgetState,
   exportChatAsText,
-  exportChatAsHTML,
+  exportChatAsMarkdown,
   downloadFile
 } from '../utils/storage.js';
 import { generateMessageId } from '../utils/feedback.js';
@@ -371,16 +371,11 @@ function ChatWidget() {
     downloadFile(text, filename, 'text/plain');
   };
   
-  // Handle download as PDF (HTML that can be printed/saved as PDF)
+  // Handle download as Markdown (.md) - universally readable format
   const handleDownloadPDF = () => {
-    const html = exportChatAsHTML(messages);
-    const filename = `pdbot_chat_${new Date().toISOString().split('T')[0]}.html`;
-    downloadFile(html, filename, 'text/html');
-    
-    // Also open in new tab for easy PDF printing
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
+    const markdown = exportChatAsMarkdown(messages);
+    const filename = `pdbot_chat_${new Date().toISOString().split('T')[0]}.md`;
+    downloadFile(markdown, filename, 'text/markdown');
   };
   
   // Dragging handlers

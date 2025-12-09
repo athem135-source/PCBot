@@ -106,8 +106,8 @@ function SettingsMenu({
               className="pdbot-menu-item pdbot-menu-sub"
               onClick={() => handleAction(onDownloadPDF)}
             >
-              <span className="pdbot-menu-icon">📑</span>
-              <span className="pdbot-menu-label">As PDF</span>
+              <span className="pdbot-menu-icon">📝</span>
+              <span className="pdbot-menu-label">As Markdown (.md)</span>
             </button>
           </div>
           
