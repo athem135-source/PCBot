@@ -35,8 +35,9 @@ import {
   saveWidgetState,
   loadWidgetState,
   exportChatAsText,
-  exportChatAsMarkdown,
-  downloadFile
+  exportChatAsHTML,
+  downloadFile,
+  downloadAsImage
 } from '../utils/storage.js';
 import { generateMessageId } from '../utils/feedback.js';
 
@@ -371,11 +372,20 @@ function ChatWidget() {
     downloadFile(text, filename, 'text/plain');
   };
   
-  // Handle download as Markdown (.md) - universally readable format
-  const handleDownloadPDF = () => {
-    const markdown = exportChatAsMarkdown(messages);
-    const filename = `pdbot_chat_${new Date().toISOString().split('T')[0]}.md`;
-    downloadFile(markdown, filename, 'text/markdown');
+  // Handle download as HTML (styled chat interface)
+  const handleDownloadHTML = () => {
+    const html = exportChatAsHTML(messages);
+    const filename = `pdbot_chat_${new Date().toISOString().split('T')[0]}.html`;
+    downloadFile(html, filename, 'text/html');
+  };
+  
+  // Handle download as image (PNG screenshot)
+  const handleDownloadImage = async () => {
+    const chatBody = document.querySelector('.pdbot-chat-body');
+    if (chatBody) {
+      const filename = `pdbot_chat_${new Date().toISOString().split('T')[0]}.png`;
+      await downloadAsImage(chatBody, filename);
+    }
   };
   
   // Dragging handlers
@@ -480,7 +490,8 @@ function ChatWidget() {
                 onNewChat={handleNewChat}
                 onClearChat={handleClearChat}
                 onDownloadText={handleDownloadText}
-                onDownloadPDF={handleDownloadPDF}
+                onDownloadHTML={handleDownloadHTML}
+                onDownloadImage={handleDownloadImage}
               />
               <button 
                 className="pdbot-minimize-btn"

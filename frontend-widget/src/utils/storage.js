@@ -250,6 +250,170 @@ export function exportChatAsMarkdown(messages) {
 }
 
 /**
+ * Export chat history as styled HTML (looks like the chat widget)
+ * @param {Array} messages - Chat messages
+ * @returns {string} HTML content
+ */
+export function exportChatAsHTML(messages) {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDBOT Chat Export</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .chat-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    .chat-header {
+      background: linear-gradient(135deg, #006600 0%, #1fa67a 100%);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .chat-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .chat-title h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+    }
+    .chat-title p {
+      font-size: 11px;
+      opacity: 0.9;
+      margin: 2px 0 0;
+    }
+    .chat-messages {
+      padding: 20px;
+      background: #f8f9fa;
+      min-height: 300px;
+    }
+    .message {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+    .message.user {
+      align-items: flex-end;
+    }
+    .message.bot {
+      align-items: flex-start;
+    }
+    .message-bubble {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    .message.user .message-bubble {
+      background: linear-gradient(135deg, #006600, #1fa67a);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .message.bot .message-bubble {
+      background: white;
+      color: #333;
+      border: 1px solid #e0e0e0;
+      border-bottom-left-radius: 4px;
+    }
+    .message-time {
+      font-size: 10px;
+      color: #999;
+      margin-top: 4px;
+      padding: 0 8px;
+    }
+    .chat-footer {
+      background: white;
+      padding: 16px 20px;
+      border-top: 1px solid #eee;
+      text-align: center;
+    }
+    .chat-footer p {
+      font-size: 11px;
+      color: #666;
+    }
+    .chat-footer .version {
+      color: #006600;
+      font-weight: 600;
+    }
+    .export-meta {
+      background: #f0f0f0;
+      padding: 12px 20px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+      border-top: 1px solid #ddd;
+    }
+    @media print {
+      body { padding: 0; background: white; }
+      .chat-container { box-shadow: none; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="chat-logo">🤖</div>
+      <div class="chat-title">
+        <h1>PDBOT</h1>
+        <p>Ministry of Planning, Development & Special Initiatives</p>
+      </div>
+    </div>
+    <div class="chat-messages">
+      ${messages.map(msg => `
+        <div class="message ${msg.role === 'user' ? 'user' : 'bot'}">
+          <div class="message-bubble">${escapeHtml(msg.content)}</div>
+          <span class="message-time">${new Date(msg.timestamp).toLocaleTimeString()}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div class="chat-footer">
+      <p><span class="version">PDBOT v3.3.2</span> | Government of Pakistan</p>
+    </div>
+    <div class="export-meta">
+      Exported: ${new Date().toLocaleString()} | Session: ${getSessionId()} | Messages: ${messages.length}
+    </div>
+  </div>
+</body>
+</html>`;
+  return html;
+}
+
+/**
+ * Escape HTML special characters
+ * @param {string} text - Text to escape
+ * @returns {string} Escaped text
+ */
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML.replace(/\n/g, '<br>');
+}
+
+/**
  * Download content as file
  * @param {string} content - File content
  * @param {string} filename - File name
@@ -267,6 +431,38 @@ export function downloadFile(content, filename, mimeType) {
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Download chat as image (PNG)
+ * Uses html2canvas-style approach with canvas rendering
+ * @param {HTMLElement} element - The element to capture
+ * @param {string} filename - Output filename
+ */
+export async function downloadAsImage(element, filename) {
+  try {
+    // Dynamically import html2canvas
+    const html2canvas = (await import('html2canvas')).default;
+    
+    const canvas = await html2canvas(element, {
+      backgroundColor: '#f8f9fa',
+      scale: 2, // Higher quality
+      useCORS: true,
+      logging: false
+    });
+    
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    
+    return true;
+  } catch (error) {
+    console.error('[PDBOT] Image export failed:', error);
+    // Fallback: alert user
+    alert('Image export requires html2canvas. Please install it with: npm install html2canvas');
+    return false;
+  }
+}
+
 export default {
   getSessionId,
   createNewSession,
@@ -279,5 +475,7 @@ export default {
   loadUserPreferences,
   exportChatAsText,
   exportChatAsMarkdown,
-  downloadFile
+  exportChatAsHTML,
+  downloadFile,
+  downloadAsImage
 };

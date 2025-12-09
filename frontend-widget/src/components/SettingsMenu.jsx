@@ -5,11 +5,11 @@
  * Three-dot settings menu with options for:
  * - New Chat
  * - Clear Chat
- * - Download Chat (TXT/PDF)
+ * - Download Chat (TXT/HTML/Image)
  * - About PDBOT
  * 
  * @author Ministry of Planning, Development & Special Initiatives
- * @version 2.4.7
+ * @version 3.3.2
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -21,14 +21,16 @@ import React, { useState, useRef, useEffect } from 'react';
  * @param {Function} props.onNewChat - Callback for new chat
  * @param {Function} props.onClearChat - Callback for clear chat
  * @param {Function} props.onDownloadText - Callback for download as text
- * @param {Function} props.onDownloadPDF - Callback for download as PDF
+ * @param {Function} props.onDownloadHTML - Callback for download as HTML
+ * @param {Function} props.onDownloadImage - Callback for download as image
  * @param {boolean} props.disabled - Whether menu is disabled
  */
 function SettingsMenu({ 
   onNewChat, 
   onClearChat, 
   onDownloadText, 
-  onDownloadPDF,
+  onDownloadHTML,
+  onDownloadImage,
   disabled = false 
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -104,10 +106,17 @@ function SettingsMenu({
             </button>
             <button 
               className="pdbot-menu-item pdbot-menu-sub"
-              onClick={() => handleAction(onDownloadPDF)}
+              onClick={() => handleAction(onDownloadHTML)}
             >
-              <span className="pdbot-menu-icon">📝</span>
-              <span className="pdbot-menu-label">As Markdown (.md)</span>
+              <span className="pdbot-menu-icon">🌐</span>
+              <span className="pdbot-menu-label">As HTML (.html)</span>
+            </button>
+            <button 
+              className="pdbot-menu-item pdbot-menu-sub"
+              onClick={() => handleAction(onDownloadImage)}
+            >
+              <span className="pdbot-menu-icon">📷</span>
+              <span className="pdbot-menu-label">As Image (.png)</span>
             </button>
           </div>
           
@@ -118,7 +127,7 @@ function SettingsMenu({
           <button 
             className="pdbot-menu-item"
             onClick={() => handleAction(() => {
-              alert('PDBOT v2.1.0\n\nPlanning & Development Bot\nMinistry of Planning, Development & Special Initiatives\nGovernment of Pakistan\n\n© 2024');
+              alert('PDBOT v3.3.2\\n\\nPlanning & Development Bot\\nMinistry of Planning, Development & Special Initiatives\\nGovernment of Pakistan\\n\\n© 2025');
             })}
           >
             <span className="pdbot-menu-icon">ℹ️</span>
