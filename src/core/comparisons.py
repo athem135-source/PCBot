@@ -1,41 +1,58 @@
 """
-Comparison Response Templates for PDBot v2.5.0-patch2
+Comparison Response Templates for PDBOT v2.5.0-patch4
+Dynamic limits pulled from src/data/approval_limits.json (single source of truth).
 """
 
-from typing import Optional
+import json
+import os
+from typing import Optional, Dict
+
+# Load approval limits from JSON to avoid hardcoding in code paths
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
+LIMITS_FILE = os.path.join(DATA_DIR, "approval_limits.json")
+
+def _load_limits() -> Dict[str, Dict[str, str]]:
+    try:
+        with open(LIMITS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        # Fallback with empty dict; upstream should handle missing values
+        return {}
+
+LIMITS = _load_limits()
 
 COMPARISON_RESPONSES = {
-    "ddwp_cdwp_ecnec": """**Comparison: DDWP vs CDWP vs ECNEC**
+    "ddwp_cdwp_ecnec": f"""**Comparison: DDWP vs CDWP vs ECNEC**
 
 | Aspect | DDWP | CDWP | ECNEC |
 |--------|------|------|-------|
-| **Full Name** | Divisional Development Working Party | Central Development Working Party | Executive Committee of National Economic Council |
-| **Level** | Divisional | Federal | National |
-| **Approval Limit** | Up to Rs. 2,000 million | Rs. 2,000-10,000 million | Above Rs. 10,000 million |
+| **Full Name** | {LIMITS.get('DDWP', {}).get('full_name', 'Divisional Development Working Party')} | {LIMITS.get('CDWP', {}).get('full_name', 'Central Development Working Party')} | {LIMITS.get('ECNEC', {}).get('full_name', 'Executive Committee of the National Economic Council')} |
+| **Level** | Divisional/Provincial | Federal | National |
+| **Approval Limit** | {LIMITS.get('DDWP', {}).get('limit_text', '')} | {LIMITS.get('CDWP', {}).get('limit_text', '')} | {LIMITS.get('ECNEC', {}).get('limit_text', '')} |
 | **Chair** | Commissioner/Additional Chief Secretary | Deputy Chairman Planning Commission | Prime Minister/Finance Minister |
 | **Scope** | Provincial/Divisional projects | Federal/large provincial projects | Mega/strategic national projects |
 
-**Key Difference:** The approval authority depends on project cost.""",
+**Key Difference:** Approval authority depends on project cost thresholds.""",
 
-    "ddwp_cdwp": """**Comparison: DDWP vs CDWP**
+    "ddwp_cdwp": f"""**Comparison: DDWP vs CDWP**
 
 | Aspect | DDWP | CDWP |
 |--------|------|------|
-| **Full Name** | Divisional Development Working Party | Central Development Working Party |
+| **Full Name** | {LIMITS.get('DDWP', {}).get('full_name', 'Divisional Development Working Party')} | {LIMITS.get('CDWP', {}).get('full_name', 'Central Development Working Party')} |
 | **Level** | Divisional/Provincial | Federal |
-| **Approval Limit** | Up to Rs. 2,000 million | Rs. 2,000-10,000 million |
+| **Approval Limit** | {LIMITS.get('DDWP', {}).get('limit_text', '')} | {LIMITS.get('CDWP', {}).get('limit_text', '')} |
 
-**Key Difference:** DDWP handles smaller provincial projects while CDWP approves larger federal projects.""",
+**Key Difference:** DDWP approves smaller provincial projects; CDWP approves larger federal/provincial projects in scope.""",
 
-    "cdwp_ecnec": """**Comparison: CDWP vs ECNEC**
+    "cdwp_ecnec": f"""**Comparison: CDWP vs ECNEC**
 
 | Aspect | CDWP | ECNEC |
 |--------|------|-------|
-| **Full Name** | Central Development Working Party | Executive Committee of National Economic Council |
-| **Approval Limit** | Rs. 2,000-10,000 million | Above Rs. 10,000 million |
+| **Full Name** | {LIMITS.get('CDWP', {}).get('full_name', 'Central Development Working Party')} | {LIMITS.get('ECNEC', {}).get('full_name', 'Executive Committee of the National Economic Council')} |
+| **Approval Limit** | {LIMITS.get('CDWP', {}).get('limit_text', '')} | {LIMITS.get('ECNEC', {}).get('limit_text', '')} |
 | **Chair** | Deputy Chairman Planning Commission | Prime Minister/Finance Minister |
 
-**Key Difference:** ECNEC is the highest approval authority for mega projects exceeding Rs. 10 billion.""",
+**Key Difference:** ECNEC is the highest approval authority; projects above the CDWP ceiling require ECNEC approval.""",
 
     "pc_forms": """**Comparison: PC Proformas**
 
@@ -63,14 +80,14 @@ COMPARISON_RESPONSES = {
 
 
 # v2.5.0-patch3: Approval Limits Table (for numeric queries)
-APPROVAL_LIMITS_TABLE = '''**Project Approval Limits by Forum**
+APPROVAL_LIMITS_TABLE = f'''**Project Approval Limits by Forum**
 
 | Forum | Full Name | Approval Limit |
 |-------|-----------|----------------|
-| **DDWP** | District Development Working Party | Up to Rs. 75 million |
-| **PDWP** | Provincial Development Working Party | Up to Rs. 2,000 million (Rs. 2 billion) |
-| **CDWP** | Central Development Working Party | Rs. 2,000 - 10,000 million (Rs. 2-10 billion) |
-| **ECNEC** | Executive Committee of NEC | Above Rs. 10,000 million (Rs. 10 billion) |
+| **DDWP** | {LIMITS.get('DDWP', {}).get('full_name', 'Divisional Development Working Party')} | {LIMITS.get('DDWP', {}).get('limit_text', '')} |
+| **PDWP** | {LIMITS.get('PDWP', {}).get('full_name', 'Provincial Development Working Party')} | {LIMITS.get('PDWP', {}).get('limit_text', '')} |
+| **CDWP** | {LIMITS.get('CDWP', {}).get('full_name', 'Central Development Working Party')} | {LIMITS.get('CDWP', {}).get('limit_text', '')} |
+| **ECNEC** | {LIMITS.get('ECNEC', {}).get('full_name', 'Executive Committee of the National Economic Council')} | {LIMITS.get('ECNEC', {}).get('limit_text', '')} |
 
 **Notes:**
 - Projects within provincial limits go to PDWP/DDWP
@@ -79,17 +96,25 @@ APPROVAL_LIMITS_TABLE = '''**Project Approval Limits by Forum**
 
 *Source: Manual for Development Projects 2024*'''
 def get_comparison_response(query):
-    """Check if query matches a known comparison."""
+    """Check if query matches a known comparison or limit query."""
     q_lower = query.lower()
 
-    # v2.5.0-patch3: Check for approval limits query
-    if any(kw in q_lower for kw in ['approval limit', 'threshold', 'limits for']):
-        return APPROVAL_LIMITS_TABLE
-
-
-    # v2.5.0-patch3: Check for approval limits query
-    if any(kw in q_lower for kw in ['approval limit', 'threshold', 'limits for']):
-        return APPROVAL_LIMITS_TABLE
+    # v2.5.0-patch4: Specific forum limit queries first (single forum only)
+    limit_terms = ['limit', 'approval', 'threshold', 'cap', 'ceiling']
+    mentions = {f: (f.lower() in q_lower) for f in ['ddwp', 'pdwp', 'cdwp', 'ecnec']}
+    if any(t in q_lower for t in limit_terms):
+        count = sum(1 for k, v in mentions.items() if v)
+        if count == 1:
+            if mentions['ddwp']:
+                return f"**DDWP Approval Limit**\n\n{LIMITS.get('DDWP', {}).get('limit_text', '')}"
+            if mentions['pdwp']:
+                return f"**PDWP Approval Limit**\n\n{LIMITS.get('PDWP', {}).get('limit_text', '')}"
+            if mentions['cdwp']:
+                return f"**CDWP Approval Limit**\n\n{LIMITS.get('CDWP', {}).get('limit_text', '')}"
+            if mentions['ecnec']:
+                return f"**ECNEC Approval Limit**\n\n{LIMITS.get('ECNEC', {}).get('limit_text', '')}"
+        elif count >= 2 or 'all' in q_lower:
+            return APPROVAL_LIMITS_TABLE
 
     
     if all(term in q_lower for term in ["ddwp", "cdwp", "ecnec"]):
