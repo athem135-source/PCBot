@@ -1,6 +1,6 @@
 @echo off
 REM ============================================
-REM PDBOT Unified Launcher v2.5.0
+REM PDBOT Unified Launcher v3.3.2
 REM Developer: M. Hassan Arif Afridi
 REM ============================================
 
@@ -19,7 +19,7 @@ if exist ".venv\Scripts\activate.bat" (
 cls
 echo.
 echo  ========================================
-echo      PDBOT v2.5.0 - Unified Launcher
+echo      PDBOT v3.3.2 - Unified Launcher
 echo      Developer: M. Hassan Arif Afridi
 echo      Planning ^& Development Assistant
 echo  ========================================
@@ -110,7 +110,7 @@ goto menu
 cls
 echo.
 echo  ========================================
-echo   Starting PDBOT React Widget v2.4.9
+echo   Starting PDBOT React Widget v3.3.2
 echo  ========================================
 echo.
 

@@ -1,9 +1,9 @@
 """
-PDBOT Widget API Server v3.3.0
+PDBOT Widget API Server v3.3.2
 ==============================
 
 A lightweight Flask API that bridges the React widget to the PDBOT RAG pipeline.
-Munawar Test optimized: precision chunking, 70-word answers, Groq force-enable.
+Optimized RAG: precision chunking, 100-word answers, dynamic value retrieval.
 
 Features:
   - Contextual memory (session-based chat history)
