@@ -440,26 +440,57 @@ export function downloadFile(content, filename, mimeType) {
  * @param {string} filename - Output filename
  */
 export async function downloadAsImage(element, filename) {
+  console.log('[PDBOT] Starting image download...', element);
+  
+  if (!element) {
+    console.error('[PDBOT] No element provided for image capture');
+    alert('Could not capture chat. Please try again.');
+    return false;
+  }
+  
   try {
+    console.log('[PDBOT] Calling html2canvas...');
     const canvas = await html2canvas(element, {
       backgroundColor: '#f8f9fa',
-      scale: 2, // Higher quality
+      scale: 2,
       useCORS: true,
-      logging: false,
-      allowTaint: true
+      logging: true, // Enable logging for debugging
+      allowTaint: true,
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight
     });
     
-    const link = document.createElement('a');
-    link.download = filename;
-    link.href = canvas.toDataURL('image/png');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    console.log('[PDBOT] Canvas created:', canvas.width, 'x', canvas.height);
+    
+    // Convert to blob and download
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        console.error('[PDBOT] Failed to create blob');
+        alert('Failed to create image. Please try again.');
+        return;
+      }
+      
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = url;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      console.log('[PDBOT] Image download triggered:', filename);
+    }, 'image/png', 1.0);
     
     return true;
   } catch (error) {
     console.error('[PDBOT] Image export failed:', error);
-    alert('Image export failed. Please try again.');
+    alert('Image export failed: ' + error.message);
     return false;
   }
 }

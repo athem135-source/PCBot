@@ -48,6 +48,5 @@ if (document.readyState === 'loading') {
   mountWidget();
 }
 
-// Export for programmatic use
+// Export for programmatic use (named export only)
 export { mountWidget };
-export default App;

@@ -381,10 +381,15 @@ function ChatWidget() {
   
   // Handle download as image (PNG screenshot)
   const handleDownloadImage = async () => {
-    const chatBody = document.querySelector('.pdbot-chat-body');
-    if (chatBody) {
+    console.log('[PDBOT] handleDownloadImage called');
+    // Capture the entire widget, not just messages
+    const widget = document.querySelector('.pdbot-widget');
+    console.log('[PDBOT] Found widget:', widget);
+    if (widget) {
       const filename = `pdbot_chat_${new Date().toISOString().split('T')[0]}.png`;
-      await downloadAsImage(chatBody, filename);
+      await downloadAsImage(widget, filename);
+    } else {
+      alert('Could not find chat to capture.');
     }
   };
   
