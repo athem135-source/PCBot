@@ -6,8 +6,10 @@
  * session management, and widget state persistence.
  * 
  * @author Ministry of Planning, Development & Special Initiatives
- * @version 1.0.0
+ * @version 3.3.3
  */
+
+import html2canvas from 'html2canvas';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -433,32 +435,31 @@ export function downloadFile(content, filename, mimeType) {
 
 /**
  * Download chat as image (PNG)
- * Uses html2canvas-style approach with canvas rendering
+ * Uses html2canvas to capture element as image
  * @param {HTMLElement} element - The element to capture
  * @param {string} filename - Output filename
  */
 export async function downloadAsImage(element, filename) {
   try {
-    // Dynamically import html2canvas
-    const html2canvas = (await import('html2canvas')).default;
-    
     const canvas = await html2canvas(element, {
       backgroundColor: '#f8f9fa',
       scale: 2, // Higher quality
       useCORS: true,
-      logging: false
+      logging: false,
+      allowTaint: true
     });
     
     const link = document.createElement('a');
     link.download = filename;
     link.href = canvas.toDataURL('image/png');
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
     
     return true;
   } catch (error) {
     console.error('[PDBOT] Image export failed:', error);
-    // Fallback: alert user
-    alert('Image export requires html2canvas. Please install it with: npm install html2canvas');
+    alert('Image export failed. Please try again.');
     return false;
   }
 }
