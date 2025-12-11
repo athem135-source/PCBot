@@ -18,6 +18,7 @@ import requests
 import json
 import time
 from datetime import datetime
+from typing import Dict, List, Any
 from collections import defaultdict
 
 API_URL = "http://localhost:5000"
@@ -542,9 +543,12 @@ def run_comprehensive_test():
         return
     
     # Results storage
-    all_results = []
-    category_stats = defaultdict(lambda: {"total": 0, "passed": 0, "failed": 0, "issues": []})
-    total_response_time = 0
+    all_results: List[Dict[str, Any]] = []
+    category_stats: Dict[str, Dict[str, Any]] = {
+        cat: {"total": 0, "passed": 0, "failed": 0, "issues": []}
+        for cat in QUESTIONS.keys()
+    }
+    total_response_time = 0.0
     
     # Calculate total questions
     total_questions = sum(len(qs) for qs in QUESTIONS.values())

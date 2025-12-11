@@ -7,9 +7,9 @@ Generates a comprehensive markdown report from test results.
 import json
 import os
 from datetime import datetime
-from collections import defaultdict
+from typing import Dict, List, Any, Optional, Tuple
 
-def load_latest_results():
+def load_latest_results() -> Optional[Tuple[Dict[str, Any], str]]:
     """Load the most recent test results file"""
     files = [f for f in os.listdir('.') if f.startswith('test_results_') and f.endswith('.json')]
     if not files:
@@ -18,23 +18,25 @@ def load_latest_results():
     with open(latest, 'r', encoding='utf-8') as f:
         return json.load(f), latest
 
-def generate_report():
+def generate_report() -> Optional[str]:
     """Generate comprehensive markdown report"""
-    data, filename = load_latest_results()
-    if not data:
+    result = load_latest_results()
+    if result is None:
         print("No test results found!")
         return
     
+    data, filename = result
     results = data['detailed_results']
     
-    # Category stats
-    categories = defaultdict(lambda: {
-        'total': 0, 'passed': 0, 'failed': 0,
-        'total_time': 0, 'questions': [], 'issues': []
-    })
-    
+    # Category stats with explicit types
+    categories: Dict[str, Dict[str, Any]] = {}
     for r in results:
         cat = r['category']
+        if cat not in categories:
+            categories[cat] = {
+                'total': 0, 'passed': 0, 'failed': 0,
+                'total_time': 0.0, 'questions': [], 'issues': []
+            }
         categories[cat]['total'] += 1
         categories[cat]['total_time'] += r.get('response_time', 0)
         categories[cat]['questions'].append(r)
