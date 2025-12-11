@@ -1567,7 +1567,7 @@ For detailed security information, see [SECURITY.md](SECURITY.md).
 *Electrical Engineering Graduate*  
 *GIKI - Ghulam Ishaq Khan Institute*
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/hassanarifafridi/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/hassan-arif-afridi-150769363/)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=for-the-badge&logo=github)](https://github.com/athem135-source)
 
 **Development Period:** Oct 16, 2025 → Present (54 Days)  

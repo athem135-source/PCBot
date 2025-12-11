@@ -119,7 +119,8 @@ If you discover a security vulnerability in PDBOT:
 ### Contact
 
 **Developer:** M. Hassan Arif Afridi  
-**LinkedIn:** [hassanarifafridi](https://www.linkedin.com/in/hassanarifafridi/)  
+**Email:** hassanarifafridi@gmail.com  
+**LinkedIn:** [Hassan Arif Afridi](https://www.linkedin.com/in/hassan-arif-afridi-150769363/)  
 **GitHub:** [@athem135-source](https://github.com/athem135-source)
 
 ### Response Timeline
