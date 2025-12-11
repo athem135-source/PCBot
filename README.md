@@ -22,7 +22,7 @@
 
 | Metric | Score | Verification |
 |--------|-------|--------------|
-| **In-Scope Accuracy** | 100% | 300-Question AI Test |
+| **In-Scope Accuracy** | 100% | 300-Question Test |
 | **Numeric Accuracy** | 100% | 40 Financial Questions |
 | **Off-Scope Detection** | 100% | 40 Off-Topic Questions |
 | **Red-Line Detection** | 12%* | 25 Malicious Questions |
