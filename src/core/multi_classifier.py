@@ -263,6 +263,24 @@ REDLINE_CORRUPTION = [
     r"\b(?:misuse|embezzle|siphon)\b.*\b(?:fund|budget|money)\b",
     r"\b(?:fake|false|fabricate|falsify)\b.*\b(?:document|record|report)\b",
     r"\b(?:bypass|circumvent|skip|avoid)\b.*\b(?:procedure|rule|regulation|audit)\b",
+    # v3.3.4: Enhanced patterns to catch fraud-related questions
+    r"\bhow\s+to\s+(?:bypass|circumvent|skip|avoid|cheat)\b",
+    r"\bhow\s+to\s+(?:embezzle|siphon|steal|misuse)\b",
+    r"\bhow\s+to\s+(?:commit\s+)?(?:fraud|corruption)\b",
+    r"\bhow\s+to\s+(?:fake|falsify|manipulate|forge)\b",
+    r"\bways?\s+to\s+(?:bypass|avoid|cheat|circumvent)\b",
+    r"\bways?\s+to\s+(?:embezzle|siphon|steal|misuse)\b",
+    r"\bmethod(?:s)?\s+to\s+(?:siphon|embezzle|steal|launder)\b",
+    r"\b(?:loopholes?)\s+(?:in|for)\b",  # "loopholes in project approval"
+    r"\b(?:bypass|circumvent|skip)\b.*\b(?:ecnec|cdwp|ddwp|approval|approval)\b",
+    r"\bhow\s+to\s+(?:create|make)\s+(?:ghost|fake|fictitious)\b",
+    r"\bhow\s+to\s+(?:launder|wash)\s+(?:money|funds)\b",
+    r"\bhow\s+to\s+(?:avoid|evade)\s+(?:audit|detection|monitoring|accountability)\b",
+    r"\bhow\s+to\s+(?:hide|conceal)\s+(?:funds|money|misuse|fraud|corruption)\b",
+    r"\bwithout\s+(?:audit|detection|approval|competition|tender)\b",
+    r"\b(?:award|give)\s+(?:contract|tender)\s+without\s+(?:competition|bidding)\b",
+    r"\billegal(?:ly)?\s+(?:use|divert|transfer|withdraw)\b",
+    r"\bforge\b.*\b(?:signature|document|approval)\b",
 ]
 
 REDLINE_MISUSE = [
@@ -274,6 +292,12 @@ REDLINE_MISUSE = [
     r"\b(?:land\s*cruisers?|prados?|fortuners?|luxury)\b.*\b(?:project\s*fund|government\s*fund)\b",
     # Direct misuse indicators
     r"\b(?:buy|purchase)\b.*\d+\s*(?:land\s*cruisers?|cars?|vehicles?)\b",  # "buy 5 land cruisers"
+    # v3.3.4: Additional fraud patterns
+    r"\b(?:exploit|abuse)\s+(?:system|process|provision)\b",
+    r"\b(?:divert|redirect)\s+(?:fund|money|budget)\b",
+    r"\b(?:collude|collusion)\s+with\s+(?:contractor|vendor|supplier)\b",
+    r"\b(?:ghost|phantom)\s+(?:project|employee|worker)\b",
+    r"\b(?:fake|false|fictitious)\s+(?:invoice|receipt|bill|document)\b",
 ]
 
 # Abusive language patterns - English (comprehensive)
