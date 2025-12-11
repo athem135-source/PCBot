@@ -67,8 +67,8 @@ if %ERRORLEVEL% neq 0 (
 REM Find and open the report
 echo.
 echo [4/4] Opening report...
-for /f "delims=" %%i in ('dir /b /o-d TEST_REPORT_*.md 2^>nul') do (
-    set "LATEST_REPORT=%%i"
+for /f "delims=" %%i in ('dir /b /o-d tests\reports\TEST_REPORT_*.md 2^>nul') do (
+    set "LATEST_REPORT=tests\reports\%%i"
     goto :found_report
 )
 :found_report
@@ -85,7 +85,7 @@ echo   Test Complete!
 echo  ========================================
 echo.
 echo Results saved to:
-echo   - test_results_*.json (raw data)
-echo   - TEST_REPORT_*.md (formatted report)
+echo   - tests\results\test_results_*.json (raw data)
+echo   - tests\reports\TEST_REPORT_*.md (formatted report)
 echo.
 pause

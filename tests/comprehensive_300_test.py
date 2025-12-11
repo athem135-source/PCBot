@@ -17,9 +17,9 @@ Tests across all categories:
 import requests
 import json
 import time
+import os
 from datetime import datetime
 from typing import Dict, List, Any
-from collections import defaultdict
 
 API_URL = "http://localhost:5000"
 
@@ -637,7 +637,10 @@ def run_comprehensive_test():
                     print(f"      Issue: {i}")
     
     # Save detailed results
-    results_file = f"test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    results_dir = os.path.join(script_dir, 'results')
+    os.makedirs(results_dir, exist_ok=True)
+    results_file = os.path.join(results_dir, f"test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
     with open(results_file, 'w') as f:
         json.dump({
             "timestamp": datetime.now().isoformat(),

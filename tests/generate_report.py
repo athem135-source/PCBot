@@ -9,13 +9,21 @@ import os
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
 
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+RESULTS_DIR = os.path.join(SCRIPT_DIR, 'results')
+REPORTS_DIR = os.path.join(SCRIPT_DIR, 'reports')
+
 def load_latest_results() -> Optional[Tuple[Dict[str, Any], str]]:
     """Load the most recent test results file"""
-    files = [f for f in os.listdir('.') if f.startswith('test_results_') and f.endswith('.json')]
+    if not os.path.exists(RESULTS_DIR):
+        os.makedirs(RESULTS_DIR)
+    files = [f for f in os.listdir(RESULTS_DIR) if f.startswith('test_results_') and f.endswith('.json')]
     if not files:
         return None
     latest = sorted(files, reverse=True)[0]
-    with open(latest, 'r', encoding='utf-8') as f:
+    filepath = os.path.join(RESULTS_DIR, latest)
+    with open(filepath, 'r', encoding='utf-8') as f:
         return json.load(f), latest
 
 def generate_report() -> Optional[str]:
@@ -241,7 +249,9 @@ def generate_report() -> Optional[str]:
     
     # Write report
     report_text = "".join(report)
-    report_filename = f"TEST_REPORT_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+    if not os.path.exists(REPORTS_DIR):
+        os.makedirs(REPORTS_DIR)
+    report_filename = os.path.join(REPORTS_DIR, f"TEST_REPORT_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md")
     with open(report_filename, 'w', encoding='utf-8') as f:
         f.write(report_text)
     
