@@ -2,9 +2,9 @@
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/3/32/Flag_of_Pakistan.svg" alt="Pakistan Flag" width="120"/>
 
-# 🏛️ PDBOT
+# 🏛️ PCBOT
 
-## Planning & Development Intelligent Assistant
+## Planning Commission Intelligent Assistant
 
 ### Government of Pakistan | Ministry of Planning, Development & Special Initiatives
 
