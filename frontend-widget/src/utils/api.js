@@ -9,7 +9,27 @@
  */
 
 // API base URL - configurable for different environments
-const API_BASE_URL = window.PDBOT_API_URL || 'http://localhost:5000';
+// Priority: 1) localStorage, 2) window global, 3) same origin (for tunnels), 4) localhost
+function getApiBaseUrl() {
+  // Check localStorage first (set via Admin Panel)
+  const savedUrl = localStorage.getItem('pdbot_api_url');
+  if (savedUrl) return savedUrl;
+  
+  // Check window global (set by embedding page)
+  if (window.PDBOT_API_URL) return window.PDBOT_API_URL;
+  
+  // For external/tunnel access: use same origin (both API and widget served from same server)
+  const hostname = window.location.hostname;
+  if (hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.startsWith('192.168.')) {
+    // Accessed via tunnel - use same origin (API is on same server)
+    return window.location.origin;
+  }
+  
+  // Default to localhost for development
+  return 'http://localhost:5000';
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 /**
  * Send a chat message to the PDBOT backend

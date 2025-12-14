@@ -42,7 +42,7 @@ import {
 import { generateMessageId } from '../utils/feedback.js';
 
 // Greeting message
-const GREETING_MESSAGE = "Assalam-o-Alaikum! I am PDBOT, your planning & development assistant. How can I help you today?";
+const GREETING_MESSAGE = "Assalam-o-Alaikum! I am PCBot, your Planning Commission assistant. How can I help you today?";
 
 // Admin code
 const ADMIN_CODE = "nufc";
@@ -485,8 +485,8 @@ function ChatWidget() {
                 onError={(e) => { e.target.style.display = 'none'; }}
               />
               <div className="pdbot-header-text">
-                <span className="pdbot-title">PDBOT</span>
-                <span className="pdbot-subtitle">Planning & Development Assistant</span>
+                <span className="pdbot-title">PCBot</span>
+                <span className="pdbot-subtitle">Planning Commission Assistant</span>
               </div>
             </div>
             

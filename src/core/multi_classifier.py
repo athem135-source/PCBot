@@ -63,7 +63,7 @@ class ClassificationResult:
 # Greeting patterns - these should NOT trigger RAG
 GREETING_PATTERNS = [
     r"^(?:hi|hello|hey|hiya|heya|yo)\s*[!.?]*$",
-    r"^(?:hi|hello|hey)\s+(?:there|bot|pdbot|assistant)[!.?]*$",
+    r"^(?:hi|hello|hey)\s+(?:there|bot|pdbot|pcbot|assistant)[!.?]*$",
     r"^(?:good\s*)?(?:morning|afternoon|evening|night)[!.?]*$",
     r"^(?:assalam[ou]?[- ]?alaikum|salam|aoa|slm)[!.?]*$",
     r"^(?:walaikum[- ]?[ao]?s*salam)[!.?]*$",
@@ -288,16 +288,21 @@ REDLINE_MISUSE = [
     r"\b(?:hide|disguise|mask)\b.*\bas\b",  # "hide X as Y"
     r"\b(?:write|show|list|record)\b.*\b(?:them|it)\b.*\bas\b.*\b(?:operational|field|project)\b",
     # Luxury items / vehicles on project funds
-    r"\b(?:buy|purchase|get)\b.*\b(?:land\s*cruisers?|cars?|vehicles?|suvs?|prados?|fortuners?|hilux)\b.*\b(?:project|fund|budget)\b",
+    r"\b(?:buy|purchase|get)\b.*\b(?:land\s*cruisers?|cars?|vehicles?|suvs?|prados?|fortuners?)\b.*\b(?:project|fund|budget)\b",
     r"\b(?:land\s*cruisers?|prados?|fortuners?|luxury)\b.*\b(?:project\s*fund|government\s*fund)\b",
     # Direct misuse indicators
     r"\b(?:buy|purchase)\b.*\d+\s*(?:land\s*cruisers?|cars?|vehicles?)\b",  # "buy 5 land cruisers"
     # v3.3.4: Additional fraud patterns
     r"\b(?:exploit|abuse)\s+(?:system|process|provision)\b",
-    r"\b(?:divert|redirect)\s+(?:fund|money|budget)\b",
+    r"\b(?:divert|redirect)\s+(?:fund|money|budget|allocated)\b",  # v3.3.7: catch 'divert allocated'
+    r"\bhow\s+to\s+divert\b",  # v3.3.7: direct divert question
     r"\b(?:collude|collusion)\s+with\s+(?:contractor|vendor|supplier)\b",
     r"\b(?:ghost|phantom)\s+(?:project|employee|worker)\b",
     r"\b(?:fake|false|fictitious)\s+(?:invoice|receipt|bill|document)\b",
+    # v3.3.7: Nepotism/favoritism patterns
+    r"\b(?:award|give)\s+(?:contract|tender|project)\s+to\s+(?:relative|friend|family)\b",
+    r"\bcontract(?:s)?\s+to\s+(?:relative|friend|family|brother|sister|cousin)\b",
+    r"\b(?:favor|favour)\s+(?:relative|friend|family)\b.*\b(?:contract|tender|project)\b",
 ]
 
 # Abusive language patterns - English (comprehensive)
@@ -341,6 +346,7 @@ ABUSIVE_HARD = [
     
     # Intelligence insults (when directed)
     r"\b(?:idiot|moron|retard|dumbass|dumb\s*ass)\b.*\b(?:you|bot|system)\b",
+    r"\b(?:you(?:'re|\s+are)?\s+(?:an?\s+)?(?:idiot|moron|retard|dumbass|fool|stupid))\b",  # v3.3.7: "you're an idiot"
     r"\b(?:imbecile|cretin|nitwit|dimwit|halfwit|twit)\b.*\b(?:you|bot|system)\b",
     r"\b(?:simpleton|dunce|doofus|dolt|numbskull|bonehead)\b.*\b(?:you|bot)\b",
     r"\b(?:airhead|blockhead|knucklehead|pinhead|meathead)\b.*\b(?:you|bot)\b",

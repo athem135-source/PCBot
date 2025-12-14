@@ -101,6 +101,45 @@ def serve_mobile():
     except FileNotFoundError:
         return jsonify({"error": "Mobile page not found", "status": "ok", "api": "/chat"}), 200
 
+# Serve the full Widget UI from the API server
+@app.route('/widget')
+def serve_widget():
+    """Serve the full React widget UI"""
+    try:
+        # Serve index.html from frontend-widget
+        index_path = os.path.join(os.path.dirname(__file__), 'frontend-widget', 'index.html')
+        with open(index_path, 'r', encoding='utf-8') as f:
+            html = f.read()
+            # Inject the API URL so widget uses same origin
+            html = html.replace('</head>', '<script>window.PDBOT_API_URL = window.location.origin;</script></head>')
+            return html, 200, {'Content-Type': 'text/html'}
+    except FileNotFoundError:
+        return "Widget not found. Run 'npm run build' in frontend-widget first.", 404
+
+# Serve widget static assets (JS, CSS)
+@app.route('/src/<path:filename>')
+def serve_widget_src(filename):
+    """Serve widget source files for dev mode"""
+    from flask import send_from_directory
+    return send_from_directory(os.path.join(os.path.dirname(__file__), 'frontend-widget', 'src'), filename)
+
+@app.route('/dist/<path:filename>')
+def serve_widget_dist(filename):
+    """Serve widget dist files"""
+    from flask import send_from_directory
+    return send_from_directory(os.path.join(os.path.dirname(__file__), 'frontend-widget', 'dist'), filename)
+
+@app.route('/assets/<path:filename>')
+def serve_widget_assets(filename):
+    """Serve widget assets"""
+    from flask import send_from_directory
+    return send_from_directory(os.path.join(os.path.dirname(__file__), 'frontend-widget', 'src', 'assets'), filename)
+
+@app.route('/@<path:rest>')
+def serve_vite_deps(rest):
+    """Handle Vite dev dependencies"""
+    return "Dev mode not supported via API", 404
+
 # Initialize model and classifier
 model = None
 groq_client = None
@@ -149,7 +188,7 @@ def generate_groq_response(query: str, context: str, page: int = 0) -> str:
     
     try:
         # v3.3.0: Strict system prompt matching local model
-        system_prompt = """You are PDBOT, the official assistant for the Manual for Development Projects 2024.
+        system_prompt = """You are PCBot, the official Planning Commission assistant for the Manual for Development Projects 2024.
 Your answers must ALWAYS follow these rules:
 
 1. Length: 45-70 words maximum.

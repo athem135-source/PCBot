@@ -44,8 +44,8 @@ export default defineConfig({
     port: 3000,
     host: true, // Expose to network
     open: true,
-    // Allow tunnel hosts (Cloudflare, localtunnel, etc.)
-    allowedHosts: 'all',
+    // Allow ALL hosts including Cloudflare tunnels
+    allowedHosts: true,
     // Proxy API requests to backend during development
     proxy: {
       '/chat': {

@@ -13,7 +13,7 @@ import random
 # ============================================================================
 
 GREETING_RESPONSES = [
-    "Assalam-o-Alaikum! I'm PDBOT, your assistant for the Manual for Development Projects 2024. How can I help you today?",
+    "Assalam-o-Alaikum! I'm PCBot, your assistant for the Manual for Development Projects 2024. How can I help you today?",
     "Hello! I'm here to help with questions about Pakistan's development project procedures. What would you like to know?",
     "Hi there! Ask me anything about PC-I, approval processes, or the Manual for Development Projects 2024.",
     "Welcome! I specialize in Pakistan's planning and development procedures. What can I assist you with?",

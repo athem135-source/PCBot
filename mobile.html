@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PDBOT - Planning & Development Assistant</title>
+    <title>PCBot - Planning Commission Assistant</title>
     <style>
         * {
             margin: 0;
@@ -17,6 +17,21 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+        
+        .test-warning {
+            background: linear-gradient(90deg, #ff6b00, #ff8c00);
+            color: white;
+            padding: 8px 15px;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .test-warning span {
+            margin-right: 8px;
         }
         
         .header {
@@ -478,9 +493,14 @@
     </style>
 </head>
 <body>
+    <!-- Testing Warning Banner -->
+    <div class="test-warning">
+        <span>⚠️</span> TESTING ENVIRONMENT ONLY - This site is for internal testing purposes. Not for public use.
+    </div>
+    
     <div class="header">
-        <h1>🏛️ PDBOT</h1>
-        <p>Planning & Development Assistant | Government of Pakistan</p>
+        <h1>🏛️ PCBot</h1>
+        <p>Planning Commission Assistant | Government of Pakistan</p>
     </div>
     
     <div class="status" id="status">Connecting...</div>
@@ -493,7 +513,7 @@
     <div class="chat-container">
         <div class="messages" id="messages">
             <div class="welcome">
-                <h2>Welcome to PDBOT</h2>
+                <h2>Welcome to PCBot</h2>
                 <p>Ask me anything about the Manual for Development Projects 2024</p>
                 <div class="suggestions">
                     <span class="suggestion" onclick="askQuestion(this.textContent)">What is PC-I?</span>
@@ -538,7 +558,7 @@
             try {
                 const response = await fetch(`${API_URL}/health`);
                 if (response.ok) {
-                    statusEl.textContent = '✓ Connected to PDBOT';
+                    statusEl.textContent = '✓ Connected to PCBot';
                     statusEl.className = 'status connected';
                 } else {
                     throw new Error('API not responding');
@@ -807,7 +827,7 @@
                 const messages = document.getElementById('messages');
                 messages.innerHTML = `
                     <div class="welcome">
-                        <h2>Welcome to PDBOT</h2>
+                        <h2>Welcome to PCBot</h2>
                         <p>Ask me anything about the Manual for Development Projects 2024</p>
                         <div class="suggestions">
                             <span class="suggestion" onclick="askQuestion(this.textContent)">What is PC-I?</span>
@@ -838,7 +858,7 @@
     <!-- Admin Panel -->
     <div class="admin-panel" id="adminPanel">
         <div class="admin-header">
-            <h2>🔧 PDBOT Admin Panel</h2>
+            <h2>🔧 PCBot Admin Panel</h2>
             <button class="admin-close" onclick="closeAdminPanel()">✕ Close</button>
         </div>
         

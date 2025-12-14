@@ -34,7 +34,7 @@ GROQ_FALLBACK_MODEL = os.getenv("GROQ_FALLBACK_MODEL", "mixtral-8x7b-32768")
 # =============================================================================
 # SYSTEM PROMPT v2.1.0 - Strict, concise, direct answers
 # =============================================================================
-SYSTEM_PROMPT = """You are PDBOT, the official assistant for the Manual for Development Projects 2024.
+SYSTEM_PROMPT = """You are PCBot, the official Planning Commission assistant for the Manual for Development Projects 2024.
 Your answers must ALWAYS follow these rules:
 
 1. Length: 50-100 words maximum.
