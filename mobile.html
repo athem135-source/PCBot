@@ -54,42 +54,45 @@
         
         .branding-bar {
             background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            padding: 18px 15px;
+            padding: 15px 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
             border-bottom: 3px solid #006600;
+            max-width: 100%;
+            overflow: hidden;
         }
         
         .branding-logo {
-            height: 70px;
-            width: auto;
+            height: 65px;
+            max-width: 45%;
             object-fit: contain;
             filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
         }
         
         .branding-logo.uraan {
-            height: 65px;
+            height: 60px;
         }
         
         .branding-logo.fives {
-            height: 75px;
+            height: 70px;
         }
         
         @media (max-width: 400px) {
             .branding-bar {
-                gap: 15px;
-                padding: 12px 10px;
+                gap: 8px;
+                padding: 12px 8px;
             }
             .branding-logo {
-                height: 55px;
+                height: 50px;
+                max-width: 42%;
             }
             .branding-logo.uraan {
-                height: 50px;
+                height: 45px;
             }
             .branding-logo.fives {
-                height: 60px;
+                height: 52px;
             }
         }
         
