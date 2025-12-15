@@ -53,39 +53,37 @@
         }
         
         .branding-bar {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 12px 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 15px 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
-            border-bottom: 2px solid #006600;
-            flex-wrap: nowrap;
+            gap: 40px;
+            border-bottom: 3px solid #006600;
         }
         
         .branding-logo {
-            height: 55px;
+            height: 70px;
             width: auto;
-            max-width: 45%;
             object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
         }
         
         .branding-logo.uraan {
-            height: 50px;
+            height: 65px;
         }
         
         .branding-logo.fives {
-            height: 60px;
+            height: 75px;
         }
         
         @media (max-width: 400px) {
             .branding-bar {
-                gap: 10px;
-                padding: 8px 10px;
+                gap: 25px;
+                padding: 12px 15px;
             }
             .branding-logo {
-                height: 45px;
+                height: 55px;
             }
             .branding-logo.uraan {
                 height: 40px;
@@ -548,8 +546,8 @@
     
     <!-- Branding Bar with Logos -->
     <div class="branding-bar">
-        <img src="/assets/uraan-pak.png" alt="Uraan Pakistan" class="branding-logo uraan" onerror="this.style.display='none'">
         <img src="/assets/5Vs.png" alt="5Es - Exports, Equity, E-Pakistan, Energy, Environment" class="branding-logo fives" onerror="this.style.display='none'">
+        <img src="/assets/uraan-pak.png" alt="Uraan Pakistan" class="branding-logo uraan" onerror="this.style.display='none'">
     </div>
     
     <div class="status" id="status">Connecting...</div>

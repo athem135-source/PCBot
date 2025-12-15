@@ -470,7 +470,7 @@ function ChatWidget() {
           aria-label="Open PDBOT chat"
         >
           <span className="pdbot-toggle-icon">💬</span>
-          <span className="pdbot-toggle-label">Chat with PDBOT</span>
+          <span className="pdbot-toggle-label">Chat with PCBot</span>
         </button>
       )}
       
