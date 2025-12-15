@@ -58,38 +58,48 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 40px;
+            gap: 30px;
             border-bottom: 3px solid #006600;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: visible;
         }
         
         .branding-logo {
-            height: 70px;
+            height: 60px;
             width: auto;
+            max-width: 140px;
             object-fit: contain;
             filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+            flex-shrink: 0;
         }
         
         .branding-logo.uraan {
-            height: 65px;
+            height: 55px;
+            max-width: 120px;
         }
         
         .branding-logo.fives {
-            height: 75px;
+            height: 65px;
+            max-width: 150px;
         }
         
         @media (max-width: 400px) {
             .branding-bar {
-                gap: 25px;
-                padding: 12px 15px;
+                gap: 15px;
+                padding: 10px 15px;
             }
             .branding-logo {
-                height: 55px;
+                height: 50px;
+                max-width: 120px;
             }
             .branding-logo.uraan {
-                height: 40px;
+                height: 45px;
+                max-width: 100px;
             }
             .branding-logo.fives {
-                height: 48px;
+                height: 52px;
+                max-width: 130px;
             }
         }
         

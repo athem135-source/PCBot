@@ -50,11 +50,24 @@ const ADMIN_CODE = "nufc";
 // Logo URL - Pakistan coat of arms
 const DEFAULT_LOGO = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Coat_of_arms_of_Pakistan.svg/800px-Coat_of_arms_of_Pakistan.svg.png";
 
-// Branding logos - Uraan Pakistan and 5Es (use window.location.origin for proper path resolution)
+// Branding logos - Uraan Pakistan and 5Es
+// Use same logic as API URL to determine base for assets
 const getAssetUrl = (path) => {
-  // If we have a base URL set, use it, otherwise use relative path
-  const base = window.PDBOT_API_URL || window.location.origin;
-  return `${base}${path}`;
+  // Check if API URL is saved in localStorage
+  const savedUrl = localStorage.getItem('pdbot_api_url');
+  if (savedUrl) return `${savedUrl}${path}`;
+  
+  // Check window global
+  if (window.PDBOT_API_URL) return `${window.PDBOT_API_URL}${path}`;
+  
+  // For localhost, use port 5000 where Flask serves assets
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `http://localhost:5000${path}`;
+  }
+  
+  // For external access (tunnels), use same origin
+  return `${window.location.origin}${path}`;
 };
 const URAAN_LOGO = "/assets/uraan-pak.png";
 const FIVES_LOGO = "/assets/5Vs.png";
