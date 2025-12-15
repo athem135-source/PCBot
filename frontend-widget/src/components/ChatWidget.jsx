@@ -51,8 +51,8 @@ const ADMIN_CODE = "nufc";
 const DEFAULT_LOGO = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Coat_of_arms_of_Pakistan.svg/800px-Coat_of_arms_of_Pakistan.svg.png";
 
 // Branding logos - Uraan Pakistan and 5Es
-const URAAN_LOGO = "/src/assets/uraan pak.png";
-const FIVES_LOGO = "/src/assets/5Vs.png";
+const URAAN_LOGO = "/assets/uraan-pak.png";
+const FIVES_LOGO = "/assets/5Vs.png";
 
 /**
  * ChatWidget - Main floating chat widget
