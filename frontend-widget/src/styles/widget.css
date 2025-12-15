@@ -1520,6 +1520,28 @@
 }
 
 /* ============================================================================
+   Branding Logos (Uraan Pakistan & 5Es)
+   ============================================================================ */
+
+.pdbot-branding-logo {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 4px;
+}
+
+.pdbot-branding-logo.uraan {
+  height: 26px;
+}
+
+.pdbot-branding-logo.fives {
+  height: 30px;
+}
+
+/* ============================================================================
    Admin Panel Styles
    ============================================================================ */
 

@@ -50,6 +50,10 @@ const ADMIN_CODE = "nufc";
 // Logo URL - Pakistan coat of arms
 const DEFAULT_LOGO = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Coat_of_arms_of_Pakistan.svg/800px-Coat_of_arms_of_Pakistan.svg.png";
 
+// Branding logos - Uraan Pakistan and 5Es
+const URAAN_LOGO = "/src/assets/uraan pak.png";
+const FIVES_LOGO = "/src/assets/5Vs.png";
+
 /**
  * ChatWidget - Main floating chat widget
  */
@@ -479,6 +483,12 @@ function ChatWidget() {
           >
             <div className="pdbot-header-info">
               <img 
+                src={URAAN_LOGO} 
+                alt="Uraan Pakistan" 
+                className="pdbot-branding-logo uraan"
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+              <img 
                 src={logoUrl} 
                 alt="Pakistan Emblem" 
                 className="pdbot-header-logo"
@@ -488,6 +498,12 @@ function ChatWidget() {
                 <span className="pdbot-title">PCBot</span>
                 <span className="pdbot-subtitle">Planning Commission Assistant</span>
               </div>
+              <img 
+                src={FIVES_LOGO} 
+                alt="5Es Framework" 
+                className="pdbot-branding-logo fives"
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
             </div>
             
             <div className="pdbot-header-actions">

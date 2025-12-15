@@ -52,6 +52,30 @@
             opacity: 0.9;
         }
         
+        .branding-bar {
+            background: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .branding-logo {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+        
+        .branding-logo.uraan {
+            height: 40px;
+        }
+        
+        .branding-logo.fives {
+            height: 50px;
+        }
+        
         .chat-container {
             flex: 1;
             display: flex;
@@ -501,6 +525,12 @@
     <div class="header">
         <h1>🏛️ PCBot</h1>
         <p>Planning Commission Assistant | Government of Pakistan</p>
+    </div>
+    
+    <!-- Branding Bar with Logos -->
+    <div class="branding-bar">
+        <img src="/src/assets/uraan pak.png" alt="Uraan Pakistan" class="branding-logo uraan" onerror="this.style.display='none'">
+        <img src="/src/assets/5Vs.png" alt="5Es - Exports, Equity, E-Pakistan, Energy, Environment" class="branding-logo fives" onerror="this.style.display='none'">
     </div>
     
     <div class="status" id="status">Connecting...</div>
