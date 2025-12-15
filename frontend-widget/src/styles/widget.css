@@ -1524,21 +1524,22 @@
    ============================================================================ */
 
 .pdbot-branding-logo {
-  height: 28px;
+  height: 32px;
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.25));
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 2px 4px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 3px 5px;
+  flex-shrink: 0;
 }
 
 .pdbot-branding-logo.uraan {
-  height: 26px;
+  height: 30px;
 }
 
 .pdbot-branding-logo.fives {
-  height: 30px;
+  height: 34px;
 }
 
 /* ============================================================================

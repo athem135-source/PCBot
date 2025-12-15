@@ -50,7 +50,12 @@ const ADMIN_CODE = "nufc";
 // Logo URL - Pakistan coat of arms
 const DEFAULT_LOGO = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Coat_of_arms_of_Pakistan.svg/800px-Coat_of_arms_of_Pakistan.svg.png";
 
-// Branding logos - Uraan Pakistan and 5Es
+// Branding logos - Uraan Pakistan and 5Es (use window.location.origin for proper path resolution)
+const getAssetUrl = (path) => {
+  // If we have a base URL set, use it, otherwise use relative path
+  const base = window.PDBOT_API_URL || window.location.origin;
+  return `${base}${path}`;
+};
 const URAAN_LOGO = "/assets/uraan-pak.png";
 const FIVES_LOGO = "/assets/5Vs.png";
 
@@ -483,7 +488,7 @@ function ChatWidget() {
           >
             <div className="pdbot-header-info">
               <img 
-                src={URAAN_LOGO} 
+                src={getAssetUrl(URAAN_LOGO)} 
                 alt="Uraan Pakistan" 
                 className="pdbot-branding-logo uraan"
                 onError={(e) => { e.target.style.display = 'none'; }}
@@ -499,7 +504,7 @@ function ChatWidget() {
                 <span className="pdbot-subtitle">Planning Commission Assistant</span>
               </div>
               <img 
-                src={FIVES_LOGO} 
+                src={getAssetUrl(FIVES_LOGO)} 
                 alt="5Es Framework" 
                 className="pdbot-branding-logo fives"
                 onError={(e) => { e.target.style.display = 'none'; }}
