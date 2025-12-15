@@ -20,6 +20,7 @@
       background: white;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
     }
     h1 {
       color: #006600;
@@ -27,19 +28,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 30px;
+      gap: 25px;
+      max-width: 100%;
     }
     .title-logo {
-      height: 70px;
+      height: 65px;
       width: auto;
+      max-width: 120px;
       object-fit: contain;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+      flex-shrink: 0;
     }
     .title-logo.fives {
-      height: 75px;
+      height: 70px;
     }
     .title-logo.uraan {
-      height: 65px;
+      height: 60px;
     }
     .title-text {
       display: flex;
