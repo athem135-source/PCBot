@@ -501,12 +501,6 @@ function ChatWidget() {
           >
             <div className="pdbot-header-info">
               <img 
-                src={getAssetUrl(URAAN_LOGO)} 
-                alt="Uraan Pakistan" 
-                className="pdbot-branding-logo uraan"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
-              <img 
                 src={logoUrl} 
                 alt="Pakistan Emblem" 
                 className="pdbot-header-logo"
@@ -516,12 +510,6 @@ function ChatWidget() {
                 <span className="pdbot-title">PCBot</span>
                 <span className="pdbot-subtitle">Planning Commission Assistant</span>
               </div>
-              <img 
-                src={getAssetUrl(FIVES_LOGO)} 
-                alt="5Es Framework" 
-                className="pdbot-branding-logo fives"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
             </div>
             
             <div className="pdbot-header-actions">
