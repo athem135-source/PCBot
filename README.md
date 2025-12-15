@@ -1,6 +1,7 @@
 <div align="center">
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/3/32/Flag_of_Pakistan.svg" alt="Pakistan Flag" width="120"/>
+<img src="uraan-pak.png" alt="Uraan Pakistan" width="140"/>
+<img src="5Vs.png" alt="5Es Framework" width="140"/>
 
 # 🏛️ PCBOT
 
@@ -10,7 +11,7 @@
 
 ---
 
-![Version](https://img.shields.io/badge/Version-3.3.4-006600?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-3.3.8-006600?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![React](https://img.shields.io/badge/React-18.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-DC382D?style=for-the-badge)
