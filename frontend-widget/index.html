@@ -21,13 +21,12 @@
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
-    h1 {
-      color: #006600;
-      margin-bottom: 5px;
+    .logo-row {
       display: flex;
-      align-items: center;
       justify-content: center;
-      gap: 2px;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 15px;
     }
     .title-logo {
       height: 65px;
@@ -37,10 +36,14 @@
     }
     .title-logo.fives {
       height: 70px;
-      margin-left: 15px;
     }
     .title-logo.uraan {
       height: 60px;
+    }
+    h1 {
+      color: #006600;
+      margin-bottom: 5px;
+      text-align: center;
     }
     .title-text {
       display: flex;
@@ -97,11 +100,11 @@
   
   <!-- Development info -->
   <div class="dev-info">
-    <h1>
+    <div class="logo-row">
       <img id="logo-uraan" alt="Uraan Pakistan" class="title-logo uraan">
-      <span class="title-text">🤖 PCBot Widget</span>
       <img id="logo-fives" alt="5Es Framework" class="title-logo fives">
-    </h1>
+    </div>
+    <h1><span class="title-text">🤖 PCBot Widget</span></h1>
     <div class="dev-badge"><span class="badge">Development Mode</span></div>
     <h2>Government of Pakistan - Ministry of Planning, Development & Special Initiatives</h2>
     
