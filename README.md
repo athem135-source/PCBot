@@ -1,7 +1,7 @@
 <div align="center">
 
-<img src="uraan-pak.png" alt="Uraan Pakistan" width="140"/>
-<img src="5Vs.png" alt="5Es Framework" width="140"/>
+<img src="uraan-pak.png" alt="Uraan Pakistan" width="340"/>
+<img src="5Vs.png" alt="5Es Framework" width="340"/>
 
 # 🏛️ PCBOT
 
