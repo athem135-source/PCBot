@@ -91,11 +91,23 @@
   <!-- Development info -->
   <div class="dev-info">
     <h1>
-      <img src="/assets/5Vs.png" alt="5Es Framework" class="title-logo fives" onerror="this.style.display='none'">
+      <img id="logo-fives" alt="5Es Framework" class="title-logo fives">
       <span class="title-text">🤖 PCBot Widget <span class="badge">Development Mode</span></span>
-      <img src="/assets/uraan-pak.png" alt="Uraan Pakistan" class="title-logo uraan" onerror="this.style.display='none'">
+      <img id="logo-uraan" alt="Uraan Pakistan" class="title-logo uraan">
     </h1>
     <h2>Government of Pakistan - Ministry of Planning, Development & Special Initiatives</h2>
+    
+    <script>
+      // Set logo sources based on environment
+      (function() {
+        var hostname = window.location.hostname;
+        var base = (hostname === 'localhost' || hostname === '127.0.0.1') 
+          ? 'http://localhost:5000' 
+          : window.location.origin;
+        document.getElementById('logo-fives').src = base + '/assets/5Vs.png';
+        document.getElementById('logo-uraan').src = base + '/assets/uraan-pak.png';
+      })();
+    </script>
     
     <div class="instructions">
       <h3>📋 Development Instructions</h3>
