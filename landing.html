@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCBot - Planning Commission Chatbot Portal</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #006600 0%, #004d00 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .logo-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+        }
+        
+        .logo.fives {
+            height: 85px;
+        }
+        
+        .logo.uraan {
+            height: 75px;
+        }
+        
+        h1 {
+            color: #006600;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #1fa67a;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .version {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #006600;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .section p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .option-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 102, 0, 0.2);
+            border-color: #006600;
+        }
+        
+        .option-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .option-title {
+            color: #006600;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .option-description {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .option-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+        
+        .badge-public {
+            background: #28a745;
+            color: white;
+        }
+        
+        .badge-dev {
+            background: #d4af37;
+            color: white;
+        }
+        
+        .badge-admin {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .badge-mobile {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .setup-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .setup-section h3 {
+            color: #006600;
+            margin-bottom: 15px;
+        }
+        
+        .setup-steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+        
+        .setup-steps li {
+            counter-increment: step-counter;
+            margin-bottom: 15px;
+            padding-left: 40px;
+            position: relative;
+            line-height: 1.6;
+        }
+        
+        .setup-steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #006600;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .logo {
+                height: 60px;
+            }
+            
+            .logo.fives {
+                height: 65px;
+            }
+            
+            .logo.uraan {
+                height: 55px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-row">
+                <img id="logo-uraan" alt="Uraan Pakistan" class="logo uraan">
+                <img id="logo-fives" alt="5Es Framework" class="logo fives">
+            </div>
+            <h1>🏛️ PCBot Portal</h1>
+            <p class="subtitle">Planning Commission Chatbot - Development Projects Manual 2024</p>
+            <span class="version">v3.3.8</span>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>🚀 Choose Your Interface</h2>
+                <p>Select the version that best suits your needs. All versions connect to the same powerful RAG backend with access to the complete Manual for Development Projects 2024.</p>
+                
+                <div class="options-grid">
+                    <!-- Widget Standalone (Shareable) -->
+                    <a href="/widget-standalone.html" class="option-card">
+                        <span class="option-icon">💬</span>
+                        <div class="option-title">Widget (Shareable)</div>
+                        <div class="option-description">
+                            Floating chat widget with full features. Perfect for sharing via Cloudflare tunnel or embedding on websites.
+                        </div>
+                        <span class="option-badge badge-public">Public Access</span>
+                        <span class="option-badge badge-mobile">Responsive</span>
+                    </a>
+                    
+                    <!-- Mobile Site (Shareable) -->
+                    <a href="/mobile.html" class="option-card">
+                        <span class="option-icon">📱</span>
+                        <div class="option-title">Mobile Site (Shareable)</div>
+                        <div class="option-description">
+                            Full-screen mobile-optimized interface. Best for smartphones and tablets. Includes AI/Exact mode toggle.
+                        </div>
+                        <span class="option-badge badge-public">Public Access</span>
+                        <span class="option-badge badge-mobile">Mobile First</span>
+                    </a>
+                    
+                    <!-- Widget Development -->
+                    <a href="/widget" class="option-card">
+                        <span class="option-icon">🛠️</span>
+                        <div class="option-title">Widget (Development)</div>
+                        <div class="option-description">
+                            Development version with React widget. For testing new features and customization before deployment.
+                        </div>
+                        <span class="option-badge badge-dev">Development</span>
+                    </a>
+                    
+                    <!-- Admin Panel -->
+                    <a href="javascript:void(0)" onclick="alert('Type \'nufc\' in any chat interface to access admin panel')" class="option-card">
+                        <span class="option-icon">⚙️</span>
+                        <div class="option-title">Admin Panel</div>
+                        <div class="option-description">
+                            System monitoring, session management, and backend controls. Type "nufc" in any chat to access.
+                        </div>
+                        <span class="option-badge badge-admin">Admin Only</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>🌐 Public Sharing Setup</h2>
+                <p>To share PCBot externally (office network, Google Sites, etc.), use the deployment script:</p>
+                
+                <div class="setup-section">
+                    <h3>Quick Deployment</h3>
+                    <ol class="setup-steps">
+                        <li>Run the deployment script:
+                            <div class="code-block">.\run_widget_standalone.bat</div>
+                        </li>
+                        <li>Wait for Flask to start and Cloudflare tunnel to be created (shows URL in console)</li>
+                        <li>Copy the tunnel URL (e.g., https://your-name.trycloudflare.com)</li>
+                        <li>Share the URL - it will show the widget interface by default</li>
+                        <li>For mobile version, add /mobile.html to the URL</li>
+                    </ol>
+                    
+                    <h3 style="margin-top: 20px;">Google Sites Embedding</h3>
+                    <ol class="setup-steps">
+                        <li>Get your Cloudflare tunnel URL from the bat file</li>
+                        <li>In Google Sites, insert an "Embed" block</li>
+                        <li>Paste the full URL (with /widget-standalone.html or /mobile.html)</li>
+                        <li>Adjust iframe size as needed (recommended: width 100%, height 700px)</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📊 Features</h2>
+                <div class="options-grid">
+                    <div class="option-card" style="cursor: default;">
+                        <span class="option-icon">🔍</span>
+                        <div class="option-title">RAG-Powered Search</div>
+                        <div class="option-description">
+                            Retrieval Augmented Generation using Mistral LLM and Qdrant vector database for accurate, context-aware answers.
+                        </div>
+                    </div>
+                    
+                    <div class="option-card" style="cursor: default;">
+                        <span class="option-icon">💾</span>
+                        <div class="option-title">Session Memory</div>
+                        <div class="option-description">
+                            Contextual conversations with memory management. Remembers previous questions in the same session.
+                        </div>
+                    </div>
+                    
+                    <div class="option-card" style="cursor: default;">
+                        <span class="option-icon">📚</span>
+                        <div class="option-title">Source References</div>
+                        <div class="option-description">
+                            Every answer includes page numbers, passages, and relevance scores from the official Manual.
+                        </div>
+                    </div>
+                    
+                    <div class="option-card" style="cursor: default;">
+                        <span class="option-icon">⬇️</span>
+                        <div class="option-title">Export Answers</div>
+                        <div class="option-description">
+                            Download individual answers with sources in TXT format for offline reference and documentation.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>ℹ️ System Information</h2>
+                <p><strong>Backend:</strong> Flask API with Waitress WSGI server</p>
+                <p><strong>LLM:</strong> Mistral-7B-Instruct via Ollama</p>
+                <p><strong>Vector DB:</strong> Qdrant (local instance)</p>
+                <p><strong>Embedding Model:</strong> all-MiniLM-L6-v2</p>
+                <p><strong>Manual:</strong> Manual for Development Projects 2024 (Planning Commission)</p>
+                <p><strong>Developer:</strong> M. Hassan Arif Afridi</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Government of Pakistan - Ministry of Planning, Development & Special Initiatives</p>
+            <p>Planning Commission Bot (PCBot) - Internal Development Version</p>
+        </div>
+    </div>
+    
+    <script>
+        // Set logo sources
+        const API_BASE = window.location.origin;
+        document.getElementById('logo-fives').src = API_BASE + '/assets/5Vs.png';
+        document.getElementById('logo-uraan').src = API_BASE + '/assets/uraan-pak.png';
+    </script>
+</body>
+</html>

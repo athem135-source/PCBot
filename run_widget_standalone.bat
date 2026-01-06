@@ -34,11 +34,16 @@ echo.
 echo Creating public tunnel...
 echo.
 echo ==========================================
-echo   SHARE THIS URL TO ACCESS WIDGET
+echo   SHARE THIS URL TO ACCESS PCBOT
 echo ==========================================
 echo.
-echo Use the tunnel URL directly (no path needed)
+echo The tunnel URL will show a landing page with all options
 echo Example: https://your-url.trycloudflare.com
+echo.
+echo Available pages:
+echo   /                        Landing page (default)
+echo   /widget-standalone.html  Widget interface
+echo   /mobile.html             Mobile interface
 echo.
 
 cloudflared tunnel --url http://localhost:5000
