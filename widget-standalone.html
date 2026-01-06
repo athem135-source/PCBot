@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PCBot Widget - Planning Commission Assistant</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .header-section {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 50px 80px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .logo-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      margin-bottom: 20px;
+    }
+    
+    .logo {
+      height: 80px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    }
+    
+    .logo.uraan {
+      height: 75px;
+    }
+    
+    .logo.fives {
+      height: 85px;
+    }
+    
+    h1 {
+      color: #006600;
+      font-size: 3rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .subtitle {
+      color: #1fa67a;
+      font-size: 1.3rem;
+      margin-bottom: 5px;
+    }
+    
+    .description {
+      color: #666;
+      font-size: 1rem;
+      max-width: 800px;
+      margin: 15px auto;
+      line-height: 1.6;
+    }
+    
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .info-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border-left: 4px solid #006600;
+    }
+    
+    .info-card h3 {
+      color: #006600;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+    
+    .info-card p {
+      color: #666;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    
+    .info-card ul {
+      margin-top: 10px;
+      padding-left: 20px;
+      color: #666;
+      line-height: 1.8;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    .footer a {
+      color: #006600;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Widget container */
+    #pcbot-widget-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+    
+    @media (max-width: 768px) {
+      .header-section {
+        padding: 30px 20px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+        flex-direction: column;
+      }
+      
+      .logo-row {
+        gap: 20px;
+      }
+      
+      .logo {
+        height: 60px;
+      }
+      
+      .logo.uraan {
+        height: 55px;
+      }
+      
+      .logo.fives {
+        height: 65px;
+      }
+      
+      .info-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-section">
+      <div class="logo-row">
+        <img id="logo-uraan" alt="Uraan Pakistan" class="logo uraan">
+        <img id="logo-fives" alt="5Es Framework" class="logo fives">
+      </div>
+      
+      <h1>
+        🏛️ PCBot
+      </h1>
+      
+      <p class="subtitle">Planning Commission Intelligent Assistant</p>
+      <p class="description">
+        Government of Pakistan - Ministry of Planning, Development & Special Initiatives
+        <br>
+        <strong>Manual for Development Projects 2024</strong>
+      </p>
+    </div>
+    
+    <div class="info-cards">
+      <div class="info-card">
+        <h3>📖 What is PCBot?</h3>
+        <p>
+          PCBot is an AI-powered assistant designed to provide instant, accurate answers about Pakistan's development project procedures, 
+          based on the official Manual for Development Projects 2024.
+        </p>
+      </div>
+      
+      <div class="info-card">
+        <h3>💬 How to Use</h3>
+        <ul>
+          <li>Click the chat button in the bottom-right corner</li>
+          <li>Ask questions about project approval, PC-I forms, DDWP/CDWP/ECNEC</li>
+          <li>Get instant answers with page references from the Manual</li>
+          <li>Rate responses to help improve accuracy</li>
+        </ul>
+      </div>
+      
+      <div class="info-card">
+        <h3>🎯 What Can You Ask?</h3>
+        <ul>
+          <li>DDWP/CDWP/ECNEC approval limits</li>
+          <li>PC-I, PC-II, PC-III requirements</li>
+          <li>Project approval procedures</li>
+          <li>Cost escalation and revision processes</li>
+          <li>Monitoring & evaluation guidelines</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <p>
+      <strong>PCBot v3.3.8</strong> | 
+      <a href="https://github.com/athem135-source/PCBot" target="_blank">GitHub</a> | 
+      Government of Pakistan
+    </p>
+  </div>
+  
+  <!-- Widget mount point -->
+  <div id="pcbot-widget-container"></div>
+  
+  <script>
+    // Configuration
+    const CONFIG = {
+      // Auto-detect environment
+      getBaseUrl: function() {
+        const hostname = window.location.hostname;
+        
+        // If running on localhost development
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          return 'http://localhost:5000';
+        }
+        
+        // If deployed (ngrok, cloudflare tunnel, or custom domain)
+        // User should set WIDGET_API_URL in their deployment
+        if (window.WIDGET_API_URL) {
+          return window.WIDGET_API_URL;
+        }
+        
+        // Default to same origin
+        return window.location.origin;
+      }
+    };
+    
+    const BASE_URL = CONFIG.getBaseUrl();
+    
+    // Set logo sources
+    (function() {
+      document.getElementById('logo-uraan').src = BASE_URL + '/assets/uraan-pak.png';
+      document.getElementById('logo-fives').src = BASE_URL + '/assets/5Vs.png';
+    })();
+    
+    // Load widget script
+    (function() {
+      const script = document.createElement('script');
+      script.src = BASE_URL + '/assets/pdbot-widget.js';
+      script.async = true;
+      script.onerror = function() {
+        console.error('Failed to load PCBot widget. Make sure the backend server is running.');
+        const container = document.getElementById('pcbot-widget-container');
+        if (container) {
+          container.innerHTML = `
+            <div style="background: #ff4444; color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: 300px;">
+              <strong>⚠️ Widget Load Error</strong>
+              <p style="margin-top: 8px; font-size: 0.9rem;">
+                Backend server not reachable. Please ensure the Flask API is running.
+              </p>
+            </div>
+          `;
+        }
+      };
+      document.body.appendChild(script);
+    })();
+  </script>
+  
+  <!-- 
+    DEPLOYMENT INSTRUCTIONS:
+    
+    For external/public access, set the API URL before loading this page:
+    
+    <script>
+      window.WIDGET_API_URL = 'https://your-ngrok-url.ngrok.io';
+      // OR
+      window.WIDGET_API_URL = 'https://your-cloudflare-tunnel.trycloudflare.com';
+      // OR
+      window.WIDGET_API_URL = 'https://pcbot.yourserver.com';
+    </script>
+  -->
+</body>
+</html>
