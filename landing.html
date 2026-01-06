@@ -467,7 +467,7 @@
         const ADMIN_CODE = 'nufc';
         
         // Access admin tools with password protection
-        function accessAdminTool(tool) {
+        async function accessAdminTool(tool) {
             const code = prompt('Enter admin code to access this feature:');
             
             if (!code) {
@@ -479,25 +479,79 @@
                 return;
             }
             
-            // Code is correct, provide instructions based on tool
-            switch(tool) {
-                case 'admin':
-                    alert('✅ Admin Access Granted\n\nTo access the Admin Panel:\n\n1. Open any chat interface (Widget or Mobile)\n2. Type "nufc" in the chat\n3. The admin panel will open automatically\n\nAdmin panel includes:\n• System status monitoring\n• Session management\n• Memory clearing\n• API connection testing');
-                    break;
-                    
-                case 'stats':
-                    alert('✅ Stats Dashboard Access Granted\n\nTo launch the Statistics Dashboard:\n\n1. Open PowerShell in the project directory\n2. Run: .\\stats_dashboard.ps1\n3. For watch mode: .\\stats_dashboard.ps1 -Watch\n\nDashboard shows:\n• Real-time server statistics\n• Active sessions\n• Service status (Qdrant, Ollama)\n• Usage metrics');
-                    break;
-                    
-                case 'calibration':
-                    alert('✅ Calibration Test Access Granted\n\nTo run the Calibration Test:\n\n1. Double-click: run_calibration_test.bat\n   OR\n   Open CMD and run: .\\run_calibration_test.bat\n\n2. The test will:\n   • Check if API is running (starts it if needed)\n   • Run 300 test questions\n   • Generate detailed accuracy reports\n   • Save results in tests/results/\n\nExpected duration: 20-30 minutes\n\nNote: Ensure you have enough time before starting.');
-                    break;
-                    
-                case 'dev':
-                    alert('✅ Development Tools Access Granted\n\nAvailable development tools:\n\n1. Widget Development Server:\n   • Navigate to frontend-widget/\n   • Run: npm run dev\n   • Access at: http://localhost:5173\n\n2. Build Widget:\n   • In frontend-widget/: npm run build\n   • Output: dist/pdbot-widget.js\n\n3. Backend Scripts:\n   • scripts/ folder contains utilities\n   • Check README.md for details\n\n4. Testing:\n   • pytest for unit tests\n   • tests/ folder for test suites');
-                    break;
-                    
-                default:
+            // Code is correct, call API to execute the tool
+            try {
+                let endpoint = '';
+                let message = '';
+                
+                switch(tool) {
+                    case 'admin':
+                        endpoint = '/admin/open-chat-admin';
+                        message = 'Opening chat interface...';
+                        break;
+                    case 'stats':
+                        endpoint = '/admin/run-stats';
+                        message = 'Launching Statistics Dashboard...';
+                        break;
+                    case 'calibration':
+                        endpoint = '/admin/run-calibration';
+                        message = 'Starting Calibration Test...';
+                        break;
+                    case 'dev':
+                        endpoint = '/admin/open-dev-widget';
+                        message = 'Opening Development Widget...';
+                        break;
+                    default:
+                        alert('Unknown tool');
+                        return;
+                }
+                
+                // Show loading message
+                const loadingMsg = document.createElement('div');
+                loadingMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #1a472a; color: white; padding: 15px 25px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+                loadingMsg.textContent = '⏳ ' + message;
+                document.body.appendChild(loadingMsg);
+                
+                // Call the API
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ password: code })
+                });
+                
+                const result = await response.json();
+                
+                // Remove loading message
+                document.body.removeChild(loadingMsg);
+                
+                if (result.success) {
+                    // Handle different actions
+                    if (result.action === 'open_url') {
+                        alert('✅ ' + result.message + '\\n\\nOpening in new tab...');
+                        window.open(result.url, '_blank');
+                    } else {
+                        // For stats and calibration, show success message
+                        let msg = '✅ ' + result.message;
+                        if (result.details) {
+                            msg += '\\n\\n' + result.details;
+                        }
+                        if (result.warning) {
+                            msg += '\\n\\n⚠️ ' + result.warning;
+                        }
+                        if (result.instructions) {
+                            msg += '\\n\\nInstructions:\\n' + result.instructions.map((s, i) => `${i+1}. ${s}`).join('\\n');
+                        }
+                        alert(msg);
+                    }
+                } else {
+                    alert('❌ Error: ' + (result.message || result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('❌ Error connecting to server: ' + error.message + '\\n\\nMake sure the backend is running (python widget_api.py)');
+            }
+        }
+    </script>
                     alert('Unknown tool');
             }
         }

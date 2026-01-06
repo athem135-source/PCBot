@@ -26,9 +26,16 @@ echo.
 
 echo [2/2] Starting Flask backend on port 5000...
 start "PCBot Backend" cmd /c "python widget_api.py"
-timeout /t 3 /nobreak >nul
 
-echo [DONE] Backend started!
+echo Waiting for backend to start...
+timeout /t 5 /nobreak >nul
+
+REM Open browser automatically
+echo Opening browser...
+start http://localhost:5000
+timeout /t 2 /nobreak >nul
+
+echo [DONE] Backend started and browser opened!
 echo.
 
 echo Creating public tunnel...

@@ -39,11 +39,14 @@ import json
 import socket
 from datetime import datetime
 from typing import Dict, List
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 
 # Add src to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+
+# Admin password for secure features
+ADMIN_PASSWORD = 'nufc'
 
 # Import PDBOT modules
 from rag_langchain import search_sentences
@@ -89,7 +92,8 @@ def load_pdf_pages():
     return pages
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for widget requests
+app.secret_key = 'pcbot-secure-key-2026-nufc'  # Required for sessions
+CORS(app, supports_credentials=True)  # Enable CORS with credentials for sessions
 
 # Serve mobile page at root for Cloudflare tunnel
 @app.route('/')
@@ -120,10 +124,105 @@ def serve_widget_standalone():
     except FileNotFoundError:
         return jsonify({"error": "Widget standalone page not found"}), 404
 
-# Serve the full Widget UI from the API server
+# Serve the full Widget UI from the API server (password protected)
 @app.route('/widget')
 def serve_widget():
-    """Serve the full React widget UI"""
+    """Serve the full React widget UI (dev mode - requires admin access)"""
+    # Check if user is authenticated
+    if not session.get('admin_authenticated'):
+        # Return password protection page
+        return '''
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PCBot Development Widget - Admin Access</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5f3f 100%);
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+        }
+        h1 { color: #1a472a; margin-bottom: 10px; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus { border-color: #1a472a; outline: none; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #1a472a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { background: #2d5f3f; }
+        .error { color: #d32f2f; margin-top: 10px; display: none; }
+        .back-link { margin-top: 20px; }
+        .back-link a { color: #1a472a; text-decoration: none; }
+        .back-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>🔒 Admin Access Required</h1>
+        <p class="subtitle">PCBot Development Widget</p>
+        <form id="loginForm">
+            <input type="password" id="password" placeholder="Enter admin code" required>
+            <button type="submit">Access Widget</button>
+        </form>
+        <p class="error" id="error">❌ Invalid code. Please try again.</p>
+        <div class="back-link">
+            <a href="/">← Back to Landing Page</a>
+        </div>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            const response = await fetch('/admin/authenticate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ password })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                window.location.reload();
+            } else {
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('password').value = '';
+            }
+        });
+    </script>
+</body>
+</html>
+        ''', 200, {'Content-Type': 'text/html'}
+    
     try:
         # Serve index.html from frontend-widget
         index_path = os.path.join(os.path.dirname(__file__), 'frontend-widget', 'index.html')
@@ -1210,6 +1309,176 @@ def admin_groq_toggle():
             'success': True,
             'force_mode': FORCE_GROQ_MODE,
             'message': f"Groq force mode {'enabled' if FORCE_GROQ_MODE else 'disabled'}"
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/admin/authenticate', methods=['POST'])
+def admin_authenticate():
+    """
+    Authenticate admin user and create session.
+    Used for accessing password-protected features.
+    """
+    try:
+        data = request.get_json() or {}
+        password = data.get('password', '')
+        
+        if password == ADMIN_PASSWORD:
+            session['admin_authenticated'] = True
+            return jsonify({'success': True, 'message': 'Authentication successful'})
+        else:
+            return jsonify({'success': False, 'message': 'Invalid password'}), 401
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/admin/logout', methods=['POST'])
+def admin_logout():
+    """Logout admin user and clear session."""
+    session.pop('admin_authenticated', None)
+    return jsonify({'success': True, 'message': 'Logged out successfully'})
+
+
+@app.route('/admin/check-auth', methods=['GET'])
+def admin_check_auth():
+    """Check if user is authenticated."""
+    return jsonify({'authenticated': session.get('admin_authenticated', False)})
+
+
+@app.route('/admin/open-chat-admin', methods=['POST'])
+def admin_open_chat_admin():
+    """
+    Returns instructions for opening admin panel in chat.
+    (Actual panel is triggered by typing 'nufc' in the chat interface)
+    """
+    try:
+        data = request.get_json() or {}
+        password = data.get('password', '')
+        
+        if password != ADMIN_PASSWORD:
+            return jsonify({'success': False, 'message': 'Invalid password'}), 401
+        
+        return jsonify({
+            'success': True,
+            'action': 'open_url',
+            'url': '/widget-standalone.html',
+            'message': 'Opening chat interface. Type "nufc" in the chat to access admin panel.',
+            'instructions': [
+                'The chat interface will open',
+                'Type "nufc" (without quotes) in the chat input',
+                'The admin panel will appear automatically',
+                'Admin panel includes: system status, session management, memory clearing, API testing'
+            ]
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/admin/run-stats', methods=['POST'])
+def admin_run_stats():
+    """
+    Launch the statistics dashboard PowerShell script.
+    """
+    import subprocess
+    
+    try:
+        data = request.get_json() or {}
+        password = data.get('password', '')
+        
+        if password != ADMIN_PASSWORD:
+            return jsonify({'success': False, 'message': 'Invalid password'}), 401
+        
+        # Start stats dashboard in new PowerShell window
+        script_path = os.path.join(os.path.dirname(__file__), 'stats_dashboard.ps1')
+        
+        if not os.path.exists(script_path):
+            return jsonify({
+                'success': False,
+                'error': f'Stats dashboard script not found at: {script_path}'
+            }), 404
+        
+        # Launch in new PowerShell window
+        subprocess.Popen([
+            'powershell.exe',
+            '-NoExit',
+            '-ExecutionPolicy', 'Bypass',
+            '-File', script_path
+        ], creationflags=subprocess.CREATE_NEW_CONSOLE)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Statistics dashboard launched successfully',
+            'details': 'A new PowerShell window has opened with the stats dashboard'
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/admin/run-calibration', methods=['POST'])
+def admin_run_calibration():
+    """
+    Launch the calibration test suite.
+    """
+    import subprocess
+    
+    try:
+        data = request.get_json() or {}
+        password = data.get('password', '')
+        
+        if password != ADMIN_PASSWORD:
+            return jsonify({'success': False, 'message': 'Invalid password'}), 401
+        
+        # Start calibration test in new window
+        bat_path = os.path.join(os.path.dirname(__file__), 'run_calibration_test.bat')
+        
+        if not os.path.exists(bat_path):
+            return jsonify({
+                'success': False,
+                'error': f'Calibration test script not found at: {bat_path}'
+            }), 404
+        
+        # Launch in new CMD window
+        subprocess.Popen([
+            'cmd.exe',
+            '/c',
+            'start',
+            'cmd.exe',
+            '/k',
+            bat_path
+        ])
+        
+        return jsonify({
+            'success': True,
+            'message': 'Calibration test launched successfully',
+            'details': 'A new window has opened. The test will run 300 questions and generate reports. Expected duration: 20-30 minutes.',
+            'warning': 'Do not close the window until the test completes.'
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/admin/open-dev-widget', methods=['POST'])
+def admin_open_dev_widget():
+    """
+    Open the development widget (password-protected route).
+    """
+    try:
+        data = request.get_json() or {}
+        password = data.get('password', '')
+        
+        if password != ADMIN_PASSWORD:
+            return jsonify({'success': False, 'message': 'Invalid password'}), 401
+        
+        # Set session authentication
+        session['admin_authenticated'] = True
+        
+        return jsonify({
+            'success': True,
+            'action': 'open_url',
+            'url': '/widget',
+            'message': 'Opening development widget interface',
+            'details': 'You have been authenticated. The widget will open in a new tab.'
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
