@@ -93,6 +93,15 @@ CORS(app)  # Enable CORS for widget requests
 
 # Serve mobile page at root for Cloudflare tunnel
 @app.route('/')
+def serve_widget_standalone_root():
+    """Serve standalone widget page at root (for easy sharing)"""
+    try:
+        with open('widget-standalone.html', 'r', encoding='utf-8') as f:
+            return f.read(), 200, {'Content-Type': 'text/html'}
+    except FileNotFoundError:
+        return jsonify({"error": "Widget standalone page not found", "status": "ok", "api": "/chat"}), 200
+
+@app.route('/mobile.html')
 def serve_mobile():
     """Serve mobile-friendly chat page"""
     try:

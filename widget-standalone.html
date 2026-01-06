@@ -1,174 +1,687 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PCBot Widget - Planning Commission Assistant</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
-  <style>
-    /* Development page styling */
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-    }
-    .dev-info {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 50px 80px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-    .logo-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 30px;
-      margin-bottom: 15px;
-    }
-    .title-logo {
-      height: 65px;
-      width: auto;
-      object-fit: contain;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-    }
-    .title-logo.fives {
-      height: 70px;
-    }
-    .title-logo.uraan {
-      height: 60px;
-    }
-    h1 {
-      color: #006600;
-      margin: 0 auto 5px auto;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .title-text {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      white-space: nowrap;
-      font-size: 2.5rem;
-      margin: 0;
-    }
-    .dev-badge {
-      display: block;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    h2 {
-      color: #1fa67a;
-      font-size: 1.2rem;
-    }
-    .badge {
-      display: inline-block;
-      background: #28a745;
-      color: white;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      margin-left: 10px;
-    }
-    code {
-      background: #f4f4f4;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.9rem;
-    }
-    .instructions {
-      background: #f9f9f9;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-    .instructions h3 {
-      margin-top: 0;
-      color: #006600;
-    }
-    .instructions ol {
-      padding-left: 20px;
-    }
-    .instructions li {
-      margin-bottom: 10px;
-    }
-    @media (max-width: 768px) {
-      .dev-info {
-        padding: 30px 20px;
-      }
-      .title-text {
-        font-size: 2rem;
-      }
-      .logo-row {
-        gap: 20px;
-      }
-      .title-logo {
-        height: 50px;
-      }
-      .title-logo.fives {
-        height: 55px;
-      }
-      .title-logo.uraan {
-        height: 45px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCBot Widget - Planning Commission Assistant</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .page-header {
+            max-width: 1100px;
+            margin: 0 auto 30px auto;
+            padding: 50px 80px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .logo-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .title-logo {
+            height: 65px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+        }
+        
+        .title-logo.fives {
+            height: 70px;
+        }
+        
+        .title-logo.uraan {
+            height: 60px;
+        }
+        
+        h1 {
+            color: #006600;
+            margin: 0 auto 5px auto;
+            font-size: 2.5rem;
+        }
+        
+        .public-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 10px 0;
+        }
+        
+        h2 {
+            color: #1fa67a;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+        
+        /* Widget Button */
+        .widget-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #006600, #28a745);
+            color: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 102, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+        
+        .widget-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 102, 0, 0.4);
+        }
+        
+        .widget-button.hidden {
+            display: none;
+        }
+        
+        /* Widget Container */
+        .widget-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 10000;
+            overflow: hidden;
+        }
+        
+        .widget-container.open {
+            display: flex;
+        }
+        
+        /* Widget Header */
+        .widget-header {
+            background: linear-gradient(135deg, #006600, #28a745);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .widget-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .widget-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .widget-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Chat Messages */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .message.bot {
+            flex-direction: row;
+        }
+        
+        .message.user {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .message.bot .message-avatar {
+            background: linear-gradient(135deg, #006600, #28a745);
+        }
+        
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #0066cc, #0099ff);
+        }
+        
+        .message-content {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+        
+        .message.bot .message-content {
+            background: white;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message.user .message-content {
+            background: linear-gradient(135deg, #0066cc, #0099ff);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 12px;
+            width: fit-content;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #006600;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: translateY(0);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(-10px);
+            }
+        }
+        
+        /* Input Area */
+        .chat-input-container {
+            padding: 16px 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .chat-input-wrapper {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 24px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .chat-input:focus {
+            border-color: #006600;
+        }
+        
+        .send-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #006600, #28a745);
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .send-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Suggested Questions */
+        .suggested-questions {
+            padding: 12px 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .suggested-title {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .suggested-question {
+            background: #f0f0f0;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            display: block;
+            text-align: left;
+            width: 100%;
+        }
+        
+        .suggested-question:hover {
+            background: #e0e0e0;
+            border-color: #006600;
+        }
+        
+        /* Source References */
+        .source-refs {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .source-title {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        
+        .source-tag {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #006600;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+        
+        /* Feedback */
+        .feedback-section {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .feedback-text {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .feedback-stars {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .star-button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .star-button:hover {
+            transform: scale(1.2);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .widget-container {
+                width: calc(100vw - 20px);
+                height: calc(100vh - 110px);
+                right: 10px;
+                bottom: 80px;
+            }
+            
+            .page-header {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .logo-row {
+                gap: 20px;
+            }
+            
+            .title-logo {
+                height: 50px;
+            }
+            
+            .title-logo.fives {
+                height: 55px;
+            }
+            
+            .title-logo.uraan {
+                height: 45px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Widget mount point -->
-  <div id="pdbot-widget"></div>
-  
-  <!-- Development info -->
-  <div class="dev-info">
-    <div class="logo-row">
-      <img id="logo-uraan" alt="Uraan Pakistan" class="title-logo uraan">
-      <img id="logo-fives" alt="5Es Framework" class="title-logo fives">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="logo-row">
+            <img id="logo-uraan" alt="Uraan Pakistan" class="title-logo uraan">
+            <img id="logo-fives" alt="5Es Framework" class="title-logo fives">
+        </div>
+        <h1>🤖 PCBot Widget</h1>
+        <span class="public-badge">Public Access</span>
+        <h2>Government of Pakistan - Ministry of Planning, Development & Special Initiatives</h2>
     </div>
-    <h1><span class="title-text">🤖 PCBot Widget</span></h1>
-    <div class="dev-badge"><span class="badge">Public Access</span></div>
-    <h2>Government of Pakistan - Ministry of Planning, Development & Special Initiatives</h2>
-    
+
+    <!-- Widget Button -->
+    <button class="widget-button" id="widgetButton" onclick="toggleWidget()">💬</button>
+
+    <!-- Widget Container -->
+    <div class="widget-container" id="widgetContainer">
+        <div class="widget-header">
+            <div class="widget-title">🤖 PCBot Assistant</div>
+            <button class="widget-close" onclick="toggleWidget()">×</button>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages"></div>
+        
+        <div class="suggested-questions" id="suggestedQuestions">
+            <div class="suggested-title">💡 Suggested Questions:</div>
+        </div>
+        
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="Ask about the Manual for Development Projects..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="send-button" id="sendButton" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-      // Set logo sources based on environment
-      (function() {
-        var hostname = window.location.hostname;
-        var base = (hostname === 'localhost' || hostname === '127.0.0.1') 
-          ? 'http://localhost:5000' 
-          : window.location.origin;
-        document.getElementById('logo-fives').src = base + '/assets/5Vs.png';
-        document.getElementById('logo-uraan').src = base + '/assets/uraan-pak.png';
-      })();
+        // Configuration
+        const API_BASE = window.location.origin;
+        const GREETING = "Assalam-o-Alaikum! I am PCBot, your Planning Commission assistant. How can I help you today?";
+        
+        const SUGGESTED_QUESTIONS = [
+            "What are DDWP approval limits?",
+            "PC-I proforma requirements?",
+            "What is ECNEC threshold?",
+            "Cost escalation process?",
+            "M&E framework guidelines?"
+        ];
+        
+        // State
+        let isOpen = false;
+        let isLoading = false;
+        let sessionId = generateSessionId();
+        let chatHistory = [];
+        
+        // Initialize
+        window.onload = function() {
+            // Set logo sources
+            document.getElementById('logo-fives').src = API_BASE + '/assets/5Vs.png';
+            document.getElementById('logo-uraan').src = API_BASE + '/assets/uraan-pak.png';
+            
+            // Show greeting
+            addBotMessage(GREETING);
+            
+            // Show suggested questions
+            renderSuggestedQuestions();
+        };
+        
+        function generateSessionId() {
+            return 'session_' + Date.now() + '_' + Math.random().toString(36).substring(7);
+        }
+        
+        function toggleWidget() {
+            isOpen = !isOpen;
+            const container = document.getElementById('widgetContainer');
+            const button = document.getElementById('widgetButton');
+            
+            if (isOpen) {
+                container.classList.add('open');
+                button.classList.add('hidden');
+                document.getElementById('chatInput').focus();
+            } else {
+                container.classList.remove('open');
+                button.classList.remove('hidden');
+            }
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        function addBotMessage(text, sources = []) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+            
+            let html = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    ${formatMessage(text)}
+            `;
+            
+            if (sources && sources.length > 0) {
+                html += `
+                    <div class="source-refs">
+                        <div class="source-title">📚 Sources:</div>
+                        ${sources.map(s => `<span class="source-tag">Page ${s.page || s.page_number || 'N/A'}</span>`).join('')}
+                    </div>
+                `;
+            }
+            
+            html += `
+                    <div class="feedback-section">
+                        <span class="feedback-text">Rate this answer:</span>
+                        <div class="feedback-stars">
+                            <button class="star-button" onclick="rateFeedback(1)">⭐</button>
+                            <button class="star-button" onclick="rateFeedback(2)">⭐⭐</button>
+                            <button class="star-button" onclick="rateFeedback(3)">⭐⭐⭐</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            messageDiv.innerHTML = html;
+            messagesDiv.appendChild(messageDiv);
+            scrollToBottom();
+        }
+        
+        function addUserMessage(text) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user';
+            messageDiv.innerHTML = `
+                <div class="message-avatar">👤</div>
+                <div class="message-content">${escapeHtml(text)}</div>
+            `;
+            messagesDiv.appendChild(messageDiv);
+            scrollToBottom();
+        }
+        
+        function showTypingIndicator() {
+            const messagesDiv = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            messagesDiv.appendChild(typingDiv);
+            scrollToBottom();
+        }
+        
+        function hideTypingIndicator() {
+            const typingDiv = document.getElementById('typingIndicator');
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message || isLoading) return;
+            
+            // Clear input
+            input.value = '';
+            
+            // Add user message
+            addUserMessage(message);
+            
+            // Show typing
+            showTypingIndicator();
+            isLoading = true;
+            
+            // Hide suggested questions
+            document.getElementById('suggestedQuestions').style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        question: message,
+                        session_id: sessionId
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                hideTypingIndicator();
+                addBotMessage(data.answer, data.source_documents || []);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                hideTypingIndicator();
+                addBotMessage('Sorry, I encountered an error connecting to the server. Please try again.');
+            } finally {
+                isLoading = false;
+            }
+        }
+        
+        function renderSuggestedQuestions() {
+            const container = document.getElementById('suggestedQuestions');
+            SUGGESTED_QUESTIONS.forEach(question => {
+                const button = document.createElement('button');
+                button.className = 'suggested-question';
+                button.textContent = question;
+                button.onclick = () => {
+                    document.getElementById('chatInput').value = question;
+                    sendMessage();
+                };
+                container.appendChild(button);
+            });
+        }
+        
+        function rateFeedback(stars) {
+            alert(`Thanks for rating ${stars} star${stars > 1 ? 's' : ''}!`);
+        }
+        
+        function formatMessage(text) {
+            // Convert markdown-style bold
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Convert line breaks
+            text = text.replace(/\n/g, '<br>');
+            
+            return text;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function scrollToBottom() {
+            const messagesDiv = document.getElementById('chatMessages');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
     </script>
-    
-    <div class="instructions">
-      <h3>📋 How to Use PCBot</h3>
-      <ol>
-        <li>The widget appears in the bottom-right corner</li>
-        <li>Click the green button to open the chat</li>
-        <li>Ask questions about the Manual for Development Projects 2024</li>
-        <li>Get instant answers with page references from the Manual</li>
-        <li>Rate responses to help improve accuracy</li>
-      </ol>
-    </div>
-    
-    <div class="instructions">
-      <h3>🎯 What Can You Ask?</h3>
-      <ol>
-        <li>DDWP/CDWP/ECNEC approval limits and thresholds</li>
-        <li>PC-I, PC-II, PC-III, PC-IV requirements and formats</li>
-        <li>Project approval procedures and workflows</li>
-        <li>Cost escalation and revision processes</li>
-        <li>Monitoring & evaluation guidelines and KPIs</li>
-      </ol>
-    </div>
-  </div>
-  
-  <!-- Main entry point - loads the built widget -->
-  <script src="/assets/pdbot-widget.js"></script>
 </body>
 </html>
