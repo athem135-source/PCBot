@@ -177,6 +177,19 @@
             color: white;
         }
         
+        .badge-testing {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .section .badge-admin {
+            background: #dc3545;
+        }
+        
+        .section .badge-testing {
+            background: #ff9800;
+        }
+        
         .setup-section {
             background: #f8f9fa;
             padding: 20px;
@@ -314,15 +327,52 @@
                         </div>
                         <span class="option-badge badge-dev">Development</span>
                     </a>
-                    
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>🔒 Admin & Testing Tools</h2>
+                <p>Advanced features for system administrators and developers. Password required.</p>
+                
+                <div class="options-grid">
                     <!-- Admin Panel -->
-                    <a href="javascript:void(0)" onclick="alert('Type \'nufc\' in any chat interface to access admin panel')" class="option-card">
+                    <a href="javascript:void(0)" onclick="accessAdminTool('admin')" class="option-card">
                         <span class="option-icon">⚙️</span>
                         <div class="option-title">Admin Panel</div>
                         <div class="option-description">
                             System monitoring, session management, and backend controls. Type "nufc" in any chat to access.
                         </div>
                         <span class="option-badge badge-admin">Admin Only</span>
+                    </a>
+                    
+                    <!-- Statistics Dashboard -->
+                    <a href="javascript:void(0)" onclick="accessAdminTool('stats')" class="option-card">
+                        <span class="option-icon">📊</span>
+                        <div class="option-title">Statistics Dashboard</div>
+                        <div class="option-description">
+                            Real-time server statistics, usage analytics, and performance metrics. PowerShell-based dashboard.
+                        </div>
+                        <span class="option-badge badge-admin">Admin Only</span>
+                    </a>
+                    
+                    <!-- Calibration Test -->
+                    <a href="javascript:void(0)" onclick="accessAdminTool('calibration')" class="option-card">
+                        <span class="option-icon">🧪</span>
+                        <div class="option-title">Calibration Test</div>
+                        <div class="option-description">
+                            Run 300-question test suite to evaluate model accuracy and performance. Generates detailed reports.
+                        </div>
+                        <span class="option-badge badge-admin">Testing</span>
+                    </a>
+                    
+                    <!-- Development Tools -->
+                    <a href="javascript:void(0)" onclick="accessAdminTool('dev')" class="option-card">
+                        <span class="option-icon">💻</span>
+                        <div class="option-title">Development Tools</div>
+                        <div class="option-description">
+                            Access to development scripts, debugging tools, and system configuration utilities.
+                        </div>
+                        <span class="option-badge badge-dev">Developer</span>
                     </a>
                 </div>
             </div>
@@ -412,6 +462,45 @@
         const API_BASE = window.location.origin;
         document.getElementById('logo-fives').src = API_BASE + '/assets/5Vs.png';
         document.getElementById('logo-uraan').src = API_BASE + '/assets/uraan-pak.png';
+        
+        // Admin password (in production, this should be server-side)
+        const ADMIN_CODE = 'nufc';
+        
+        // Access admin tools with password protection
+        function accessAdminTool(tool) {
+            const code = prompt('Enter admin code to access this feature:');
+            
+            if (!code) {
+                return; // User cancelled
+            }
+            
+            if (code.toLowerCase() !== ADMIN_CODE) {
+                alert('❌ Invalid code. Access denied.');
+                return;
+            }
+            
+            // Code is correct, provide instructions based on tool
+            switch(tool) {
+                case 'admin':
+                    alert('✅ Admin Access Granted\n\nTo access the Admin Panel:\n\n1. Open any chat interface (Widget or Mobile)\n2. Type "nufc" in the chat\n3. The admin panel will open automatically\n\nAdmin panel includes:\n• System status monitoring\n• Session management\n• Memory clearing\n• API connection testing');
+                    break;
+                    
+                case 'stats':
+                    alert('✅ Stats Dashboard Access Granted\n\nTo launch the Statistics Dashboard:\n\n1. Open PowerShell in the project directory\n2. Run: .\\stats_dashboard.ps1\n3. For watch mode: .\\stats_dashboard.ps1 -Watch\n\nDashboard shows:\n• Real-time server statistics\n• Active sessions\n• Service status (Qdrant, Ollama)\n• Usage metrics');
+                    break;
+                    
+                case 'calibration':
+                    alert('✅ Calibration Test Access Granted\n\nTo run the Calibration Test:\n\n1. Double-click: run_calibration_test.bat\n   OR\n   Open CMD and run: .\\run_calibration_test.bat\n\n2. The test will:\n   • Check if API is running (starts it if needed)\n   • Run 300 test questions\n   • Generate detailed accuracy reports\n   • Save results in tests/results/\n\nExpected duration: 20-30 minutes\n\nNote: Ensure you have enough time before starting.');
+                    break;
+                    
+                case 'dev':
+                    alert('✅ Development Tools Access Granted\n\nAvailable development tools:\n\n1. Widget Development Server:\n   • Navigate to frontend-widget/\n   • Run: npm run dev\n   • Access at: http://localhost:5173\n\n2. Build Widget:\n   • In frontend-widget/: npm run build\n   • Output: dist/pdbot-widget.js\n\n3. Backend Scripts:\n   • scripts/ folder contains utilities\n   • Check README.md for details\n\n4. Testing:\n   • pytest for unit tests\n   • tests/ folder for test suites');
+                    break;
+                    
+                default:
+                    alert('Unknown tool');
+            }
+        }
     </script>
 </body>
 </html>
