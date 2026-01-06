@@ -2,12 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PCBot Widget - Planning Commission Assistant</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -16,7 +12,7 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             padding: 20px;
@@ -55,7 +51,7 @@
             height: 60px;
         }
         
-        h1 {
+        .page-header h1 {
             color: #006600;
             margin: 0 auto 5px auto;
             font-size: 2.5rem;
@@ -71,7 +67,7 @@
             margin: 10px 0;
         }
         
-        h2 {
+        .page-header h2 {
             color: #1fa67a;
             font-size: 1.2rem;
             margin-top: 10px;
@@ -109,8 +105,8 @@
             position: fixed;
             bottom: 90px;
             right: 20px;
-            width: 400px;
-            height: 600px;
+            width: 450px;
+            height: 650px;
             background: white;
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -158,271 +154,446 @@
             background: rgba(255, 255, 255, 0.2);
         }
         
-        /* Chat Messages */
-        .chat-messages {
+        .header {
+            display: none;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            background: white;
+            overflow: hidden;
+        }
+        
+        .messages {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         
         .message {
-            margin-bottom: 16px;
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user {
+            background: #006600;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.bot {
+            background: #f0f0f0;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message.bot strong {
+            color: #006600;
+        }
+        
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .message.typing {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .typing-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+        
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #666;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        .input-container {
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
             display: flex;
             gap: 10px;
         }
         
-        .message.bot {
-            flex-direction: row;
-        }
-        
-        .message.user {
-            flex-direction: row-reverse;
-        }
-        
-        .message-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-        
-        .message.bot .message-avatar {
-            background: linear-gradient(135deg, #006600, #28a745);
-        }
-        
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, #0066cc, #0099ff);
-        }
-        
-        .message-content {
-            max-width: 75%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            line-height: 1.5;
-        }
-        
-        .message.bot .message-content {
-            background: white;
-            border-bottom-left-radius: 4px;
-        }
-        
-        .message.user .message-content {
-            background: linear-gradient(135deg, #0066cc, #0099ff);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        
-        /* Typing Indicator */
-        .typing-indicator {
-            display: flex;
-            gap: 4px;
-            padding: 12px 16px;
-            background: white;
-            border-radius: 12px;
-            width: fit-content;
-        }
-        
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #006600;
-            animation: typing 1.4s infinite;
-        }
-        
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-        
-        @keyframes typing {
-            0%, 60%, 100% {
-                opacity: 0.3;
-                transform: translateY(0);
-            }
-            30% {
-                opacity: 1;
-                transform: translateY(-10px);
-            }
-        }
-        
-        /* Input Area */
-        .chat-input-container {
-            padding: 16px 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-        }
-        
-        .chat-input-wrapper {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .chat-input {
+        .input-container input {
             flex: 1;
             padding: 12px 16px;
             border: 2px solid #e0e0e0;
-            border-radius: 24px;
-            font-size: 14px;
+            border-radius: 25px;
+            font-size: 16px;
             outline: none;
             transition: border-color 0.2s;
         }
         
-        .chat-input:focus {
+        .input-container input:focus {
             border-color: #006600;
         }
         
-        .send-button {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #006600, #28a745);
+        .input-container button {
+            background: #006600;
             color: white;
             border: none;
-            font-size: 20px;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
             cursor: pointer;
-            transition: transform 0.2s;
+            font-size: 20px;
+            transition: background 0.2s;
         }
         
-        .send-button:hover {
-            transform: scale(1.1);
+        .input-container button:hover {
+            background: #004d00;
         }
         
-        .send-button:disabled {
-            opacity: 0.5;
+        .input-container button:disabled {
+            background: #ccc;
             cursor: not-allowed;
+        }
+        
+        .welcome {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .welcome h2 {
+            color: #006600;
+            margin-bottom: 10px;
+        }
+        
+        .welcome p {
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .suggestion {
+            background: #e8f5e9;
+            color: #006600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 1px solid #c8e6c9;
+            transition: all 0.2s;
+        }
+        
+        .suggestion:hover {
+            background: #006600;
+            color: white;
+        }
+        
+        .status {
+            padding: 5px 15px;
+            font-size: 0.75rem;
+            text-align: center;
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        .status.connected { color: #2e7d32; }
+        .status.disconnected { color: #c62828; }
+        
+        /* Exact Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .mode-btn {
+            padding: 8px 16px;
+            border: 2px solid #006600;
+            border-radius: 20px;
+            background: white;
+            color: #006600;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mode-btn.active {
+            background: #006600;
+            color: white;
+        }
+        
+        .mode-btn:hover:not(.active) {
+            background: #e8f5e9;
+        }
+        
+        /* Message Actions & Sources */
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+            background: white;
+            color: #666;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: #e8f5e9;
+            border-color: #006600;
+            color: #006600;
+        }
+        
+        .action-btn.active {
+            background: #006600;
+            color: white;
+            border-color: #006600;
+        }
+        
+        .sources-panel, .passages-panel {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .sources-panel.show, .passages-panel.show {
+            display: block;
+        }
+        
+        .source-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #006600;
+        }
+        
+        .source-item .page {
+            font-weight: bold;
+            color: #006600;
+        }
+        
+        .source-item .relevance {
+            font-size: 0.75rem;
+            color: #888;
+        }
+        
+        .passage-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #ff9800;
+        }
+        
+        .passage-item .text {
+            font-style: italic;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .passage-item .meta {
+            margin-top: 5px;
+            font-size: 0.75rem;
+            color: #888;
         }
         
         /* Suggested Questions */
         .suggested-questions {
-            padding: 12px 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            max-height: 150px;
-            overflow-y: auto;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
         }
         
-        .suggested-title {
-            font-size: 0.85rem;
-            color: #666;
+        .suggested-questions .label {
+            font-size: 0.75rem;
+            color: #888;
             margin-bottom: 8px;
         }
         
-        .suggested-question {
-            background: #f0f0f0;
-            border: 1px solid #e0e0e0;
-            border-radius: 16px;
-            padding: 8px 12px;
-            margin-bottom: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
+        .suggestion-btn {
             display: block;
-            text-align: left;
             width: 100%;
-        }
-        
-        .suggested-question:hover {
-            background: #e0e0e0;
-            border-color: #006600;
-        }
-        
-        /* Source References */
-        .source-refs {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #e0e0e0;
-        }
-        
-        .source-title {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 6px;
-        }
-        
-        .source-tag {
-            display: inline-block;
+            padding: 10px;
+            margin-bottom: 8px;
             background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 10px;
             color: #006600;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            margin-right: 4px;
-            margin-bottom: 4px;
-        }
-        
-        /* Feedback */
-        .feedback-section {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        .feedback-text {
-            font-size: 0.8rem;
-            color: #666;
-        }
-        
-        .feedback-stars {
-            display: flex;
-            gap: 4px;
-        }
-        
-        .star-button {
-            background: none;
-            border: none;
-            font-size: 18px;
+            font-size: 0.85rem;
+            text-align: left;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s;
         }
         
-        .star-button:hover {
-            transform: scale(1.2);
+        .suggestion-btn:hover {
+            background: #006600;
+            color: white;
         }
         
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .widget-container {
-                width: calc(100vw - 20px);
-                height: calc(100vh - 110px);
-                right: 10px;
-                bottom: 80px;
-            }
-            
-            .page-header {
-                padding: 30px 20px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .logo-row {
-                gap: 20px;
-            }
-            
-            .title-logo {
-                height: 50px;
-            }
-            
-            .title-logo.fives {
-                height: 55px;
-            }
-            
-            .title-logo.uraan {
-                height: 45px;
-            }
+        .suggestion-btn::before {
+            content: "→ ";
+        }
+        
+        /* Admin Panel Styles */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .admin-panel.active {
+            display: block;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .admin-header h2 {
+            color: #00ff00;
+            font-size: 1.2rem;
+        }
+        
+        .admin-close {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .admin-section {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .admin-section h3 {
+            color: #00cc00;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .status-item {
+            background: #2a2a2a;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .status-item .label {
+            color: #888;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        
+        .status-item .value {
+            color: #00ff00;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .status-item .value.error {
+            color: #ff4444;
+        }
+        
+        .admin-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .admin-btn:hover {
+            opacity: 0.8;
+        }
+        
+        .admin-btn.primary {
+            background: #006600;
+            color: white;
+        }
+        
+        .admin-btn.danger {
+            background: #cc0000;
+            color: white;
+        }
+        
+        .admin-btn.warning {
+            background: #ff9900;
+            color: black;
         }
     </style>
 </head>
@@ -448,250 +619,433 @@
             <button class="widget-close" onclick="toggleWidget()">×</button>
         </div>
         
-        <div class="chat-messages" id="chatMessages"></div>
+        <div class="status" id="status">Connecting...</div>
         
-        <div class="suggested-questions" id="suggestedQuestions">
-            <div class="suggested-title">💡 Suggested Questions:</div>
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="aiModeBtn" onclick="setMode('ai')">🤖 AI Mode</button>
+            <button class="mode-btn" id="exactModeBtn" onclick="setMode('exact')">📍 Exact Mode</button>
         </div>
         
-        <div class="chat-input-container">
-            <div class="chat-input-wrapper">
-                <input 
-                    type="text" 
-                    class="chat-input" 
-                    id="chatInput" 
-                    placeholder="Ask about the Manual for Development Projects..."
-                    onkeypress="handleKeyPress(event)"
-                >
-                <button class="send-button" id="sendButton" onclick="sendMessage()">➤</button>
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="welcome">
+                    <h2>Welcome to PCBot</h2>
+                    <p>Ask me anything about the Manual for Development Projects 2024</p>
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="askQuestion(this.textContent)">What is PC-I?</span>
+                        <span class="suggestion" onclick="askQuestion(this.textContent)">DDWP approval limit?</span>
+                        <span class="suggestion" onclick="askQuestion(this.textContent)">What is ECNEC?</span>
+                        <span class="suggestion" onclick="askQuestion(this.textContent)">Project revision process?</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Ask about development projects..." 
+                       onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()" id="sendBtn">➤</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Configuration
-        const API_BASE = window.location.origin;
-        const GREETING = "Assalam-o-Alaikum! I am PCBot, your Planning Commission assistant. How can I help you today?";
+        // Session ID for memory
+        const sessionId = 'widget_' + Math.random().toString(36).substr(2, 9);
+        const API_URL = window.location.origin;
+        let exactMode = false;
+        let isWidgetOpen = false;
         
-        const SUGGESTED_QUESTIONS = [
-            "What are DDWP approval limits?",
-            "PC-I proforma requirements?",
-            "What is ECNEC threshold?",
-            "Cost escalation process?",
-            "M&E framework guidelines?"
-        ];
+        // Initialize logos
+        document.getElementById('logo-fives').src = API_URL + '/assets/5Vs.png';
+        document.getElementById('logo-uraan').src = API_URL + '/assets/uraan-pak.png';
         
-        // State
-        let isOpen = false;
-        let isLoading = false;
-        let sessionId = generateSessionId();
-        let chatHistory = [];
-        
-        // Initialize
-        window.onload = function() {
-            // Set logo sources
-            document.getElementById('logo-fives').src = API_BASE + '/assets/5Vs.png';
-            document.getElementById('logo-uraan').src = API_BASE + '/assets/uraan-pak.png';
-            
-            // Show greeting
-            addBotMessage(GREETING);
-            
-            // Show suggested questions
-            renderSuggestedQuestions();
-        };
-        
-        function generateSessionId() {
-            return 'session_' + Date.now() + '_' + Math.random().toString(36).substring(7);
-        }
-        
+        // Toggle widget
         function toggleWidget() {
-            isOpen = !isOpen;
+            isWidgetOpen = !isWidgetOpen;
             const container = document.getElementById('widgetContainer');
             const button = document.getElementById('widgetButton');
             
-            if (isOpen) {
+            if (isWidgetOpen) {
                 container.classList.add('open');
                 button.classList.add('hidden');
-                document.getElementById('chatInput').focus();
+                document.getElementById('userInput').focus();
             } else {
                 container.classList.remove('open');
                 button.classList.remove('hidden');
             }
         }
         
-        function handleKeyPress(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
+        // Mode toggle
+        function setMode(mode) {
+            exactMode = (mode === 'exact');
+            document.getElementById('aiModeBtn').classList.toggle('active', !exactMode);
+            document.getElementById('exactModeBtn').classList.toggle('active', exactMode);
+            
+            // Update placeholder
+            const input = document.getElementById('userInput');
+            if (exactMode) {
+                input.placeholder = 'Search exact text in Manual...';
+            } else {
+                input.placeholder = 'Ask about development projects...';
             }
         }
         
-        function addBotMessage(text, sources = []) {
-            const messagesDiv = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message bot';
+        // Check connection
+        async function checkConnection() {
+            const statusEl = document.getElementById('status');
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                if (response.ok) {
+                    statusEl.textContent = '✓ Connected to PCBot';
+                    statusEl.className = 'status connected';
+                } else {
+                    throw new Error('API not responding');
+                }
+            } catch (e) {
+                statusEl.textContent = '✗ Disconnected - Check server';
+                statusEl.className = 'status disconnected';
+            }
+        }
+        
+        function askQuestion(question) {
+            document.getElementById('userInput').value = question;
+            sendMessage();
+        }
+        
+        function addMessage(content, type, data = {}) {
+            const messages = document.getElementById('messages');
             
-            let html = `
-                <div class="message-avatar">🤖</div>
-                <div class="message-content">
-                    ${formatMessage(text)}
-            `;
+            // Remove welcome message if exists
+            const welcome = messages.querySelector('.welcome');
+            if (welcome) welcome.remove();
             
-            if (sources && sources.length > 0) {
+            const msgId = 'msg_' + Date.now();
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+            msg.id = msgId;
+            
+            // Main content
+            let html = `<div class="message-content">${content}</div>`;
+            
+            // Add actions for bot messages with sources/passages
+            if (type === 'bot' && (data.sources?.length > 0 || data.passages?.length > 0)) {
                 html += `
-                    <div class="source-refs">
-                        <div class="source-title">📚 Sources:</div>
-                        ${sources.map(s => `<span class="source-tag">Page ${s.page || s.page_number || 'N/A'}</span>`).join('')}
-                    </div>
-                `;
+                <div class="message-actions">
+                    ${data.sources?.length > 0 ? `<button class="action-btn" onclick="toggleSources('${msgId}')">📚 Sources (${data.sources.length})</button>` : ''}
+                    ${data.passages?.length > 0 ? `<button class="action-btn" onclick="togglePassages('${msgId}')">📄 Passages (${data.passages.length})</button>` : ''}
+                    <button class="action-btn" onclick="downloadAnswer('${msgId}')">⬇️ Download</button>
+                </div>`;
+                
+                // Sources panel
+                if (data.sources?.length > 0) {
+                    html += `<div class="sources-panel" id="sources_${msgId}">`;
+                    data.sources.forEach((s, i) => {
+                        html += `<div class="source-item">
+                            <span class="page">📖 Page ${s.page || '?'}</span>
+                            ${s.relevance ? `<span class="relevance"> | Relevance: ${s.relevance}%</span>` : ''}
+                            ${s.paragraph ? `<span class="meta"> | Para ${s.paragraph}, Line ${s.line || '?'}</span>` : ''}
+                        </div>`;
+                    });
+                    html += '</div>';
+                }
+                
+                // Passages panel
+                if (data.passages?.length > 0) {
+                    html += `<div class="passages-panel" id="passages_${msgId}">`;
+                    data.passages.forEach((p, i) => {
+                        html += `<div class="passage-item">
+                            <div class="text">"${(p.text || '').substring(0, 300)}${p.text?.length > 300 ? '...' : ''}"</div>
+                            <div class="meta">📖 Page ${p.page || '?'} ${p.relevance ? `| Relevance: ${p.relevance}%` : ''}</div>
+                        </div>`;
+                    });
+                    html += '</div>';
+                }
             }
             
-            html += `
-                    <div class="feedback-section">
-                        <span class="feedback-text">Rate this answer:</span>
-                        <div class="feedback-stars">
-                            <button class="star-button" onclick="rateFeedback(1)">⭐</button>
-                            <button class="star-button" onclick="rateFeedback(2)">⭐⭐</button>
-                            <button class="star-button" onclick="rateFeedback(3)">⭐⭐⭐</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            messageDiv.innerHTML = html;
-            messagesDiv.appendChild(messageDiv);
-            scrollToBottom();
-        }
-        
-        function addUserMessage(text) {
-            const messagesDiv = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message user';
-            messageDiv.innerHTML = `
-                <div class="message-avatar">👤</div>
-                <div class="message-content">${escapeHtml(text)}</div>
-            `;
-            messagesDiv.appendChild(messageDiv);
-            scrollToBottom();
-        }
-        
-        function showTypingIndicator() {
-            const messagesDiv = document.getElementById('chatMessages');
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message bot';
-            typingDiv.id = 'typingIndicator';
-            typingDiv.innerHTML = `
-                <div class="message-avatar">🤖</div>
-                <div class="typing-indicator">
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                </div>
-            `;
-            messagesDiv.appendChild(typingDiv);
-            scrollToBottom();
-        }
-        
-        function hideTypingIndicator() {
-            const typingDiv = document.getElementById('typingIndicator');
-            if (typingDiv) {
-                typingDiv.remove();
+            // Add suggested questions for bot messages
+            if (type === 'bot' && data.suggested_questions?.length > 0) {
+                html += `
+                <div class="suggested-questions">
+                    <div class="label">💡 Related questions you might ask:</div>
+                    ${data.suggested_questions.map(q => 
+                        `<button class="suggestion-btn" onclick="askQuestion('${q.replace(/'/g, "\\'")}')">${q}</button>`
+                    ).join('')}
+                </div>`;
             }
+            
+            msg.innerHTML = html;
+            
+            // Store data for download
+            msg.dataset.query = data.query || '';
+            msg.dataset.answer = content;
+            msg.dataset.sources = JSON.stringify(data.sources || []);
+            
+            messages.appendChild(msg);
+            messages.scrollTop = messages.scrollHeight;
+            return msg;
+        }
+        
+        function toggleSources(msgId) {
+            const panel = document.getElementById('sources_' + msgId);
+            if (panel) {
+                panel.classList.toggle('show');
+            }
+        }
+        
+        function togglePassages(msgId) {
+            const panel = document.getElementById('passages_' + msgId);
+            if (panel) {
+                panel.classList.toggle('show');
+            }
+        }
+        
+        function downloadAnswer(msgId) {
+            const msg = document.getElementById(msgId);
+            if (!msg) return;
+            
+            const query = msg.dataset.query || 'Question';
+            const answer = msg.querySelector('.message-content')?.innerText || '';
+            const sources = JSON.parse(msg.dataset.sources || '[]');
+            
+            let content = `PDBOT Answer Export\n`;
+            content += `=${'='.repeat(50)}\n\n`;
+            content += `Question: ${query}\n\n`;
+            content += `Answer:\n${answer}\n\n`;
+            
+            if (sources.length > 0) {
+                content += `Sources:\n`;
+                sources.forEach((s, i) => {
+                    content += `  ${i+1}. Page ${s.page || '?'}`;
+                    if (s.relevance) content += ` (Relevance: ${s.relevance}%)`;
+                    content += '\n';
+                });
+            }
+            
+            content += `\n---\nExported: ${new Date().toLocaleString()}\n`;
+            content += `Source: Manual for Development Projects 2024\n`;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pdbot_answer_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function showTyping() {
+            return addMessage('<div class="typing-dots"><span></span><span></span><span></span></div>', 'bot typing');
         }
         
         async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
+            const input = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const query = input.value.trim();
             
-            if (!message || isLoading) return;
+            if (!query) return;
             
-            // Clear input
+            // Check for admin command
+            if (checkAdminCommand(query)) {
+                input.value = '';
+                return;
+            }
+            
+            // Show user message
+            addMessage(query, 'user');
             input.value = '';
+            sendBtn.disabled = true;
             
-            // Add user message
-            addUserMessage(message);
-            
-            // Show typing
-            showTypingIndicator();
-            isLoading = true;
-            
-            // Hide suggested questions
-            document.getElementById('suggestedQuestions').style.display = 'none';
+            // Show typing indicator
+            const typingMsg = showTyping();
             
             try {
-                const response = await fetch(`${API_BASE}/chat`, {
+                const response = await fetch(`${API_URL}/chat`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        query: message,
-                        session_id: sessionId
+                        query: query,
+                        session_id: sessionId,
+                        exact_mode: exactMode
                     })
                 });
                 
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                
                 const data = await response.json();
-                hideTypingIndicator();
                 
-                // Format response
-                let answer = data.answer || data.response || 'No response';
-                answer = answer
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\n/g, '<br>');
+                // Remove typing indicator
+                typingMsg.remove();
                 
-                addBotMessage(answer, data.sources || data.source_documents || []);
+                if (data.error) {
+                    addMessage(`Error: ${data.error}`, 'bot error', {});
+                } else {
+                    // Format the response with markdown-like styling
+                    let answer = data.answer || data.response || 'No response';
+                    answer = answer
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\n/g, '<br>');
+                    
+                    // Pass all data including sources, passages, suggestions
+                    addMessage(answer, 'bot', {
+                        query: query,
+                        sources: data.sources || [],
+                        passages: data.passages || [],
+                        suggested_questions: data.suggested_questions || []
+                    });
+                }
+            } catch (e) {
+                typingMsg.remove();
+                addMessage(`Connection error: ${e.message}`, 'bot error', {});
+            }
+            
+            sendBtn.disabled = false;
+            input.focus();
+        }
+        
+        // Initial connection check
+        checkConnection();
+        setInterval(checkConnection, 30000);
+        
+        // ==================== ADMIN PANEL ====================
+        let adminOpen = false;
+        
+        // Check for admin command
+        function checkAdminCommand(query) {
+            if (query.toLowerCase() === 'nufc') {
+                openAdminPanel();
+                return true;
+            }
+            return false;
+        }
+        
+        function openAdminPanel() {
+            adminOpen = true;
+            document.getElementById('adminPanel').classList.add('active');
+            refreshAdminStatus();
+        }
+        
+        function closeAdminPanel() {
+            adminOpen = false;
+            document.getElementById('adminPanel').classList.remove('active');
+        }
+        
+        async function refreshAdminStatus() {
+            try {
+                const response = await fetch(`${API_URL}/admin/status`);
+                const data = await response.json();
                 
-            } catch (error) {
-                console.error('Error:', error);
-                hideTypingIndicator();
-                addBotMessage('Sorry, I encountered an error connecting to the server. Please try again.');
-            } finally {
-                isLoading = false;
+                // Update status values
+                document.getElementById('adminVersion').textContent = data.version || 'N/A';
+                document.getElementById('adminSessions').textContent = data.active_sessions || 0;
+                
+                const qdrantEl = document.getElementById('adminQdrant');
+                qdrantEl.textContent = data.qdrant_status || 'unknown';
+                qdrantEl.className = 'value ' + (data.qdrant_status === 'connected' ? '' : 'error');
+                
+                const ollamaEl = document.getElementById('adminOllama');
+                ollamaEl.textContent = data.ollama_status || 'unknown';
+                ollamaEl.className = 'value ' + (data.ollama_status === 'connected' ? '' : 'error');
+                
+                document.getElementById('adminModel').textContent = data.model_loaded ? 'Loaded' : 'Not loaded';
+                document.getElementById('adminEmbedding').textContent = data.embedding_ready ? 'Ready' : 'Not ready';
+                
+            } catch (e) {
+                console.error('Admin status error:', e);
             }
         }
         
-        function renderSuggestedQuestions() {
-            const container = document.getElementById('suggestedQuestions');
-            SUGGESTED_QUESTIONS.forEach(question => {
-                const button = document.createElement('button');
-                button.className = 'suggested-question';
-                button.textContent = question;
-                button.onclick = () => {
-                    document.getElementById('chatInput').value = question;
-                    sendMessage();
-                };
-                container.appendChild(button);
-            });
+        async function clearMemory() {
+            try {
+                await fetch(`${API_URL}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId, clear_memory: true })
+                });
+                alert('Session memory cleared!');
+                
+                // Clear chat messages
+                const messages = document.getElementById('messages');
+                messages.innerHTML = `
+                    <div class="welcome">
+                        <h2>Welcome to PCBot</h2>
+                        <p>Ask me anything about the Manual for Development Projects 2024</p>
+                        <div class="suggestions">
+                            <span class="suggestion" onclick="askQuestion(this.textContent)">What is PC-I?</span>
+                            <span class="suggestion" onclick="askQuestion(this.textContent)">DDWP approval limit?</span>
+                            <span class="suggestion" onclick="askQuestion(this.textContent)">What is ECNEC?</span>
+                            <span class="suggestion" onclick="askQuestion(this.textContent)">Project revision process?</span>
+                        </div>
+                    </div>`;
+            } catch (e) {
+                alert('Error clearing memory: ' + e.message);
+            }
         }
         
-        function rateFeedback(stars) {
-            alert(`Thanks for rating ${stars} star${stars > 1 ? 's' : ''}!`);
-        }
-        
-        function formatMessage(text) {
-            // Convert markdown-style bold
-            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            
-            // Convert line breaks
-            text = text.replace(/\n/g, '<br>');
-            
-            return text;
-        }
-        
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function scrollToBottom() {
-            const messagesDiv = document.getElementById('chatMessages');
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        async function testConnection() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                if (response.ok) {
+                    alert('✅ API Connection: OK');
+                } else {
+                    alert('❌ API Connection: Failed');
+                }
+            } catch (e) {
+                alert('❌ API Connection: ' + e.message);
+            }
         }
     </script>
+    
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h2>🔧 PCBot Admin Panel</h2>
+            <button class="admin-close" onclick="closeAdminPanel()">✕ Close</button>
+        </div>
+        
+        <div class="admin-section">
+            <h3>📊 System Status</h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="label">Version</div>
+                    <div class="value" id="adminVersion">--</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Sessions</div>
+                    <div class="value" id="adminSessions">--</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Qdrant</div>
+                    <div class="value" id="adminQdrant">--</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Ollama</div>
+                    <div class="value" id="adminOllama">--</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Model</div>
+                    <div class="value" id="adminModel">--</div>
+                </div>
+                <div class="status-item">
+                    <div class="label">Embedding</div>
+                    <div class="value" id="adminEmbedding">--</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-section">
+            <h3>🛠️ Actions</h3>
+            <button class="admin-btn primary" onclick="refreshAdminStatus()">🔄 Refresh Status</button>
+            <button class="admin-btn warning" onclick="clearMemory()">🧹 Clear Session Memory</button>
+            <button class="admin-btn primary" onclick="testConnection()">📡 Test API Connection</button>
+        </div>
+        
+        <div class="admin-section">
+            <h3>ℹ️ Info</h3>
+            <p style="color: #888; font-size: 0.85rem; line-height: 1.6;">
+                <strong style="color: #00cc00;">Mobile Admin Panel</strong><br>
+                Type "nufc" in chat to open this panel.<br>
+                Session ID: <code style="color: #00ff00;">${sessionId.substring(0, 12)}...</code><br>
+                API URL: <code style="color: #00ff00;">${API_URL}</code>
+            </p>
+        </div>
+    </div>
 </body>
 </html>
