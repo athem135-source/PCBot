@@ -101,6 +101,16 @@ def serve_mobile():
     except FileNotFoundError:
         return jsonify({"error": "Mobile page not found", "status": "ok", "api": "/chat"}), 200
 
+# Serve the standalone widget page
+@app.route('/widget-standalone.html')
+def serve_widget_standalone():
+    """Serve the standalone shareable widget page"""
+    try:
+        with open('widget-standalone.html', 'r', encoding='utf-8') as f:
+            return f.read(), 200, {'Content-Type': 'text/html'}
+    except FileNotFoundError:
+        return jsonify({"error": "Widget standalone page not found"}), 404
+
 # Serve the full Widget UI from the API server
 @app.route('/widget')
 def serve_widget():

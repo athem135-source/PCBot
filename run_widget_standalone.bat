@@ -49,6 +49,9 @@ echo ==========================================
 echo   SHARE THIS URL TO ACCESS WIDGET
 echo ==========================================
 echo.
+echo Once the tunnel starts, add /widget-standalone.html to the URL
+echo Example: https://your-url.trycloudflare.com/widget-standalone.html
+echo.
 
 cloudflared tunnel --url http://localhost:5000
 
