@@ -100,7 +100,7 @@ CORS(app, supports_credentials=True)  # Enable CORS with credentials for session
 def serve_landing():
     """Serve landing page with all options"""
     try:
-        with open('landing.html', 'r', encoding='utf-8') as f:
+        with open('public/html/landing.html', 'r', encoding='utf-8') as f:
             return f.read(), 200, {'Content-Type': 'text/html'}
     except FileNotFoundError:
         return jsonify({"error": "Landing page not found", "status": "ok", "api": "/chat"}), 200
@@ -109,7 +109,7 @@ def serve_landing():
 def serve_mobile():
     """Serve mobile-friendly chat page"""
     try:
-        with open('mobile.html', 'r', encoding='utf-8') as f:
+        with open('public/html/mobile.html', 'r', encoding='utf-8') as f:
             return f.read(), 200, {'Content-Type': 'text/html'}
     except FileNotFoundError:
         return jsonify({"error": "Mobile page not found", "status": "ok", "api": "/chat"}), 200
@@ -119,7 +119,7 @@ def serve_mobile():
 def serve_widget_standalone():
     """Serve the standalone shareable widget page"""
     try:
-        with open('widget-standalone.html', 'r', encoding='utf-8') as f:
+        with open('public/html/widget-standalone.html', 'r', encoding='utf-8') as f:
             return f.read(), 200, {'Content-Type': 'text/html'}
     except FileNotFoundError:
         return jsonify({"error": "Widget standalone page not found"}), 404
@@ -225,7 +225,7 @@ def serve_widget():
     
     try:
         # Serve widget-dev.html which loads the built widget
-        with open('widget-dev.html', 'r', encoding='utf-8') as f:
+        with open('public/html/widget-dev.html', 'r', encoding='utf-8') as f:
             return f.read(), 200, {'Content-Type': 'text/html'}
     except FileNotFoundError:
         return "Widget dev page not found. Make sure widget-dev.html exists.", 404
@@ -245,8 +245,12 @@ def serve_widget_dist(filename):
 
 @app.route('/assets/<path:filename>')
 def serve_widget_assets(filename):
-    """Serve widget assets"""
+    """Serve widget assets (logos, images)"""
     from flask import send_from_directory
+    # Try public/assets first, then fallback to frontend-widget assets
+    public_assets = os.path.join(os.path.dirname(__file__), 'public', 'assets')
+    if os.path.exists(os.path.join(public_assets, filename)):
+        return send_from_directory(public_assets, filename)
     return send_from_directory(os.path.join(os.path.dirname(__file__), 'frontend-widget', 'src', 'assets'), filename)
 
 @app.route('/@<path:rest>')

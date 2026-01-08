@@ -1,7 +1,7 @@
 <div align="center">
 
-<img src="uraan-pak.png" alt="Uraan Pakistan" width="340"/>
-<img src="5Vs.png" alt="5Es Framework" width="340"/>
+<img src="public/assets/uraan-pak.png" alt="Uraan Pakistan" width="340"/>
+<img src="public/assets/5Vs.png" alt="5Es Framework" width="340"/>
 
 # 🏛️ PCBOT
 
@@ -11,11 +11,12 @@
 
 ---
 
-![Version](https://img.shields.io/badge/Version-3.3.8-006600?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-3.4.0-006600?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![React](https://img.shields.io/badge/React-18.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-DC382D?style=for-the-badge)
 ![Ollama](https://img.shields.io/badge/Ollama-Mistral_7B-000000?style=for-the-badge)
+![Netlify](https://img.shields.io/badge/Netlify-Ready-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)
 
 ---
 
@@ -214,27 +215,49 @@ https://github.com/athem135-source/PDBOT/raw/main/src/assets/PDBOT.mp4
 
 ## 🚀 Quick Start
 
-### One-Click Start (Recommended)
+### **New in v3.4: Unified Launcher** 🎉
 
 ```powershell
-# Run the unified launcher
-.\start_pdbot.bat
+# One-click access to all features
+.\run_pcbot.bat
 
-# Menu Options:
-# [1] Widget Mode (React + Flask API)
-# [2] Streamlit Mode (Legacy)
-# [3] Qdrant Only
-# [4] Statistics Dashboard
+# Interactive Menu:
+# [1] Start Widget (Standalone + Tunnel)
+# [2] Calibration Test (300 questions)
+# [3] Statistics Dashboard
+# [4] Setup Environment
 ```
 
 ### First-Time Setup
 
 ```powershell
 # 1. Run setup script
-.\setup.bat
+.\scripts\setup\setup.bat
 
-# 2. Start PDBOT
-.\start_pdbot.bat
+# 2. Launch PCBot
+.\run_pcbot.bat
+
+# 3. Choose option 1 for full deployment
+```
+
+### Deployment Options
+
+#### **Option 1: Local Development**
+```powershell
+.\run_pcbot.bat  # Choose option 1
+# - Auto-starts Qdrant & Ollama
+# - Launches Flask backend
+# - Opens browser to landing page
+# - Creates Cloudflare tunnel
+```
+
+#### **Option 2: Netlify (Static Frontend)**
+```bash
+# Deploy to Netlify (frontend only)
+netlify deploy --prod
+
+# See detailed guide:
+# deployment/NETLIFY.md
 ```
 
 ### Prerequisites
@@ -242,9 +265,9 @@ https://github.com/athem135-source/PDBOT/raw/main/src/assets/PDBOT.mp4
 | Requirement | Version | Purpose |
 |-------------|---------|---------|
 | Python | 3.10+ | Core runtime |
-| Node.js | 18+ | React widget |
-| Docker | Latest | Qdrant container |
-| Ollama | Latest | Local LLM |
+| Qdrant | Latest | Vector database |
+| Ollama | Latest | Local LLM (Mistral-7B) |
+| Cloudflare | Latest | Public tunneling |
 
 ### Manual Setup
 
@@ -256,7 +279,15 @@ python -m venv .venv
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Start Qdrant (Docker)
+# 3. Start Qdrant
+qdrant
+
+# 4. Start Ollama
+ollama serve
+
+# 5. Run backend
+python widget_api.py
+```
 docker run -p 6338:6333 -p 6337:6334 qdrant/qdrant
 
 # 4. Start Ollama
