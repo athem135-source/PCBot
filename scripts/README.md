@@ -1,13 +1,29 @@
-# Utility Scripts
+# Scripts Directory
 
-Helper scripts for setup, running, and maintaining PDBot.
+## Purpose
+Contains utility scripts and setup tools for PCBot deployment and management.
 
-## Windows Scripts (.bat)
+## Directory Structure
 
-- **start.bat** - One-click launcher (recommended for first-time users)
-- **setup.bat** - Initial environment setup and dependency installation
-- **run.bat** - Quick launcher for daily use
-- **diagnose.bat** - System diagnostics and health checks
+### `setup/` - Setup and Deployment Scripts
+- **`setup.bat`**: Complete environment setup (venv, dependencies, models)
+- **`run_widget_standalone.bat`**: Daily launcher with auto-services
+- **`stats_dashboard.ps1`**: Statistics dashboard PowerShell script
+- **`run_calibration_test.bat`**: 300-question test suite launcher
+- **`start_tunnel.ps1`**: Cloudflare tunnel for external access
+
+### Root Scripts (Legacy/Deprecated)
+- **`run.bat`**, **`start.bat`**: Old launchers (use root-level versions instead)
+- **`diagnose.bat`**: System diagnostics tool
+- **`run_updated_pndbot.ps1`**: Streamlit launcher (legacy)
+
+## Recommended Usage
+
+**For daily use, use the root-level scripts:**
+- `setup.bat` (root) - First-time setup
+- `run_widget_standalone.bat` (root) - Daily launcher
+
+These are copies of the scripts in `setup/` for easier user access.
 - **create_shortcut.bat** - Create desktop shortcut
 
 ## PowerShell Scripts (.ps1)

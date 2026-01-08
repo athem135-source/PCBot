@@ -68,6 +68,9 @@ Thumbs.db
 *.bak
 README_backup.md
 
+# Private documentation (not for public repo)
+PRIVATE_TECHNICAL_DOCUMENTATION.md
+
 # Large model files (if any)
 *.bin
 *.onnx
