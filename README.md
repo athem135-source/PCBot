@@ -158,45 +158,144 @@ https://github.com/athem135-source/PDBOT/raw/main/src/assets/PDBOT.mp4
 
 ## 🏗️ System Architecture
 
+### v3.4.0 Enhanced Architecture
+
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        PDBOT v3.3.4 ARCHITECTURE                             │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│    👤 USER (Browser/Mobile)                                                  │
-│         │                                                                    │
-│         ▼                                                                    │
-│    ┌──────────────────┐         ┌──────────────────────┐                    │
-│    │  🖥️ React Widget │────────▶│  🔌 Flask API        │                    │
-│    │  (Port 3000)     │◀────────│  (Port 5000)         │                    │
-│    │  + Typing Anim   │         │  + Waitress WSGI     │                    │
-│    └──────────────────┘         └────────┬─────────────┘                    │
-│                                          │                                   │
-│         ┌────────────────────────────────┼────────────────────────┐         │
-│         │                                │                        │         │
-│         ▼                                ▼                        ▼         │
-│  ┌──────────────────┐     ┌─────────────────────┐     ┌─────────────────┐  │
-│  │  🧠 Classifier   │     │  🔍 RAG Pipeline    │     │  💾 Memory      │  │
-│  │  (14-Class)      │     │  + Precision Chunk  │     │  (Per Session)  │  │
-│  │  + Safety Filter │     │  + Numeric Extract  │     └─────────────────┘  │
-│  └──────────────────┘     └─────────┬───────────┘                          │
-│                                     │                                       │
-│                            ┌────────┴────────┐                              │
-│                            ▼                 ▼                              │
-│                    ┌──────────────┐   ┌──────────────┐                      │
-│                    │ 📊 Qdrant    │   │ 🔄 Reranker  │                      │
-│                    │ Port 6338    │   │ Cross-Encoder│                      │
-│                    │ 360+ chunks  │   │ Threshold 33%│                      │
-│                    └──────────────┘   └──────────────┘                      │
-│                                              │                               │
-│                                              ▼                               │
-│                              ┌────────────────────────┐                      │
-│                              │  🤖 LLM Generation     │                      │
-│                              │  Primary: Mistral 7B   │                      │
-│                              │  Fallback: Groq API    │                      │
-│                              └────────────────────────┘                      │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                           PCBOT v3.4.0 ARCHITECTURE                                   │
+├──────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                       │
+│  👥 ACCESS LAYER                                                                      │
+│  ┌─────────────────┐  ┌──────────────────┐  ┌────────────────────┐                  │
+│  │ 🌐 GitHub Pages │  │ 🔷 Netlify       │  │ 🔒 Cloudflare     │                  │
+│  │ Static Hosting  │  │ CDN Distribution │  │ Secure Tunnels    │                  │
+│  └────────┬────────┘  └────────┬─────────┘  └──────────┬─────────┘                  │
+│           │                    │                        │                            │
+│           └────────────────────┴────────────────────────┘                            │
+│                                 │                                                     │
+│                                 ▼                                                     │
+│  🎨 PRESENTATION LAYER                                                                │
+│  ┌───────────────────────────────────────────────────────────────┐                   │
+│  │  Landing Page (Mode Selector)                                 │                   │
+│  │  ┌──────────────────┐         ┌──────────────────┐           │                   │
+│  │  │  👤 User Mode    │         │  🔐 Admin Mode   │           │                   │
+│  │  │  - Widget Share  │         │  - Statistics    │           │                   │
+│  │  │  - Mobile Site   │         │  - Calibration   │           │                   │
+│  │  └──────────────────┘         │  - Dev Widget    │           │                   │
+│  │                               │  - Admin Panel   │           │                   │
+│  │                               └──────────────────┘           │                   │
+│  └───────────────────────────────────────────────────────────────┘                   │
+│                                 │                                                     │
+│                                 ▼                                                     │
+│  🖥️ INTERFACE LAYER                                                                  │
+│  ┌────────────────────────────────────────────────────────┐                          │
+│  │  React Widget (Animated)                               │                          │
+│  │  ✨ Animations: slideUp, fadeIn, bounce, pulse         │                          │
+│  │  🔍 Health Check + Retry Overlay                       │                          │
+│  │  💬 AI/Exact Mode Toggle                               │                          │
+│  │  📥 Download Answers                                   │                          │
+│  │  📖 Expandable Sources & Passages                      │                          │
+│  └──────────────────────┬─────────────────────────────────┘                          │
+│                         │                                                             │
+│                         ▼                                                             │
+│  🔌 API LAYER (Flask + Waitress)                                                     │
+│  ┌─────────────────────────────────────────────────────────┐                         │
+│  │  Authentication: /admin/authenticate (Session-based)    │                         │
+│  │  Chat: /chat (RAG pipeline)                            │                         │
+│  │  Admin: /admin/run-stats, /admin/run-calibration      │                         │
+│  │  Health: /health (Backend status check)                │                         │
+│  └──────────────┬──────────────────────────────────────────┘                         │
+│                 │                                                                     │
+│         ┌───────┴────────┬──────────────────┬──────────────┐                        │
+│         │                │                  │              │                        │
+│         ▼                ▼                  ▼              ▼                        │
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────┐  ┌──────────┐                 │
+│  │ 🧠 14-Class │  │ 🔍 RAG       │  │ 💾 Session  │  │ 📊 Stats │                 │
+│  │ Classifier  │  │ Pipeline     │  │ Memory      │  │ Engine   │                 │
+│  │ + Safety    │  │ + Precision  │  │ (Isolated)  │  │          │                 │
+│  │ Filter      │  │ Chunking     │  │             │  │          │                 │
+│  └─────────────┘  └──────┬───────┘  └─────────────┘  └──────────┘                 │
+│                          │                                                           │
+│                 ┌────────┴─────────┐                                                │
+│                 │                  │                                                │
+│                 ▼                  ▼                                                │
+│         ┌──────────────┐    ┌─────────────┐                                        │
+│         │ 📊 Qdrant    │    │ 🔄 Reranker │                                        │
+│         │ Port 6338    │    │ Cross-Enc   │                                        │
+│         │ 360+ chunks  │    │ Thresh 33%  │                                        │
+│         │ Auto-start   │    │             │                                        │
+│         └──────────────┘    └──────┬──────┘                                        │
+│                                    │                                                │
+│                                    ▼                                                │
+│                      ┌──────────────────────────┐                                   │
+│                      │  🤖 LLM Generation       │                                   │
+│                      │  Primary: Mistral 7B     │                                   │
+│                      │  - Local (Ollama)        │                                   │
+│                      │  - Auto-warmup (8s)      │                                   │
+│                      │  Fallback: LLaMA 3.1 70B │                                   │
+│                      │  - Cloud (Groq API)      │                                   │
+│                      └──────────────────────────┘                                   │
+│                                                                                       │
+│  🔧 INFRASTRUCTURE LAYER                                                              │
+│  ┌────────────────────────────────────────────────────────────┐                     │
+│  │  Virtual Environment (.venv)                               │                     │
+│  │  - Auto-created by setup.bat                               │                     │
+│  │  - Isolated package management                             │                     │
+│  │  - Embedding model auto-download                           │                     │
+│  │                                                             │                     │
+│  │  Service Auto-Start:                                       │                     │
+│  │  ✅ Qdrant (Windows service)                               │                     │
+│  │  ✅ Ollama (Windows service)                               │                     │
+│  │  ✅ Flask backend (venv context)                           │                     │
+│  │  ✅ Cloudflare tunnel (temporary URLs)                     │                     │
+│  └────────────────────────────────────────────────────────────┘                     │
+│                                                                                       │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow
+
+1. **User Request** → Landing Page → Select Mode (User/Admin)
+2. **Admin Mode** → Password → `/admin/authenticate` → Session Created
+3. **Query Submission** → Flask API → Classifier (14-class + safety)
+4. **RAG Pipeline** → Embeddings → Qdrant Search → Reranking → LLM
+5. **Response** → Source Citations → Frontend Display → Download Option
+
+### Security Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│           SECURITY LAYERS (v3.4.0)                  │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  1️⃣ NETWORK SECURITY                                │
+│     ✅ HTTPS (GitHub Pages, Netlify)               │
+│     ✅ Encrypted Tunnels (Cloudflare)              │
+│     ✅ CORS Whitelist                              │
+│                                                      │
+│  2️⃣ AUTHENTICATION                                  │
+│     ✅ Server-Side Password Validation             │
+│     ✅ Session Management (Flask)                  │
+│     ✅ No Client-Side Secrets                      │
+│                                                      │
+│  3️⃣ INPUT VALIDATION                                │
+│     ✅ Query Length Limits (2000 chars)            │
+│     ✅ Special Character Sanitization              │
+│     ✅ SQL Injection Prevention                    │
+│     ✅ XSS Protection                              │
+│                                                      │
+│  4️⃣ DATA PROTECTION                                 │
+│     ✅ No PII Storage                              │
+│     ✅ Session Isolation                           │
+│     ✅ Memory Cleanup                              │
+│     ✅ No Query Logging                            │
+│                                                      │
+│  5️⃣ ENVIRONMENT ISOLATION                           │
+│     ✅ Virtual Environment (.venv)                 │
+│     ✅ Package Isolation                           │
+│     ✅ Service Sandboxing                          │
+│                                                      │
+└─────────────────────────────────────────────────────┘
 ```
 
 ### Technical Specifications
