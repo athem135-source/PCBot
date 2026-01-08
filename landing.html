@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCBot - Planning Commission Chatbot Portal</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #006600 0%, #004d00 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .logo-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+        }
+        
+        .logo.fives {
+            height: 85px;
+        }
+        
+        .logo.uraan {
+            height: 75px;
+        }
+        
+        h1 {
+            color: #006600;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #1fa67a;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .version {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        /* Mode Selection Modal */
+        .mode-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .mode-modal.hidden {
+            display: none;
+        }
+        
+        .mode-box {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .mode-box h2 {
+            color: #006600;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .mode-box p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .mode-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .mode-btn {
+            padding: 30px 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .mode-btn:hover {
+            border-color: #006600;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 102, 0, 0.2);
+        }
+        
+        .mode-btn .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .mode-btn .title {
+            color: #006600;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .mode-btn .desc {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        /* Password Modal */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+        
+        .password-modal.show {
+            display: flex;
+        }
+        
+        .password-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .password-box h3 {
+            color: #006600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .password-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .password-box input:focus {
+            border-color: #006600;
+            outline: none;
+        }
+        
+        .password-box button {
+            width: 100%;
+            padding: 12px;
+            background: #006600;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        
+        .password-box button:hover {
+            background: #004d00;
+        }
+        
+        .password-box .cancel {
+            background: #666;
+        }
+        
+        .password-box .cancel:hover {
+            background: #444;
+        }
+        
+        .password-error {
+            color: #d32f2f;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .password-error.show {
+            display: block;
+        }
+        
+        /* Main Content Sections */
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section.hidden {
+            display: none;
+        }
+        
+        .section h2 {
+            color: #006600;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .section p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .option-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 102, 0, 0.2);
+            border-color: #006600;
+        }
+        
+        .option-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .option-title {
+            color: #006600;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .option-description {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .option-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-public {
+            background: #28a745;
+            color: white;
+        }
+        
+        .badge-mobile {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .badge-dev {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .badge-admin {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .badge-testing {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 40px;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .mode-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        
+        .mode-indicator .mode-text {
+            color: #006600;
+            font-weight: 600;
+        }
+        
+        .mode-indicator .change-mode {
+            color: #666;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .mode-indicator .change-mode:hover {
+            color: #006600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mode Selection Modal -->
+    <div class="mode-modal" id="modeModal">
+        <div class="mode-box">
+            <h2>🏛️ Welcome to PCBot</h2>
+            <p>Please select your access level:</p>
+            <div class="mode-options">
+                <button class="mode-btn" onclick="selectMode('user')">
+                    <div class="icon">👤</div>
+                    <div class="title">User Mode</div>
+                    <div class="desc">Access chatbot interfaces</div>
+                </button>
+                <button class="mode-btn" onclick="selectMode('admin')">
+                    <div class="icon">🔐</div>
+                    <div class="title">Admin Mode</div>
+                    <div class="desc">Full system access</div>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Password Modal -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-box">
+            <h3>🔐 Admin Authentication</h3>
+            <input type="password" id="passwordInput" placeholder="Enter admin code" autofocus>
+            <button onclick="verifyPassword()">Verify</button>
+            <button class="cancel" onclick="cancelPassword()">Cancel</button>
+            <p class="password-error" id="passwordError">❌ Invalid code. Please try again.</p>
+        </div>
+    </div>
+    
+    <!-- Mode Indicator -->
+    <div class="mode-indicator" id="modeIndicator" style="display: none;">
+        <span class="mode-text" id="modeText"></span>
+        <span class="change-mode" onclick="changeMode()">Change Mode</span>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo-row">
+                <img src="/assets/5Vs.png" alt="5Es Framework" class="logo fives" id="logo-fives">
+                <img src="/assets/uraan-pak.png" alt="Uraan Pakistan" class="logo uraan" id="logo-uraan">
+            </div>
+            <h1>Planning Commission Bot</h1>
+            <p class="subtitle">Manual for Development Projects 2024 - Intelligent Assistant</p>
+            <span class="version">v3.3.8</span>
+        </div>
+        
+        <div class="content">
+            <!-- User Mode Interfaces -->
+            <div class="section" id="userInterfaces">
+                <h2>💬 Choose Your Interface</h2>
+                <p>Select the version that best suits your needs. All versions connect to the same powerful RAG backend with access to the complete Manual for Development Projects 2024.</p>
+                
+                <div class="options-grid">
+                    <div class="option-card" onclick="window.open('/widget-standalone.html', '_blank')">
+                        <span class="option-icon">💬</span>
+                        <div class="option-title">Widget (Shareable)</div>
+                        <div class="option-description">
+                            Floating chat widget with full features. Perfect for sharing via Cloudflare tunnel or embedding on websites.
+                        </div>
+                        <div class="option-badge">
+                            <span class="badge badge-public">Public Access</span>
+                            <span class="badge badge-responsive">Responsive</span>
+                        </div>
+                    </div>
+                    
+                    <div class="option-card" onclick="window.open('/mobile.html', '_blank')">
+                        <span class="option-icon">📱</span>
+                        <div class="option-title">Mobile Site (Shareable)</div>
+                        <div class="option-description">
+                            Full-screen mobile-optimized interface. Best for smartphones and tablets. Includes AI/Exact mode toggle.
+                        </div>
+                        <div class="option-badge">
+                            <span class="badge badge-public">Public Access</span>
+                            <span class="badge badge-mobile">Mobile First</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin Mode Features (Hidden by default) -->
+            <div class="section hidden" id="adminFeatures">
+                <h2>🔐 Admin & Testing Tools</h2>
+                <p>Advanced features for system administrators and developers. Password required.</p>
+                
+                <div class="options-grid">
+                    <div class="option-card" onclick="accessAdminTool('widget-dev')">
+                        <span class="option-icon">💻</span>
+                        <div class="option-title">Development Widget</div>
+                        <div class="option-description">
+                            Development version with React widget. For testing new features and customization before deployment.
+                        </div>
+                        <div class="option-badge">
+                            <span class="badge badge-dev">Development</span>
+                        </div>
+                    </div>
+                    
+                    <div class="option-card" onclick="accessAdminTool('admin')">
+                        <span class="option-icon">⚙️</span>
+                        <div class="option-title">Admin Panel</div>
+                        <div class="option-description">
+                            System monitoring, session management, and backend controls. Type "nufc" in any chat to access.
+                        </div>
+                        <div class="option-badge">
+                            <span class="badge badge-admin">Admin Only</span>
+                        </div>
+                    </div>
+                    
+                    <div class="option-card" onclick="accessAdminTool('stats')">
+                        <span class="option-icon">📊</span>
+                        <div class="option-title">Statistics Dashboard</div>
+                        <div class="option-description">
+                            Real-time server statistics, usage analytics, and performance metrics. PowerShell-based dashboard.
+                        </div>
+                        <div class="option-badge">
+                            <span class="badge badge-admin">Admin Only</span>
+                        </div>
+                    </div>
+                    
+                    <div class="option-card" onclick="accessAdminTool('calibration')">
+                        <span class="option-icon">🧪</span>
+                        <div class="option-title">Calibration Test</div>
+                        <div class="option-description">
+                            Run 300-question test suite to evaluate model accuracy and performance. Generates detailed reports.
+                        </div>
+                        <div class="option-badge">
+                            <span class="badge badge-testing">Testing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Information (Always visible) -->
+            <div class="section" id="systemInfo">
+                <h2>ℹ️ System Information</h2>
+                <p><strong>Backend:</strong> Flask API with Waitress WSGI server</p>
+                <p><strong>LLM:</strong> Mistral-7B-Instruct via Ollama</p>
+                <p><strong>Vector DB:</strong> Qdrant (local instance)</p>
+                <p><strong>Embedding Model:</strong> all-MiniLM-L6-v2</p>
+                <p><strong>Manual:</strong> Manual for Development Projects 2024 (Planning Commission)</p>
+                <p><strong>Developer:</strong> M. Hassan Arif Afridi</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Government of Pakistan - Ministry of Planning, Development & Special Initiatives</p>
+            <p>Planning Commission Bot (PCBot) - Internal Development Version</p>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        let currentMode = null;
+        
+        // Show mode selection on page load
+        window.addEventListener('load', () => {
+            document.getElementById('modeModal').classList.remove('hidden');
+        });
+        
+        // Select mode
+        function selectMode(mode) {
+            if (mode === 'admin') {
+                // Show password modal
+                document.getElementById('modeModal').classList.add('hidden');
+                document.getElementById('passwordModal').classList.add('show');
+                document.getElementById('passwordInput').focus();
+            } else {
+                // User mode - show only user interfaces
+                setUserMode();
+            }
+        }
+        
+        // Set user mode
+        function setUserMode() {
+            currentMode = 'user';
+            document.getElementById('modeModal').classList.add('hidden');
+            document.getElementById('passwordModal').classList.remove('show');
+            document.getElementById('userInterfaces').classList.remove('hidden');
+            document.getElementById('adminFeatures').classList.add('hidden');
+            document.getElementById('modeIndicator').style.display = 'block';
+            document.getElementById('modeText').textContent = '👤 User Mode';
+        }
+        
+        // Verify password
+        async function verifyPassword() {
+            const password = document.getElementById('passwordInput').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/authenticate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    setAdminMode();
+                } else {
+                    document.getElementById('passwordError').classList.add('show');
+                    document.getElementById('passwordInput').value = '';
+                    document.getElementById('passwordInput').focus();
+                }
+            } catch (error) {
+                alert('Error connecting to server. Make sure the backend is running.');
+            }
+        }
+        
+        // Set admin mode
+        function setAdminMode() {
+            currentMode = 'admin';
+            document.getElementById('passwordModal').classList.remove('show');
+            document.getElementById('userInterfaces').classList.remove('hidden');
+            document.getElementById('adminFeatures').classList.remove('hidden');
+            document.getElementById('modeIndicator').style.display = 'block';
+            document.getElementById('modeText').textContent = '🔐 Admin Mode';
+        }
+        
+        // Cancel password
+        function cancelPassword() {
+            document.getElementById('passwordModal').classList.remove('show');
+            document.getElementById('modeModal').classList.remove('hidden');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordError').classList.remove('show');
+        }
+        
+        // Change mode
+        function changeMode() {
+            if (currentMode === 'admin') {
+                // Logout admin session
+                fetch(`${API_BASE}/admin/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            }
+            
+            currentMode = null;
+            document.getElementById('modeIndicator').style.display = 'none';
+            document.getElementById('userInterfaces').classList.add('hidden');
+            document.getElementById('adminFeatures').classList.add('hidden');
+            document.getElementById('modeModal').classList.remove('hidden');
+        }
+        
+        // Handle Enter key in password input
+        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                verifyPassword();
+            }
+        });
+        
+        // Access admin tool
+        async function accessAdminTool(tool) {
+            const password = 'nufc'; // Use authenticated session
+            
+            try {
+                let endpoint = '';
+                let message = '';
+                
+                switch(tool) {
+                    case 'widget-dev':
+                        // Open development widget in new tab
+                        window.open('/widget', '_blank');
+                        return;
+                    case 'admin':
+                        endpoint = '/admin/open-chat-admin';
+                        message = 'Opening chat interface...';
+                        break;
+                    case 'stats':
+                        endpoint = '/admin/run-stats';
+                        message = 'Launching Statistics Dashboard...';
+                        break;
+                    case 'calibration':
+                        endpoint = '/admin/run-calibration';
+                        message = 'Starting Calibration Test...';
+                        break;
+                    default:
+                        return;
+                }
+                
+                // Show loading
+                const loadingMsg = document.createElement('div');
+                loadingMsg.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #006600; color: white; padding: 15px 25px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+                loadingMsg.textContent = '⏳ ' + message;
+                document.body.appendChild(loadingMsg);
+                
+                // Call API
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ password })
+                });
+                
+                const result = await response.json();
+                
+                // Remove loading
+                document.body.removeChild(loadingMsg);
+                
+                if (result.success) {
+                    if (result.action === 'open_url') {
+                        alert('✅ ' + result.message + '\n\nOpening in new tab...');
+                        window.open(result.url, '_blank');
+                    } else {
+                        let msg = '✅ ' + result.message;
+                        if (result.details) msg += '\n\n' + result.details;
+                        if (result.warning) msg += '\n\n⚠️ ' + result.warning;
+                        if (result.instructions) {
+                            msg += '\n\nInstructions:\n' + result.instructions.map((s, i) => `${i+1}. ${s}`).join('\n');
+                        }
+                        alert(msg);
+                    }
+                } else {
+                    alert('❌ Error: ' + (result.message || result.error));
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

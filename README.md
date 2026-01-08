@@ -16,6 +16,7 @@
 ![React](https://img.shields.io/badge/React-18.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-DC382D?style=for-the-badge)
 ![Ollama](https://img.shields.io/badge/Ollama-Mistral_7B-000000?style=for-the-badge)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Ready-222222?style=for-the-badge&logo=github&logoColor=white)
 ![Netlify](https://img.shields.io/badge/Netlify-Ready-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)
 
 ---
@@ -53,7 +54,7 @@
 - [Evaluation & Metrics](#-evaluation--metrics)
 - [300-Question Calibration Test](#-300-question-calibration-test)
 - [Verification Methodology](#-verification-methodology)
-- [What's New in v3.3.5](#-whats-new-in-v335)
+- [What's New in v3.4.0](#-whats-new-in-v340)
 - [Version History](#-version-history)
 - [Mobile Access](#-mobile-access)
 - [Security](#-security)
@@ -203,42 +204,66 @@ https://github.com/athem135-source/PDBOT/raw/main/src/assets/PDBOT.mp4
 | Component | Technology | Configuration |
 |-----------|------------|---------------|
 | **Vector DB** | Qdrant | 360+ chunks, similarity search |
-| **Embeddings** | sentence-transformers | all-MiniLM-L6-v2 |
+| **Embeddings** | sentence-transformers | all-MiniLM-L6-v2 (auto-downloaded) |
 | **Reranker** | Cross-Encoder | ms-marco-MiniLM, 0.33 threshold |
-| **Primary LLM** | Ollama (Mistral 7B) | Local deployment |
+| **Primary LLM** | Ollama (Mistral 7B) | Local deployment, auto-warmup |
 | **Fallback LLM** | Groq API (LLaMA 3.1 70B) | Cloud backup |
 | **Chunking** | Precision Sentences | 1-3 sentences, max 70 words |
-| **Frontend** | React 18.2 | TypeScript, Tailwind CSS |
-| **Backend** | Flask + Waitress | WSGI production server |
+| **Frontend** | React 18.2 | TypeScript, Tailwind CSS, animations |
+| **Backend** | Flask + Waitress | WSGI production server, venv isolated |
+| **Deployment** | Multi-platform | GitHub Pages, Netlify, Cloudflare |
+| **Setup** | Automated | Virtual env, model downloads, service startup |
 
 ---
 
 ## 🚀 Quick Start
 
-### **New in v3.4: Unified Launcher** 🎉
+### **One-Command Setup** 🎉
 
 ```powershell
-# One-click access to all features
-.\run_pcbot.bat
+# First time? Just double-click this file:
+setup.bat
 
-# Interactive Menu:
-# [1] Start Widget (Standalone + Tunnel)
-# [2] Calibration Test (300 questions)
-# [3] Statistics Dashboard
-# [4] Setup Environment
+# This will:
+# ✅ Create virtual environment (.venv)
+# ✅ Install all Python packages
+# ✅ Download Ollama Mistral model
+# ✅ Download embedding models
+# ✅ Start Qdrant and Ollama services
+# ✅ Run initial warmup (30 seconds)
+
+# Takes 15-20 minutes on first run
 ```
 
-### First-Time Setup
+### Daily Use
 
 ```powershell
-# 1. Run setup script
-.\scripts\setup\setup.bat
+# Double-click to start everything:
+run_widget_standalone.bat
 
-# 2. Launch PCBot
-.\run_pcbot.bat
+# This will:
+# [1/5] Check and start Qdrant
+# [2/5] Check and start Ollama
+# [3/5] Activate virtual environment
+# [4/5] Start Flask backend (with warmup)
+# [5/5] Open browser + Create Cloudflare tunnel
 
-# 3. Choose option 1 for full deployment
+# Takes ~30 seconds
 ```
+
+### Access Modes
+
+After running `run_widget_standalone.bat`, choose your mode:
+
+- **User Mode**: Public interfaces only
+  - Shareable Widget Interface
+  - Mobile Site
+  
+- **Admin Mode**: Enter password "nufc" for:
+  - Statistics Dashboard
+  - 300-Question Calibration Test
+  - Development Widget
+  - Admin Panel
 
 ### Deployment Options
 
@@ -251,7 +276,16 @@ https://github.com/athem135-source/PDBOT/raw/main/src/assets/PDBOT.mp4
 # - Creates Cloudflare tunnel
 ```
 
-#### **Option 2: Netlify (Static Frontend)**
+#### **Option 2: GitHub Pages (Static Frontend)**
+```bash
+# Push to GitHub - auto-deploys via GitHub Actions
+git push origin main
+
+# Live at: https://athem135-source.github.io/PCBot/
+# Guide: deployment/GITHUB_PAGES.md
+```
+
+#### **Option 3: Netlify (Static Frontend)**
 ```bash
 # Deploy to Netlify (frontend only)
 netlify deploy --prod
@@ -1470,6 +1504,7 @@ python generate_report.py
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v3.4.0** | Jan 8, 2026 | Mode selector, GitHub Pages, venv automation, animations |
 | **v3.3.4** | Dec 9, 2025 | Full chat image export, enhanced download options |
 | **v3.3.2** | Dec 9, 2025 | Answer truncation fix, 100-word limit |
 | **v3.3.1** | Dec 9, 2025 | Remove all hardcoded values |
@@ -1483,13 +1518,88 @@ python generate_report.py
 ### Development Timeline
 
 ```
-  OCT 2025                          NOV 2025                      DEC 2025
-  ────────                          ────────                      ────────
-  Oct 16: Project Start             Nov 5: v2.0 Reranker          Dec 1: v2.2 Widget
+  OCT 2025                          NOV 2025                      DEC 2025          JAN 2026
+  ────────                          ────────                      ────────          ────────
+  Oct 16: Project Start             Nov 5: v2.0 Reranker          Dec 1: v2.2 Widget    Jan 8: v3.4.0 ← NOW
   Oct 25: v1.0 Release              Nov 12: v2.1 Numeric          Dec 3: v2.5.0 Smart
   Oct 31: v1.1 Classifier           Nov 20: Enterprise            Dec 8: v3.3.0 RAG
-                                                                   Dec 9: v3.3.4 ← NOW
+                                                                   Dec 9: v3.3.4
 ```
+
+---
+
+## 🆕 What's New in v3.4.0
+
+### Major Updates (January 2026)
+
+#### 🎨 **Enhanced User Interface**
+- **Mode Selector Landing Page**
+  - User Mode: Public interfaces only (Widget, Mobile Site)
+  - Admin Mode: Password-protected tools (Stats, Calibration, Dev Widget)
+  - Server-side authentication (no client-side password exposure)
+  - Visual mode indicator with easy mode switching
+
+- **Animated Widget Interface**
+  - Smooth slideUp animations (0.3s)
+  - FadeIn message transitions
+  - Bouncing typing indicators
+  - Button pulse effects
+  - Backend health check with retry overlay
+
+#### 🚀 **Deployment & Distribution**
+- **GitHub Pages Integration**
+  - Auto-deployment via GitHub Actions
+  - Live at: https://athem135-source.github.io/PCBot/
+  - Complete deployment guide in `deployment/GITHUB_PAGES.md`
+
+- **Netlify Ready**
+  - Pre-configured `netlify.toml`
+  - Drag-and-drop or CLI deployment
+  - Security headers and asset caching
+  - Guide: `deployment/NETLIFY.md`
+
+- **Cloudflare Tunnel Enhancements**
+  - Auto-retry warning messages
+  - 5-tip user guide for tunnel issues
+  - Temporary URL sharing for mobile access
+
+#### 🔧 **Setup & Installation**
+- **Virtual Environment Auto-Setup**
+  - `setup.bat` creates and configures `.venv`
+  - All packages installed in isolated environment
+  - Fixes "Embedding model not available" errors
+  - Initial 30-second warmup downloads embedding models
+
+- **Enhanced Launchers**
+  - `run_widget_standalone.bat` activates venv automatically
+  - Auto-starts Qdrant and Ollama services
+  - 8-second model warmup before serving
+  - Root-level access for easy user visibility
+
+#### 📁 **Professional Folder Structure**
+```
+PCBot/
+├── public/               # Static frontend files
+│   ├── html/            # All HTML interfaces
+│   └── assets/          # Images, CSS, JS
+├── scripts/setup/       # Installation scripts
+├── deployment/          # Deployment guides
+├── src/                 # Python backend
+├── frontend-widget/     # React widget source
+└── setup.bat           # One-click setup (root)
+```
+
+#### 🛡️ **Security Improvements**
+- Admin password moved to server-side validation
+- Session-based authentication via `/admin/authenticate` API
+- No sensitive data in client-side JavaScript
+- Enhanced CORS configuration for multi-domain deployment
+
+#### 📚 **Documentation**
+- **QUICKSTART.md**: Simple getting-started guide
+- **GITHUB_PAGES.md**: Complete GitHub Pages deployment
+- **NETLIFY.md**: Netlify deployment options
+- **Enhanced README**: Updated with v3.4 features
 
 ---
 

@@ -101,6 +101,13 @@ echo   /                        Landing page (default)
 echo   /widget-standalone.html  Widget interface
 echo   /mobile.html             Mobile interface
 echo.
+echo ⚠️  IMPORTANT - CLOUDFLARE TUNNEL TIPS:
+echo    1. Sometimes tunnel fails on first try - this is normal
+echo    2. If no URL appears, press Ctrl+C and run this script again
+echo    3. Copy the URL immediately when it appears
+echo    4. URL changes each time you restart the tunnel
+echo    5. For permanent URL, use ngrok or deploy to cloud
+echo.
 
 cloudflared tunnel --url http://localhost:5000
 
