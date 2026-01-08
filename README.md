@@ -56,7 +56,8 @@
 - [Verification Methodology](#-verification-methodology)
 - [What's New in v3.4.0](#-whats-new-in-v340)
 - [Version History](#-version-history)
-- [Mobile Access](#-mobile-access)
+- [Screenshots & Interface](#-screenshots--interface-overview)
+- [Mobile & External Access](#-mobile--external-access)
 - [Security](#-security)
 - [Limitations](#-limitations)
 - [Developer Information](#-developer-information)
@@ -1702,33 +1703,100 @@ PCBot/
 
 ---
 
-## 📱 Mobile Access
+## � Screenshots & Interface Overview
 
-### Access PDBOT from Any Device
+### Landing Page - Mode Selector
 
-PDBOT supports **external access via Cloudflare Tunnel**, enabling use from any phone or device on any network.
+<div align="center">
+<img src="public/assets/landing-page-mode-selector.png" width="800" alt="Landing Page Mode Selector"/>
 
-<table>
-<tr>
-<td align="center"><img src="https://github.com/athem135-source/PDBOT/raw/main/src/assets/mobile-screenshot-1.jpg" width="280" alt="Mobile Chat Interface"/></td>
-<td align="center"><img src="https://github.com/athem135-source/PDBOT/raw/main/src/assets/mobile-screenshot-2.jpg" width="280" alt="Mobile Response View"/></td>
-</tr>
-<tr>
-<td align="center"><b>Chat Interface</b></td>
-<td align="center"><b>Response with Citations</b></td>
-</tr>
-</table>
+**Dual-Mode Access System**
+- **User Mode**: Public interfaces (Widget Shareable, Mobile Site)
+- **Admin Mode**: Password-protected tools (Statistics, Calibration, Dev Widget)
+- Clean, professional design with organization logos
+- Quick access cards with descriptive icons
+</div>
+
+---
+
+### Admin Authentication
+
+<div align="center">
+<img src="public/assets/admin-password-modal.png" width="500" alt="Admin Password Modal"/>
+
+**Server-Side Password Protection**
+- Password validated via Flask backend (`/admin/authenticate`)
+- No client-side password exposure
+- Session-based authentication with secure cookies
+- Invalid password handling with error messages
+</div>
+
+---
+
+### Widget Interface - Chat Experience
+
+<div align="center">
+<img src="public/assets/widget-interface-chat.png" width="700" alt="Widget Chat Interface"/>
+
+**Floating Widget with Animations**
+- Smooth slideUp and fadeIn animations (0.3s transitions)
+- Real-time typing indicators with bounce effects
+- AI/Exact mode toggle for different query types
+- Clean message bubbles with timestamp
+- Expandable sources and passages sections
+- Download answers as .txt files
+</div>
+
+---
+
+### Widget Interface - Sources Expanded
+
+<div align="center">
+<img src="public/assets/widget-sources-expanded.png" width="700" alt="Widget with Expanded Sources"/>
+
+**Transparent Source Citations**
+- Every answer includes page references from Manual
+- Expandable "Sources Used" section shows retrieval details
+- Document names and page numbers clearly displayed
+- "Relevant Passages" section shows exact text from manual
+- 94.3% source citation rate (283/300 responses)
+- Zero hallucination - all answers from official document
+</div>
+
+---
+
+### Mobile Site Interface
+
+<div align="center">
+<img src="public/assets/mobile-site-interface.png" width="350" alt="Mobile Site Interface"/>
+
+**Responsive Mobile Design**
+- Optimized for all screen sizes and devices
+- Touch-friendly interface elements
+- Full-featured chat experience on mobile
+- Access via Cloudflare Tunnel from any network
+- Same accuracy and functionality as desktop
+- HTTPS encrypted connection
+</div>
+
+---
+
+## 📱 Mobile & External Access
+
+## 📱 Mobile & External Access
+
+PCBot supports **external access via Cloudflare Tunnel**, enabling use from any phone or device on any network.
 
 ### Enable External Access
 
 ```powershell
-# 1. Start the main server
-.\run_widget.ps1
+# Double-click to start everything (auto-creates tunnel):
+run_widget_standalone.bat
 
-# 2. In a new terminal, start the Cloudflare tunnel
+# Or manually start tunnel in separate window:
 .\start_tunnel.ps1
 
-# 3. Share the generated URL
+# Share the generated URL with your team
 ```
 
 ### Mobile Features
