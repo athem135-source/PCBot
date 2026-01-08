@@ -1390,12 +1390,19 @@ def admin_run_stats():
             return jsonify({'success': False, 'message': 'Invalid password'}), 401
         
         # Start stats dashboard in new PowerShell window
-        script_path = os.path.join(os.path.dirname(__file__), 'stats_dashboard.ps1')
+        # Use dynamic base path to work on any PC
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        script_path = os.path.join(base_dir, 'scripts', 'setup', 'stats_dashboard.ps1')
+        
+        # Fallback: try root directory if not in scripts/setup
+        if not os.path.exists(script_path):
+            script_path = os.path.join(base_dir, '..', 'scripts', 'setup', 'stats_dashboard.ps1')
+            script_path = os.path.abspath(script_path)
         
         if not os.path.exists(script_path):
             return jsonify({
                 'success': False,
-                'error': f'Stats dashboard script not found at: {script_path}'
+                'error': f'Stats dashboard script not found. Searched: {script_path}'
             }), 404
         
         # Launch in new PowerShell window
@@ -1430,12 +1437,19 @@ def admin_run_calibration():
             return jsonify({'success': False, 'message': 'Invalid password'}), 401
         
         # Start calibration test in new window
-        bat_path = os.path.join(os.path.dirname(__file__), 'run_calibration_test.bat')
+        # Use dynamic base path to work on any PC
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        bat_path = os.path.join(base_dir, 'scripts', 'setup', 'run_calibration_test.bat')
+        
+        # Fallback: try root directory if not in scripts/setup
+        if not os.path.exists(bat_path):
+            bat_path = os.path.join(base_dir, '..', 'scripts', 'setup', 'run_calibration_test.bat')
+            bat_path = os.path.abspath(bat_path)
         
         if not os.path.exists(bat_path):
             return jsonify({
                 'success': False,
-                'error': f'Calibration test script not found at: {bat_path}'
+                'error': f'Calibration test script not found. Searched: {bat_path}'
             }), 404
         
         # Launch in new CMD window

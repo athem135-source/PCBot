@@ -3,9 +3,9 @@
 <div align="center">
 
 ![Security](https://img.shields.io/badge/Security-Policy-red?style=for-the-badge&logo=shield&logoColor=white)
-![Version](https://img.shields.io/badge/Version-3.3.4-006600?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-3.4.0-006600?style=for-the-badge)
 
-**PDBOT Security Guidelines & Vulnerability Reporting**
+**PCBot Security Guidelines & Vulnerability Reporting**
 
 </div>
 
@@ -15,9 +15,9 @@
 
 | Version | Status | Support Level |
 |---------|--------|---------------|
-| 3.3.x | ✅ Current | Full support - security patches & features |
-| 2.5.x | ⚠️ Legacy | Critical security fixes only |
-| < 2.5.0 | ❌ Unsupported | Please upgrade to latest version |
+| 3.4.0 | ✅ Current | Full support - security patches & features |
+| 3.3.x | ⚠️ Legacy | Critical security fixes only |
+| < 3.3.0 | ❌ Unsupported | Please upgrade to latest version |
 
 ---
 
@@ -56,25 +56,39 @@
 | **Violence/Hate Speech** | 15+ patterns | ✅ Active |
 | **Off-Scope Query Handling** | Polite rejection | ✅ Active |
 
-### API Security (v3.3.2)
+### API Security (v3.4.0)
 
 | Endpoint | Protection | Access |
 |----------|------------|--------|
 | `/chat` | Session validation | Public |
-| `/admin/status` | Rate limited | Public |
-| `/admin/statistics` | Rate limited | Public |
-| `/admin/groq-status` | Admin only | Restricted |
+| `/admin/authenticate` | Server-side password check | Public (login) |
+| `/admin/run-stats` | Session-based auth | Admin only |
+| `/admin/run-calibration` | Session-based auth | Admin only |
+| `/admin/groq-status` | Rate limited | Public |
 | `/admin/groq-toggle` | Admin only | Restricted |
 | `/feedback/*` | Session validated | Public |
 
-### Network Security
+### Authentication & Access Control (v3.4.0)
 
-| Feature | Recommendation | Status |
+| Feature | Implementation | Status |
 |---------|----------------|--------|
-| **HTTPS/TLS** | Required for production | ✅ Via Cloudflare |
-| **CORS** | Restrict to trusted origins | ✅ Configurable |
+| **Server-Side Auth** | Password validated via `/admin/authenticate` | ✅ Active |
+| **Session Management** | Flask session cookies with httpOnly | ✅ Active |
+| **Mode Separation** | User/Admin modes with different capabilities | ✅ Active |
+| **No Client Secrets** | Zero passwords or keys in JavaScript | ✅ Active |
+| **Virtual Env Isolation** | All packages in isolated .venv | ✅ Active |
+
+### Network Security (v3.4.0)
+
+| Feature | Implementation | Status |
+|---------|----------------|--------|
+| **HTTPS/TLS** | Required for production | ✅ Active |
+| **GitHub Pages** | HTTPS by default, DDoS protection | ✅ Active |
+| **Netlify** | CSP headers, X-Frame-Options, HSTS | ✅ Ready |
+| **Cloudflare Tunnel** | Encrypted tunnels, temporary URLs | ✅ Active |
+| **CORS** | Whitelist-based origin control | ✅ Configurable |
 | **Rate Limiting** | 100 requests/minute recommended | 🔧 Ready |
-| **API Authentication** | JWT/API key for admin | 🔧 Ready |
+| **API Authentication** | Session-based for admin endpoints | ✅ Active |
 | **Firewall** | Block unused ports | 🔧 Recommended |
 
 ---
@@ -138,15 +152,34 @@ If you discover a security vulnerability in PDBOT:
 
 ### Pre-Deployment
 
-- [ ] Enable HTTPS/TLS encryption
+- [ ] Run `setup.bat` to create isolated virtual environment
+- [ ] Enable HTTPS/TLS encryption (auto on GitHub Pages/Netlify)
 - [ ] Configure CORS to trusted domains only
 - [ ] Set up rate limiting (100 req/min recommended)
-- [ ] Enable API authentication for admin endpoints
+- [ ] Verify admin password is not default "nufc"
 - [ ] Review and update all dependencies
 - [ ] Run security vulnerability scan
-- [ ] Configure firewall rules (allow 5000, 3000, 6338)
+- [ ] Configure firewall rules (allow ports: 5000, 6338, 11434)
 - [ ] Set up monitoring and alerting
 - [ ] Secure Groq API key in environment
+- [ ] Test virtual environment isolation
+
+### GitHub Pages Deployment
+
+- [ ] Enable GitHub Actions deployment (Settings > Pages)
+- [ ] Verify HTTPS is enforced
+- [ ] Configure custom domain with SSL (optional)
+- [ ] Review CORS settings for GitHub Pages URL
+- [ ] Deploy backend separately (Railway, Render, etc.)
+- [ ] Update API_BASE_URL in frontend HTML files
+
+### Netlify Deployment
+
+- [ ] Verify security headers in netlify.toml
+- [ ] Enable HTTPS redirect
+- [ ] Configure environment variables
+- [ ] Set up backend deployment separately
+- [ ] Test CORS configuration
 
 ### Post-Deployment
 
@@ -175,11 +208,12 @@ If you discover a security vulnerability in PDBOT:
 
 ### Known Limitations
 
-| Limitation | Mitigation |
-|------------|------------|
-| No authentication by default | Enable for production |
-| Admin endpoints accessible | Add auth layer |
-| Single document source | By design - focused scope |
+| Limitation | Mitigation | v3.4.0 Status |
+|------------|------------|---------------|
+| Admin password in code | Change default password | 🔧 To-do |
+| Session cookies | Use httpOnly, Secure flags | ✅ Implemented |
+| Single document source | By design - focused scope | N/A |
+| Virtual env dependency | Auto-created by setup.bat | ✅ Automated |
 
 ---
 
@@ -206,8 +240,8 @@ Users are responsible for:
 
 <div align="center">
 
-**Last Updated:** December 9, 2025  
-**Version:** 3.3.2
+**Last Updated:** January 8, 2026  
+**Version:** 3.4.0
 
 *Security is a shared responsibility. Please report vulnerabilities responsibly.*
 

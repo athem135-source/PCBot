@@ -6,10 +6,14 @@
 
 $ErrorActionPreference = "Stop"
 
-# Path to the project's virtual environment Python
-$py = "D:\PLANNING WORK\Chatbot\chatbot-project\.venv\Scripts\python.exe"
+# Get script directory to build relative paths (works on any PC)
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ProjectRoot = Split-Path -Parent $ScriptDir
+
+# Path to the project's virtual environment Python (relative to project root)
+$py = Join-Path $ProjectRoot ".venv\Scripts\python.exe"
 # Path to the updated app (the one we want to keep)
-$app = "D:\PLANNING WORK\Chatbot\PND BOT MINI DEMO\src\app.py"
+$app = Join-Path $ProjectRoot "src\app.py"
 $appFull = [System.IO.Path]::GetFullPath($app)
 
 if (-Not (Test-Path $py)) { throw "Python interpreter not found at $py. Ensure the virtual environment exists and try again." }
