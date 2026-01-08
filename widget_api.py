@@ -224,15 +224,11 @@ def serve_widget():
         ''', 200, {'Content-Type': 'text/html'}
     
     try:
-        # Serve index.html from frontend-widget
-        index_path = os.path.join(os.path.dirname(__file__), 'frontend-widget', 'index.html')
-        with open(index_path, 'r', encoding='utf-8') as f:
-            html = f.read()
-            # Inject the API URL so widget uses same origin
-            html = html.replace('</head>', '<script>window.PDBOT_API_URL = window.location.origin;</script></head>')
-            return html, 200, {'Content-Type': 'text/html'}
+        # Serve widget-dev.html which loads the built widget
+        with open('widget-dev.html', 'r', encoding='utf-8') as f:
+            return f.read(), 200, {'Content-Type': 'text/html'}
     except FileNotFoundError:
-        return "Widget not found. Run 'npm run build' in frontend-widget first.", 404
+        return "Widget dev page not found. Make sure widget-dev.html exists.", 404
 
 # Serve widget static assets (JS, CSS)
 @app.route('/src/<path:filename>')
@@ -1506,6 +1502,27 @@ if __name__ == '__main__':
     print("="*60)
     print(f"\n  🌐 Local:   http://localhost:{port}")
     print(f"  📱 Network: http://{local_ip}:{port}")
+    
+    # Warm up models (load embedding model, reranker, and classifier)
+    print("\n  🔄 Warming up models...")
+    try:
+        from src.rag_langchain import get_embedder, get_reranker
+        embedder = get_embedder()
+        reranker = get_reranker()
+        clf = get_classifier()
+        
+        if embedder:
+            print("  ✅ Embedding model loaded")
+        else:
+            print("  ⚠️  Embedding model not available - install: pip install sentence-transformers")
+        
+        if reranker:
+            print("  ✅ Reranker model loaded")
+        
+        if clf:
+            print("  ✅ Classifier loaded")
+    except Exception as e:
+        print(f"  ⚠️  Model warmup warning: {e}")
     
     # Try localtunnel for external access (open source, free)
     use_tunnel = os.environ.get('USE_TUNNEL', '').lower() == 'true'

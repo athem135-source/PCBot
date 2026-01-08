@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PCBot Widget - Development</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    .dev-info {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 50px 80px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+    }
+    .logo-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 15px;
+    }
+    .title-logo {
+      height: 65px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    }
+    .title-logo.fives {
+      height: 70px;
+    }
+    .title-logo.uraan {
+      height: 60px;
+    }
+    h1 {
+      color: #006600;
+      margin: 0 auto 15px auto;
+      text-align: center;
+      font-size: 2.5rem;
+    }
+    .dev-badge {
+      display: block;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .badge {
+      display: inline-block;
+      background: #ffc107;
+      color: #333;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .subtitle {
+      text-align: center;
+      color: #1fa67a;
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+    }
+    .widget-demo {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      min-height: 600px;
+    }
+    .demo-title {
+      color: #006600;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+  </style>
+  
+  <!-- Load built widget -->
+  <link rel="stylesheet" href="/dist/pdbot-widget.css">
+</head>
+<body>
+  <div class="dev-info">
+    <div class="logo-row">
+      <img src="/assets/5Vs.png" alt="5Es Framework" class="title-logo fives">
+      <img src="/assets/uraan-pak.png" alt="Uraan Pakistan" class="title-logo uraan">
+    </div>
+    <h1>Planning Commission Bot</h1>
+    <div class="dev-badge">
+      <span class="badge">🔧 Development Widget</span>
+    </div>
+    <p class="subtitle">React-based Widget Interface - Manual for Development Projects 2024</p>
+  </div>
+  
+  <div class="widget-demo">
+    <h2 class="demo-title">💬 Live Widget Demo</h2>
+    <div id="pdbot-widget-root"></div>
+  </div>
+
+  <!-- Load widget script -->
+  <script src="/dist/pdbot-widget.iife.js"></script>
+  <script>
+    // Initialize widget
+    if (window.PCBotWidget) {
+      window.PCBotWidget.init({
+        apiUrl: window.location.origin,
+        theme: 'light',
+        position: 'inline'
+      });
+    }
+  </script>
+</body>
+</html>

@@ -84,8 +84,174 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
         
+        /* Mode Selection Modal */
+        .mode-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .mode-modal.hidden {
+            display: none;
+        }
+        
+        .mode-box {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .mode-box h2 {
+            color: #006600;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .mode-box p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .mode-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .mode-btn {
+            padding: 30px 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .mode-btn:hover {
+            border-color: #006600;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 102, 0, 0.2);
+        }
+        
+        .mode-btn .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .mode-btn .title {
+            color: #006600;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .mode-btn .desc {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        /* Password Modal */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+        
+        .password-modal.show {
+            display: flex;
+        }
+        
+        .password-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .password-box h3 {
+            color: #006600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .password-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .password-box input:focus {
+            border-color: #006600;
+            outline: none;
+        }
+        
+        .password-box button {
+            width: 100%;
+            padding: 12px;
+            background: #006600;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        
+        .password-box button:hover {
+            background: #004d00;
+        }
+        
+        .password-box .cancel {
+            background: #666;
+        }
+        
+        .password-box .cancel:hover {
+            background: #444;
+        }
+        
+        .password-error {
+            color: #d32f2f;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .password-error.show {
+            display: block;
+        }
+        
+        /* Main Content Sections */
         .section {
             margin-bottom: 40px;
+        }
+        
+        .section.hidden {
+            display: none;
         }
         
         .section h2 {
@@ -148,27 +314,21 @@
         }
         
         .option-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-right: 5px;
-            margin-top: 5px;
         }
         
         .badge-public {
             background: #28a745;
-            color: white;
-        }
-        
-        .badge-dev {
-            background: #d4af37;
-            color: white;
-        }
-        
-        .badge-admin {
-            background: #dc3545;
             color: white;
         }
         
@@ -177,270 +337,198 @@
             color: white;
         }
         
+        .badge-dev {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .badge-admin {
+            background: #dc3545;
+            color: white;
+        }
+        
         .badge-testing {
             background: #ff9800;
             color: white;
         }
         
-        .section .badge-admin {
-            background: #dc3545;
-        }
-        
-        .section .badge-testing {
-            background: #ff9800;
-        }
-        
-        .setup-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-        
-        .setup-section h3 {
-            color: #006600;
-            margin-bottom: 15px;
-        }
-        
-        .setup-steps {
-            list-style: none;
-            counter-reset: step-counter;
-        }
-        
-        .setup-steps li {
-            counter-increment: step-counter;
-            margin-bottom: 15px;
-            padding-left: 40px;
-            position: relative;
-            line-height: 1.6;
-        }
-        
-        .setup-steps li::before {
-            content: counter(step-counter);
-            position: absolute;
-            left: 0;
-            top: 0;
-            background: #006600;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-        
-        .code-block {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-        
         .footer {
             text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 30px;
-            padding: 20px;
-            font-size: 0.9rem;
+            padding: 30px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 40px;
         }
         
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .logo {
-                height: 60px;
-            }
-            
-            .logo.fives {
-                height: 65px;
-            }
-            
-            .logo.uraan {
-                height: 55px;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .mode-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        
+        .mode-indicator .mode-text {
+            color: #006600;
+            font-weight: 600;
+        }
+        
+        .mode-indicator .change-mode {
+            color: #666;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .mode-indicator .change-mode:hover {
+            color: #006600;
         }
     </style>
 </head>
 <body>
+    <!-- Mode Selection Modal -->
+    <div class="mode-modal" id="modeModal">
+        <div class="mode-box">
+            <h2>🏛️ Welcome to PCBot</h2>
+            <p>Please select your access level:</p>
+            <div class="mode-options">
+                <button class="mode-btn" onclick="selectMode('user')">
+                    <div class="icon">👤</div>
+                    <div class="title">User Mode</div>
+                    <div class="desc">Access chatbot interfaces</div>
+                </button>
+                <button class="mode-btn" onclick="selectMode('admin')">
+                    <div class="icon">🔐</div>
+                    <div class="title">Admin Mode</div>
+                    <div class="desc">Full system access</div>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Password Modal -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-box">
+            <h3>🔐 Admin Authentication</h3>
+            <input type="password" id="passwordInput" placeholder="Enter admin code" autofocus>
+            <button onclick="verifyPassword()">Verify</button>
+            <button class="cancel" onclick="cancelPassword()">Cancel</button>
+            <p class="password-error" id="passwordError">❌ Invalid code. Please try again.</p>
+        </div>
+    </div>
+    
+    <!-- Mode Indicator -->
+    <div class="mode-indicator" id="modeIndicator" style="display: none;">
+        <span class="mode-text" id="modeText"></span>
+        <span class="change-mode" onclick="changeMode()">Change Mode</span>
+    </div>
+    
     <div class="container">
         <div class="header">
             <div class="logo-row">
-                <img id="logo-uraan" alt="Uraan Pakistan" class="logo uraan">
-                <img id="logo-fives" alt="5Es Framework" class="logo fives">
+                <img src="/assets/5Vs.png" alt="5Es Framework" class="logo fives" id="logo-fives">
+                <img src="/assets/uraan-pak.png" alt="Uraan Pakistan" class="logo uraan" id="logo-uraan">
             </div>
-            <h1>🏛️ PCBot Portal</h1>
-            <p class="subtitle">Planning Commission Chatbot - Development Projects Manual 2024</p>
+            <h1>Planning Commission Bot</h1>
+            <p class="subtitle">Manual for Development Projects 2024 - Intelligent Assistant</p>
             <span class="version">v3.3.8</span>
         </div>
         
         <div class="content">
-            <div class="section">
-                <h2>🚀 Choose Your Interface</h2>
+            <!-- User Mode Interfaces -->
+            <div class="section" id="userInterfaces">
+                <h2>💬 Choose Your Interface</h2>
                 <p>Select the version that best suits your needs. All versions connect to the same powerful RAG backend with access to the complete Manual for Development Projects 2024.</p>
                 
                 <div class="options-grid">
-                    <!-- Widget Standalone (Shareable) -->
-                    <a href="/widget-standalone.html" class="option-card">
+                    <div class="option-card" onclick="window.open('/widget-standalone.html', '_blank')">
                         <span class="option-icon">💬</span>
                         <div class="option-title">Widget (Shareable)</div>
                         <div class="option-description">
                             Floating chat widget with full features. Perfect for sharing via Cloudflare tunnel or embedding on websites.
                         </div>
-                        <span class="option-badge badge-public">Public Access</span>
-                        <span class="option-badge badge-mobile">Responsive</span>
-                    </a>
+                        <div class="option-badge">
+                            <span class="badge badge-public">Public Access</span>
+                            <span class="badge badge-responsive">Responsive</span>
+                        </div>
+                    </div>
                     
-                    <!-- Mobile Site (Shareable) -->
-                    <a href="/mobile.html" class="option-card">
+                    <div class="option-card" onclick="window.open('/mobile.html', '_blank')">
                         <span class="option-icon">📱</span>
                         <div class="option-title">Mobile Site (Shareable)</div>
                         <div class="option-description">
                             Full-screen mobile-optimized interface. Best for smartphones and tablets. Includes AI/Exact mode toggle.
                         </div>
-                        <span class="option-badge badge-public">Public Access</span>
-                        <span class="option-badge badge-mobile">Mobile First</span>
-                    </a>
-                    
-                    <!-- Widget Development -->
-                    <a href="/widget" class="option-card">
-                        <span class="option-icon">🛠️</span>
-                        <div class="option-title">Widget (Development)</div>
-                        <div class="option-description">
-                            Development version with React widget. For testing new features and customization before deployment.
+                        <div class="option-badge">
+                            <span class="badge badge-public">Public Access</span>
+                            <span class="badge badge-mobile">Mobile First</span>
                         </div>
-                        <span class="option-badge badge-dev">Development</span>
-                    </a>
+                    </div>
                 </div>
             </div>
             
-            <div class="section">
-                <h2>🔒 Admin & Testing Tools</h2>
+            <!-- Admin Mode Features (Hidden by default) -->
+            <div class="section hidden" id="adminFeatures">
+                <h2>🔐 Admin & Testing Tools</h2>
                 <p>Advanced features for system administrators and developers. Password required.</p>
                 
                 <div class="options-grid">
-                    <!-- Admin Panel -->
-                    <a href="javascript:void(0)" onclick="accessAdminTool('admin')" class="option-card">
+                    <div class="option-card" onclick="accessAdminTool('widget-dev')">
+                        <span class="option-icon">💻</span>
+                        <div class="option-title">Development Widget</div>
+                        <div class="option-description">
+                            Development version with React widget. For testing new features and customization before deployment.
+                        </div>
+                        <div class="option-badge">
+                            <span class="badge badge-dev">Development</span>
+                        </div>
+                    </div>
+                    
+                    <div class="option-card" onclick="accessAdminTool('admin')">
                         <span class="option-icon">⚙️</span>
                         <div class="option-title">Admin Panel</div>
                         <div class="option-description">
                             System monitoring, session management, and backend controls. Type "nufc" in any chat to access.
                         </div>
-                        <span class="option-badge badge-admin">Admin Only</span>
-                    </a>
+                        <div class="option-badge">
+                            <span class="badge badge-admin">Admin Only</span>
+                        </div>
+                    </div>
                     
-                    <!-- Statistics Dashboard -->
-                    <a href="javascript:void(0)" onclick="accessAdminTool('stats')" class="option-card">
+                    <div class="option-card" onclick="accessAdminTool('stats')">
                         <span class="option-icon">📊</span>
                         <div class="option-title">Statistics Dashboard</div>
                         <div class="option-description">
                             Real-time server statistics, usage analytics, and performance metrics. PowerShell-based dashboard.
                         </div>
-                        <span class="option-badge badge-admin">Admin Only</span>
-                    </a>
+                        <div class="option-badge">
+                            <span class="badge badge-admin">Admin Only</span>
+                        </div>
+                    </div>
                     
-                    <!-- Calibration Test -->
-                    <a href="javascript:void(0)" onclick="accessAdminTool('calibration')" class="option-card">
+                    <div class="option-card" onclick="accessAdminTool('calibration')">
                         <span class="option-icon">🧪</span>
                         <div class="option-title">Calibration Test</div>
                         <div class="option-description">
                             Run 300-question test suite to evaluate model accuracy and performance. Generates detailed reports.
                         </div>
-                        <span class="option-badge badge-admin">Testing</span>
-                    </a>
-                    
-                    <!-- Development Tools -->
-                    <a href="javascript:void(0)" onclick="accessAdminTool('dev')" class="option-card">
-                        <span class="option-icon">💻</span>
-                        <div class="option-title">Development Tools</div>
-                        <div class="option-description">
-                            Access to development scripts, debugging tools, and system configuration utilities.
-                        </div>
-                        <span class="option-badge badge-dev">Developer</span>
-                    </a>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2>🌐 Public Sharing Setup</h2>
-                <p>To share PCBot externally (office network, Google Sites, etc.), use the deployment script:</p>
-                
-                <div class="setup-section">
-                    <h3>Quick Deployment</h3>
-                    <ol class="setup-steps">
-                        <li>Run the deployment script:
-                            <div class="code-block">.\run_widget_standalone.bat</div>
-                        </li>
-                        <li>Wait for Flask to start and Cloudflare tunnel to be created (shows URL in console)</li>
-                        <li>Copy the tunnel URL (e.g., https://your-name.trycloudflare.com)</li>
-                        <li>Share the URL - it will show the widget interface by default</li>
-                        <li>For mobile version, add /mobile.html to the URL</li>
-                    </ol>
-                    
-                    <h3 style="margin-top: 20px;">Google Sites Embedding</h3>
-                    <ol class="setup-steps">
-                        <li>Get your Cloudflare tunnel URL from the bat file</li>
-                        <li>In Google Sites, insert an "Embed" block</li>
-                        <li>Paste the full URL (with /widget-standalone.html or /mobile.html)</li>
-                        <li>Adjust iframe size as needed (recommended: width 100%, height 700px)</li>
-                    </ol>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2>📊 Features</h2>
-                <div class="options-grid">
-                    <div class="option-card" style="cursor: default;">
-                        <span class="option-icon">🔍</span>
-                        <div class="option-title">RAG-Powered Search</div>
-                        <div class="option-description">
-                            Retrieval Augmented Generation using Mistral LLM and Qdrant vector database for accurate, context-aware answers.
-                        </div>
-                    </div>
-                    
-                    <div class="option-card" style="cursor: default;">
-                        <span class="option-icon">💾</span>
-                        <div class="option-title">Session Memory</div>
-                        <div class="option-description">
-                            Contextual conversations with memory management. Remembers previous questions in the same session.
-                        </div>
-                    </div>
-                    
-                    <div class="option-card" style="cursor: default;">
-                        <span class="option-icon">📚</span>
-                        <div class="option-title">Source References</div>
-                        <div class="option-description">
-                            Every answer includes page numbers, passages, and relevance scores from the official Manual.
-                        </div>
-                    </div>
-                    
-                    <div class="option-card" style="cursor: default;">
-                        <span class="option-icon">⬇️</span>
-                        <div class="option-title">Export Answers</div>
-                        <div class="option-description">
-                            Download individual answers with sources in TXT format for offline reference and documentation.
+                        <div class="option-badge">
+                            <span class="badge badge-testing">Testing</span>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="section">
+            <!-- System Information (Always visible) -->
+            <div class="section" id="systemInfo">
                 <h2>ℹ️ System Information</h2>
                 <p><strong>Backend:</strong> Flask API with Waitress WSGI server</p>
                 <p><strong>LLM:</strong> Mistral-7B-Instruct via Ollama</p>
@@ -458,33 +546,119 @@
     </div>
     
     <script>
-        // Set logo sources
         const API_BASE = window.location.origin;
-        document.getElementById('logo-fives').src = API_BASE + '/assets/5Vs.png';
-        document.getElementById('logo-uraan').src = API_BASE + '/assets/uraan-pak.png';
+        let currentMode = null;
         
-        // Admin password (in production, this should be server-side)
-        const ADMIN_CODE = 'nufc';
+        // Show mode selection on page load
+        window.addEventListener('load', () => {
+            document.getElementById('modeModal').classList.remove('hidden');
+        });
         
-        // Access admin tools with password protection
+        // Select mode
+        function selectMode(mode) {
+            if (mode === 'admin') {
+                // Show password modal
+                document.getElementById('modeModal').classList.add('hidden');
+                document.getElementById('passwordModal').classList.add('show');
+                document.getElementById('passwordInput').focus();
+            } else {
+                // User mode - show only user interfaces
+                setUserMode();
+            }
+        }
+        
+        // Set user mode
+        function setUserMode() {
+            currentMode = 'user';
+            document.getElementById('modeModal').classList.add('hidden');
+            document.getElementById('passwordModal').classList.remove('show');
+            document.getElementById('userInterfaces').classList.remove('hidden');
+            document.getElementById('adminFeatures').classList.add('hidden');
+            document.getElementById('modeIndicator').style.display = 'block';
+            document.getElementById('modeText').textContent = '👤 User Mode';
+        }
+        
+        // Verify password
+        async function verifyPassword() {
+            const password = document.getElementById('passwordInput').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/authenticate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    setAdminMode();
+                } else {
+                    document.getElementById('passwordError').classList.add('show');
+                    document.getElementById('passwordInput').value = '';
+                    document.getElementById('passwordInput').focus();
+                }
+            } catch (error) {
+                alert('Error connecting to server. Make sure the backend is running.');
+            }
+        }
+        
+        // Set admin mode
+        function setAdminMode() {
+            currentMode = 'admin';
+            document.getElementById('passwordModal').classList.remove('show');
+            document.getElementById('userInterfaces').classList.remove('hidden');
+            document.getElementById('adminFeatures').classList.remove('hidden');
+            document.getElementById('modeIndicator').style.display = 'block';
+            document.getElementById('modeText').textContent = '🔐 Admin Mode';
+        }
+        
+        // Cancel password
+        function cancelPassword() {
+            document.getElementById('passwordModal').classList.remove('show');
+            document.getElementById('modeModal').classList.remove('hidden');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordError').classList.remove('show');
+        }
+        
+        // Change mode
+        function changeMode() {
+            if (currentMode === 'admin') {
+                // Logout admin session
+                fetch(`${API_BASE}/admin/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            }
+            
+            currentMode = null;
+            document.getElementById('modeIndicator').style.display = 'none';
+            document.getElementById('userInterfaces').classList.add('hidden');
+            document.getElementById('adminFeatures').classList.add('hidden');
+            document.getElementById('modeModal').classList.remove('hidden');
+        }
+        
+        // Handle Enter key in password input
+        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                verifyPassword();
+            }
+        });
+        
+        // Access admin tool
         async function accessAdminTool(tool) {
-            const code = prompt('Enter admin code to access this feature:');
+            const password = 'nufc'; // Use authenticated session
             
-            if (!code) {
-                return; // User cancelled
-            }
-            
-            if (code.toLowerCase() !== ADMIN_CODE) {
-                alert('❌ Invalid code. Access denied.');
-                return;
-            }
-            
-            // Code is correct, call API to execute the tool
             try {
                 let endpoint = '';
                 let message = '';
                 
                 switch(tool) {
+                    case 'widget-dev':
+                        // Open development widget in new tab
+                        window.open('/widget', '_blank');
+                        return;
                     case 'admin':
                         endpoint = '/admin/open-chat-admin';
                         message = 'Opening chat interface...';
@@ -497,62 +671,47 @@
                         endpoint = '/admin/run-calibration';
                         message = 'Starting Calibration Test...';
                         break;
-                    case 'dev':
-                        endpoint = '/admin/open-dev-widget';
-                        message = 'Opening Development Widget...';
-                        break;
                     default:
-                        alert('Unknown tool');
                         return;
                 }
                 
-                // Show loading message
+                // Show loading
                 const loadingMsg = document.createElement('div');
-                loadingMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #1a472a; color: white; padding: 15px 25px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+                loadingMsg.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #006600; color: white; padding: 15px 25px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
                 loadingMsg.textContent = '⏳ ' + message;
                 document.body.appendChild(loadingMsg);
                 
-                // Call the API
+                // Call API
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ password: code })
+                    body: JSON.stringify({ password })
                 });
                 
                 const result = await response.json();
                 
-                // Remove loading message
+                // Remove loading
                 document.body.removeChild(loadingMsg);
                 
                 if (result.success) {
-                    // Handle different actions
                     if (result.action === 'open_url') {
-                        alert('✅ ' + result.message + '\\n\\nOpening in new tab...');
+                        alert('✅ ' + result.message + '\n\nOpening in new tab...');
                         window.open(result.url, '_blank');
                     } else {
-                        // For stats and calibration, show success message
                         let msg = '✅ ' + result.message;
-                        if (result.details) {
-                            msg += '\\n\\n' + result.details;
-                        }
-                        if (result.warning) {
-                            msg += '\\n\\n⚠️ ' + result.warning;
-                        }
+                        if (result.details) msg += '\n\n' + result.details;
+                        if (result.warning) msg += '\n\n⚠️ ' + result.warning;
                         if (result.instructions) {
-                            msg += '\\n\\nInstructions:\\n' + result.instructions.map((s, i) => `${i+1}. ${s}`).join('\\n');
+                            msg += '\n\nInstructions:\n' + result.instructions.map((s, i) => `${i+1}. ${s}`).join('\n');
                         }
                         alert(msg);
                     }
                 } else {
-                    alert('❌ Error: ' + (result.message || result.error || 'Unknown error'));
+                    alert('❌ Error: ' + (result.message || result.error));
                 }
             } catch (error) {
-                alert('❌ Error connecting to server: ' + error.message + '\\n\\nMake sure the backend is running (python widget_api.py)');
-            }
-        }
-    </script>
-                    alert('Unknown tool');
+                alert('❌ Error: ' + error.message);
             }
         }
     </script>
