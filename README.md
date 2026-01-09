@@ -1704,7 +1704,7 @@ PCBot/
 ---
 
 ## � Screenshots & Interface Overview
-
+**⚠️Images may be put in opposite placeholders due to an issue in GITHUB, sorry for the inconvenience**
 ### Landing Page - Mode Selector
 
 <div align="center">
@@ -1780,8 +1780,6 @@ PCBot/
 </div>
 
 ---
-
-## 📱 Mobile & External Access
 
 ## 📱 Mobile & External Access
 
