@@ -11,7 +11,7 @@
 
 ---
 
-![Version](https://img.shields.io/badge/Version-3.4.0-006600?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-4.0.0-006600?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![React](https://img.shields.io/badge/React-18.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-DC382D?style=for-the-badge)
@@ -54,7 +54,7 @@
 - [Evaluation & Metrics](#-evaluation--metrics)
 - [300-Question Calibration Test](#-300-question-calibration-test)
 - [Verification Methodology](#-verification-methodology)
-- [What's New in v3.4.0](#-whats-new-in-v340)
+- [What's New in v4.0.0](#-whats-new-in-v400)
 - [Version History](#-version-history)
 - [Screenshots & Interface](#-screenshots--interface-overview)
 - [Mobile & External Access](#-mobile--external-access)
@@ -159,11 +159,11 @@ https://github.com/athem135-source/PDBOT/raw/main/src/assets/PDBOT.mp4
 
 ## 🏗️ System Architecture
 
-### v3.4.0 Enhanced Architecture
+### v4.0.0 Enhanced Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────────┐
-│                           PCBOT v3.4.0 ARCHITECTURE                                   │
+│                           PCBOT v4.0.0 ARCHITECTURE                                   │
 ├──────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                       │
 │  👥 ACCESS LAYER                                                                      │
@@ -266,7 +266,7 @@ https://github.com/athem135-source/PDBOT/raw/main/src/assets/PDBOT.mp4
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│           SECURITY LAYERS (v3.4.0)                  │
+│           SECURITY LAYERS (v4.0.0)                  │
 ├─────────────────────────────────────────────────────┤
 │                                                      │
 │  1️⃣ NETWORK SECURITY                                │
@@ -420,7 +420,7 @@ qdrant
 ollama serve
 
 # 5. Run backend
-python widget_api.py
+Windows: run_pcbot.bat (recommended) or scripts\setup\run_backend.bat — Linux: python widget_api.py
 ```
 docker run -p 6338:6333 -p 6337:6334 qdrant/qdrant
 
@@ -1604,7 +1604,7 @@ python generate_report.py
 
 | Version | Date | Highlights |
 |---------|------|------------|
-| **v3.4.0** | Jan 8, 2026 | Mode selector, GitHub Pages, venv automation, animations |
+| **v4.0.0** | Jul 29, 2026 | Mode selector, GitHub Pages, venv automation, animations |
 | **v3.3.4** | Dec 9, 2025 | Full chat image export, enhanced download options |
 | **v3.3.2** | Dec 9, 2025 | Answer truncation fix, 100-word limit |
 | **v3.3.1** | Dec 9, 2025 | Remove all hardcoded values |
@@ -1620,7 +1620,7 @@ python generate_report.py
 ```
   OCT 2025                          NOV 2025                      DEC 2025          JAN 2026
   ────────                          ────────                      ────────          ────────
-  Oct 16: Project Start             Nov 5: v2.0 Reranker          Dec 1: v2.2 Widget    Jan 8: v3.4.0 ← NOW
+  Oct 16: Project Start             Nov 5: v2.0 Reranker          Dec 1: v2.2 Widget    Jul 29: v4.0.0 <- NOW
   Oct 25: v1.0 Release              Nov 12: v2.1 Numeric          Dec 3: v2.5.0 Smart
   Oct 31: v1.1 Classifier           Nov 20: Enterprise            Dec 8: v3.3.0 RAG
                                                                    Dec 9: v3.3.4
@@ -1628,7 +1628,11 @@ python generate_report.py
 
 ---
 
-## 🆕 What's New in v3.4.0
+## 🆕 What's New in v4.0.0
+
+See full release notes: RELEASE_NOTES_4.0.0.md (new) — summary below.
+
+
 
 ### Major Updates (January 2026)
 
