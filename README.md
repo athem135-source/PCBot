@@ -18,6 +18,7 @@
 ![Ollama](https://img.shields.io/badge/Ollama-Mistral_7B-000000?style=for-the-badge)
 ![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Ready-222222?style=for-the-badge&logo=github&logoColor=white)
 ![Netlify](https://img.shields.io/badge/Netlify-Ready-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)
+![License](https://img.shields.io/badge/License-Proprietary-000000?style=for-the-badge)
 
 ---
 
