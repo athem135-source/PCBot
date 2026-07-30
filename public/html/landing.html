@@ -286,6 +286,17 @@
             color: inherit;
             display: block;
         }
+        /* Center and enlarge widget card on desktop */
+        .widget-center {
+            grid-column: 1 / -1;
+            justify-self: center;
+            max-width: 700px;
+            text-align: center;
+            padding: 40px;
+        }
+        @media (max-width: 800px) {
+            .widget-center { max-width: 100%; padding: 25px; }
+        }
         
         .option-card:hover {
             transform: translateY(-5px);
@@ -391,6 +402,18 @@
         .mode-indicator .change-mode:hover {
             color: #006600;
         }
+        /* Feedback / option-like button styling to match option-card */
+        .btn.option-like {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 12px 18px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            color: #006600;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn.option-like:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
     </style>
 </head>
 <body>
@@ -439,7 +462,7 @@
             </div>
             <h1>Planning Commission Bot</h1>
             <p class="subtitle">Manual for Development Projects 2024 - Intelligent Assistant</p>
-            <span class="version">v3.3.8</span>
+            <span class="version">v4.0.0</span>
         </div>
         
         <div class="content">
@@ -449,9 +472,9 @@
                 <p>Select the version that best suits your needs. All versions connect to the same powerful RAG backend with access to the complete Manual for Development Projects 2024.</p>
                 
                 <div class="options-grid">
-                    <div class="option-card" onclick="window.open('/widget-standalone.html', '_blank')">
-                        <span class="option-icon">💬</span>
-                        <div class="option-title">Widget (Shareable)</div>
+                    <div class="option-card widget-center" onclick="window.open('/widget-standalone.html', '_blank')">
+                        <span class="option-icon" style="font-size:4.5rem;display:block;">💬</span>
+                        <div class="option-title" style="font-size:1.6rem;">Widget (Shareable)</div>
                         <div class="option-description">
                             Floating chat widget with full features. Perfect for sharing via Cloudflare tunnel or embedding on websites.
                         </div>
@@ -461,9 +484,9 @@
                         </div>
                     </div>
                     
-                    <div class="option-card" onclick="window.open('/mobile.html', '_blank')">
-                        <span class="option-icon">📱</span>
-                        <div class="option-title">Mobile Site (Shareable)</div>
+                    <div class="option-card widget-center" onclick="window.open('/mobile.html', '_blank')" style="cursor:pointer;">
+                        <span class="option-icon" style="font-size:4rem;display:block;">📱</span>
+                        <div class="option-title" style="font-size:1.4rem;">Mobile Site (Shareable)</div>
                         <div class="option-description">
                             Full-screen mobile-optimized interface. Best for smartphones and tablets. Includes AI/Exact mode toggle.
                         </div>
@@ -481,50 +504,53 @@
                 <p>Advanced features for system administrators and developers. Password required.</p>
                 
                 <div class="options-grid">
-                    <div class="option-card" onclick="accessAdminTool('widget-dev')">
-                        <span class="option-icon">💻</span>
-                        <div class="option-title">Development Widget</div>
+                    <div class="option-card admin-only" onclick="accessAdminTool('dashboard')">
+                        <span class="option-icon">🛠️</span>
+                        <div class="option-title">Admin Console</div>
                         <div class="option-description">
-                            Development version with React widget. For testing new features and customization before deployment.
-                        </div>
-                        <div class="option-badge">
-                            <span class="badge badge-dev">Development</span>
-                        </div>
-                    </div>
-                    
-                    <div class="option-card" onclick="accessAdminTool('admin')">
-                        <span class="option-icon">⚙️</span>
-                        <div class="option-title">Admin Panel</div>
-                        <div class="option-description">
-                            System monitoring, session management, and backend controls. Type "nufc" in any chat to access.
+                            Unified admin console: monitoring, statistics, calibration tests and feedback review in one page.
                         </div>
                         <div class="option-badge">
                             <span class="badge badge-admin">Admin Only</span>
-                        </div>
-                    </div>
-                    
-                    <div class="option-card" onclick="accessAdminTool('stats')">
-                        <span class="option-icon">📊</span>
-                        <div class="option-title">Statistics Dashboard</div>
-                        <div class="option-description">
-                            Real-time server statistics, usage analytics, and performance metrics. PowerShell-based dashboard.
-                        </div>
-                        <div class="option-badge">
-                            <span class="badge badge-admin">Admin Only</span>
-                        </div>
-                    </div>
-                    
-                    <div class="option-card" onclick="accessAdminTool('calibration')">
-                        <span class="option-icon">🧪</span>
-                        <div class="option-title">Calibration Test</div>
-                        <div class="option-description">
-                            Run 300-question test suite to evaluate model accuracy and performance. Generates detailed reports.
-                        </div>
-                        <div class="option-badge">
-                            <span class="badge badge-testing">Testing</span>
                         </div>
                     </div>
                 </div>
+            </div>
+            
+            <!-- Quick Actions + Feedback -->
+            <div class="section">
+                <h2>⚡ Quick Actions</h2>
+                <p>Fast access to common checks and quick tests.</p>
+                <div class="card actions" style="background:#fafafa;padding:20px;border-radius:10px;border:1px solid #e8e8e8;">
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button onclick="openQuick25()" class="btn admin-only">Take 25-question Test</button>
+                        <button onclick="openAdminDashboard()" class="btn admin-only">Open Admin Dashboard</button>
+                        <button onclick="openFeedbackModal()" class="btn option-like" id="feedbackBtn">Give Feedback</button>
+                    </div>
+                </div>
+                
+                <!-- Feedback modal -->
+                <div id="feedbackModal" class="modal" style="display:none; position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:2000;">
+                    <div class="modal-content" style="background:white;max-width:640px;margin:80px auto;padding:20px;border-radius:10px;">
+                        <span class="close" onclick="closeFeedbackModal()" style="float:right;cursor:pointer;font-size:20px;padding:4px;">&times;</span>
+                        <h3>Rate your experience</h3>
+                        <div id="starRow" style="display:flex;gap:6px;margin:10px 0;">
+                            <button class="star" data-val="1">1</button>
+                            <button class="star" data-val="2">2</button>
+                            <button class="star" data-val="3">3</button>
+                            <button class="star" data-val="4">4</button>
+                            <button class="star" data-val="5">5</button>
+                        </div>
+                        <textarea id="feedbackText" placeholder="Optional feedback" style="width:100%;height:120px;padding:10px;border:1px solid #ddd;border-radius:6px;"></textarea>
+                        <input id="feedbackName" placeholder="Your name (optional)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;margin-top:8px;" />
+                        <div style="margin-top:10px;display:flex;gap:8px;">
+                            <button class="btn" onclick="submitFeedback()">Submit Feedback</button>
+                            <button class="btn btn-secondary" onclick="closeFeedbackModal()">Cancel</button>
+                        </div>
+                        <div id="feedbackStatus" style="margin-top:8px;color:green;display:none;"></div>
+                    </div>
+                </div>
+                
             </div>
             
             <!-- System Information (Always visible) -->
@@ -568,15 +594,39 @@
         }
         
         // Set user mode
-        function setUserMode() {
+        async function setUserMode() {
+            // Prompt for name and store it in session via API so admins can see who asked
+            let name = prompt('Please enter your name (this will be shown to admins for audit):');
+            if (!name) {
+                alert('Name is required to continue.');
+                return;
+            }
+            try {
+                const resp = await fetch(`${API_BASE}/session/set-name`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ name })
+                });
+                const result = await resp.json();
+                if (!result.success) {
+                    alert('Could not set name: ' + (result.error || 'unknown'));
+                    return;
+                }
+            } catch (e) {
+                alert('Error connecting to server to set name. Make sure backend is running.');
+                return;
+            }
             currentMode = 'user';
             document.getElementById('modeModal').classList.add('hidden');
             document.getElementById('passwordModal').classList.remove('show');
             document.getElementById('userInterfaces').classList.remove('hidden');
             document.getElementById('adminFeatures').classList.add('hidden');
-            document.getElementById('modeIndicator').style.display = 'block';
-            document.getElementById('modeText').textContent = '👤 User Mode';
-        }
+                    // Hide admin-only quick actions when in user mode
+                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                    document.getElementById('modeIndicator').style.display = 'block';
+                    document.getElementById('modeText').textContent = '👤 User Mode';
+                }
         
         // Verify password
         async function verifyPassword() {
@@ -610,9 +660,11 @@
             document.getElementById('passwordModal').classList.remove('show');
             document.getElementById('userInterfaces').classList.remove('hidden');
             document.getElementById('adminFeatures').classList.remove('hidden');
-            document.getElementById('modeIndicator').style.display = 'block';
-            document.getElementById('modeText').textContent = '🔐 Admin Mode';
-        }
+                    // Ensure admin-only elements are visible in admin mode
+                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+                    document.getElementById('modeIndicator').style.display = 'block';
+                    document.getElementById('modeText').textContent = '🔐 Admin Mode';
+                }
         
         // Cancel password
         function cancelPassword() {
@@ -667,9 +719,17 @@
                         endpoint = '/admin/run-stats';
                         message = 'Launching Statistics Dashboard...';
                         break;
+                    case 'dashboard':
+                        // Open the browser-based admin dashboard directly (no POST required)
+                        window.open('/admin/dashboard', '_blank');
+                        return;
                     case 'calibration':
                         endpoint = '/admin/run-calibration';
                         message = 'Starting Calibration Test...';
+                        break;
+                    case 'quick-calibration':
+                        endpoint = '/admin/run-quick-test';
+                        message = 'Starting Quick 25-question Test...';
                         break;
                     default:
                         return;
@@ -712,6 +772,71 @@
                 }
             } catch (error) {
                 alert('❌ Error: ' + error.message);
+            }
+        }
+        
+        // Quick helpers used by Quick Actions
+        function openQuick25() {
+            // Use the admin quick-calibration endpoint using the built-in code path so users can trigger a quick test
+            accessAdminTool('quick-calibration');
+        }
+
+        function openAdminDashboard() {
+            // Open dashboard in a new tab (may require admin authentication)
+            window.open('/admin/dashboard', '_blank');
+        }
+
+        // Feedback modal handlers
+        function openFeedbackModal() {
+            document.getElementById('feedbackModal').style.display = 'block';
+            // attach star handlers lazily
+            document.querySelectorAll('#starRow .star').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('#starRow .star').forEach(b => b.style.background='');
+                    btn.style.background = '#ffd54f';
+                    btn.dataset.selected = '1';
+                    // mark selected value on container for readback
+                    document.getElementById('starRow').dataset.selected = btn.getAttribute('data-val');
+                };
+            });
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').style.display = 'none';
+            document.getElementById('feedbackText').value = '';
+            document.getElementById('feedbackName').value = '';
+            document.getElementById('feedbackStatus').style.display = 'none';
+            document.getElementById('starRow').dataset.selected = '';
+            document.querySelectorAll('#starRow .star').forEach(b => b.style.background='');
+        }
+
+        async function submitFeedback() {
+            const sel = document.getElementById('starRow').dataset.selected;
+            const rating = sel ? parseInt(sel) : 0;
+            const feedback = document.getElementById('feedbackText').value || '';
+            const name = document.getElementById('feedbackName').value || '';
+            if (!rating || rating < 1 || rating > 5) {
+                alert('Please select a rating (1-5) before submitting.');
+                return;
+            }
+            try {
+                const resp = await fetch('/feedback/submit', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    credentials: 'include',
+                    body: JSON.stringify({ rating, feedback, name })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    const st = document.getElementById('feedbackStatus');
+                    st.textContent = 'Thanks! Your feedback was submitted.';
+                    st.style.display = 'block';
+                    setTimeout(() => closeFeedbackModal(), 1200);
+                } else {
+                    alert('Error: ' + (data.error || 'failed'));
+                }
+            } catch (e) {
+                alert('Could not submit feedback: ' + e.message);
             }
         }
     </script>

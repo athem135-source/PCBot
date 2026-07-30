@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>PCBot Admin Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f7f6; }
+    h1 { color: #006600 }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
+    th { background: #e8f5ec; }
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.9rem; }
+    .btn { padding: 8px 12px; background: #006600; color: white; border: none; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>PCBot Admin Dashboard</h1>
+  <p>Overview of active sessions and recent activity. This page fetches live statistics from the backend.</p>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <button class="btn" onclick="refresh()">Refresh</button>
+    <div id="serviceStatus" style="font-size:0.95rem;color:#333;margin-left:8px;"></div>
+    <span id="lastUpdate" style="margin-left:10px;color:#666;"></span>
+    <div style="margin-left:auto;font-size:0.95rem;color:#333;">Feedback: <strong id="feedbackCount">-</strong></div>
+  </div>
+  
+  <!-- Top-level status summary -->
+  <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;">
+    <div style="background:white;padding:12px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);min-width:180px;">
+      <div style="color:#666;font-size:0.9rem">Version</div>
+      <div id="uiVersion" style="font-weight:700;color:#006600">-</div>
+    </div>
+    <div style="background:white;padding:12px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);min-width:180px;">
+      <div style="color:#666;font-size:0.9rem">Sessions</div>
+      <div id="uiSessions" style="font-weight:700">-</div>
+    </div>
+    <div style="background:white;padding:12px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);min-width:220px;">
+      <div style="color:#666;font-size:0.9rem">Qdrant</div>
+      <div id="uiQdrant" style="font-weight:700;color:#d9534f">-</div>
+    </div>
+    <div style="background:white;padding:12px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);min-width:220px;">
+      <div style="color:#666;font-size:0.9rem">Ollama</div>
+      <div id="uiOllama" style="font-weight:700;color:#d9534f">-</div>
+    </div>
+    <div style="background:white;padding:12px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);min-width:180px;">
+      <div style="color:#666;font-size:0.9rem">Model</div>
+      <div id="uiModel" style="font-weight:700;color:#d9534f">-</div>
+    </div>
+    <div style="background:white;padding:12px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);min-width:180px;">
+      <div style="color:#666;font-size:0.9rem">Embedding</div>
+      <div id="uiEmbedding" style="font-weight:700;color:#006600">-</div>
+    </div>
+  </div>
+  <table id="sessionsTable">
+    <thead>
+      <tr>
+        <th>Session ID</th>
+        <th>Username</th>
+        <th>Messages</th>
+        <th>Last Activity</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <script>
+    const API = window.location.origin;
+    async function refresh(){
+      try{
+        // Fetch statistics and session details
+        const res = await fetch(API + '/admin/statistics', {credentials: 'include'});
+        const data = await res.json();
+        if(data.error){ alert('Error: ' + data.error); return; }
+        const tbody = document.querySelector('#sessionsTable tbody');
+        tbody.innerHTML = '';
+        const rows = (data.sessions && data.sessions.details) ? data.sessions.details : [];
+        rows.forEach(r =>{
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td style="font-family:monospace;">${r.session_id}</td><td>${r.username || 'Anonymous'}</td><td>${r.message_count}</td><td>${r.last_activity}</td>`;
+          tbody.appendChild(tr);
+        });
+        document.getElementById('lastUpdate').textContent = 'Last: ' + new Date(data.timestamp).toLocaleString();
+
+        // Fetch dependent service status (Qdrant, Ollama) and update top-level widgets
+        try {
+          const sres = await fetch(API + '/admin/status', {credentials: 'include'});
+          const sdata = await sres.json();
+          const parts = [];
+          parts.push(`Backend: ${sdata.backend.ok ? 'OK' : 'DOWN'}`);
+          parts.push(`Qdrant: ${sdata.qdrant.ok ? 'OK' : 'DOWN'}`);
+          parts.push(`Ollama: ${sdata.ollama.ok ? 'OK' : 'DOWN'}`);
+          document.getElementById('serviceStatus').textContent = parts.join(' | ');
+
+          // Update the summary boxes with richer info when available
+          try {
+            if (sdata && sdata.qdrant) {
+              document.getElementById('uiQdrant').textContent = (sdata.qdrant.ok === true || sdata.qdrant === 'connected' || sdata.qdrant === 'ok') ? 'OK' : (sdata.qdrant.info || sdata.qdrant || 'error');
+            } else if (data.qdrant_status) {
+              document.getElementById('uiQdrant').textContent = data.qdrant_status;
+            } else {
+              document.getElementById('uiQdrant').textContent = 'unknown';
+            }
+
+            if (sdata && sdata.ollama) {
+              document.getElementById('uiOllama').textContent = (sdata.ollama.ok === true || sdata.ollama === 'connected') ? 'connected' : (sdata.ollama.info || sdata.ollama || 'error');
+            } else if (data.ollama_status) {
+              document.getElementById('uiOllama').textContent = data.ollama_status;
+            } else {
+              document.getElementById('uiOllama').textContent = 'unknown';
+            }
+
+            // embedding and model info may be part of /admin/statistics response; fallback defaults
+            document.getElementById('uiEmbedding').textContent = (data.embedding && data.embedding.ready) ? 'Ready' : (data.embedding_ready ? (data.embedding_ready ? 'Ready' : 'Not ready') : 'unknown');
+            document.getElementById('uiEmbedding').style.color = (document.getElementById('uiEmbedding').textContent.toLowerCase().indexOf('ready') !== -1) ? '#006600' : '#d9534f';
+          } catch (e) { console.warn('service update error', e); }
+        } catch (se) {
+          document.getElementById('serviceStatus').textContent = 'Service status: error';
+        }
+
+        // Fetch feedback count
+        try {
+          const fres = await fetch(API + '/admin/feedback-count', {credentials: 'include'});
+          const fdata = await fres.json();
+          document.getElementById('feedbackCount').textContent = (fdata.count>=0) ? fdata.count : 'error';
+        } catch (fe) {
+          document.getElementById('feedbackCount').textContent = 'err';
+        }
+
+        // Update version/sessions/model top widgets from statistics response if present
+        try {
+          document.getElementById('uiVersion').textContent = data.version || 'v4.0.0';
+          document.getElementById('uiSessions').textContent = (data.sessions && data.sessions.count) ? data.sessions.count : (data.sessions && data.sessions.details ? data.sessions.details.length : 0);
+          // Determine model loaded state from multiple possible response shapes
+          var modelLoaded = false;
+          if (typeof data.model_loaded !== 'undefined') modelLoaded = data.model_loaded;
+          else if (data.services && typeof data.services.model_loaded !== 'undefined') modelLoaded = data.services.model_loaded;
+          else if (sdata && typeof sdata.model_loaded !== 'undefined') modelLoaded = sdata.model_loaded;
+          document.getElementById('uiModel').textContent = modelLoaded ? (data.services && data.services.model_name ? data.services.model_name : 'loaded') : 'Not loaded';
+          document.getElementById('uiModel').style.color = (document.getElementById('uiModel').textContent === 'Not loaded') ? '#d9534f' : '#006600';
+        } catch (ux) { console.warn('dashboard update partial', ux); }
+      }catch(e){ alert('Error fetching stats: ' + e.message); }
+    }
+    refresh();
+  </script>
+</body>
+</html>
