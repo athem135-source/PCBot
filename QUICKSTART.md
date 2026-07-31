@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - PCBot v3.4
+# 🚀 Quick Start Guide - PCBot v4.0
 
 ## First Time Setup (One Time Only)
 
@@ -78,7 +78,7 @@
 
 ## Version
 
-**PCBot v3.4.0**
+**PCBot v4.0.0**
 - ✅ Organized folder structure
 - ✅ Auto-start services
 - ✅ Netlify deployment ready

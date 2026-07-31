@@ -60,10 +60,10 @@ const getAssetUrl = (path) => {
   // Check window global
   if (window.PDBOT_API_URL) return `${window.PDBOT_API_URL}${path}`;
   
-  // For localhost, use port 5000 where Flask serves assets
+  // For localhost, use port 5001 where Flask serves assets
   const hostname = window.location.hostname;
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return `http://localhost:5000${path}`;
+    return `http://localhost:5001${path}`;
   }
   
   // For external access (tunnels), use same origin

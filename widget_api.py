@@ -95,6 +95,17 @@ app = Flask(__name__)
 app.secret_key = 'pcbot-secure-key-2026-nufc'  # Required for sessions
 CORS(app, supports_credentials=True)  # Enable CORS with credentials for sessions
 
+# Ensure UTF-8 output to avoid UnicodeEncodeError on Windows consoles when printing emojis
+try:
+    # Available in Python 3.7+ to reconfigure text streams
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+except Exception:
+    # If reconfigure isn't available (older Python) or fails, set PYTHONUTF8 flag as a fallback
+    os.environ.setdefault('PYTHONUTF8', '1')
+    # If sys.stdout encoding cannot be changed, also wrap prints that may contain emoji later
+    # (This fallback ensures the environment prefers UTF-8 where possible.)
+
 # Serve mobile page at root for Cloudflare tunnel
 @app.route('/')
 def serve_landing():
@@ -266,6 +277,8 @@ classifier = None
 # Session memory store (in-memory, per-session chat history)
 # Format: { session_id: [ { "role": "user/bot", "content": "...", "timestamp": "..." }, ... ] }
 session_memory: Dict[str, List[Dict]] = {}
+# Map session_id -> username for admin reporting
+session_users: Dict[str, str] = {}
 
 # Maximum messages to keep in memory per session
 MAX_MEMORY_MESSAGES = 20
@@ -353,17 +366,27 @@ Answer in 45-70 words. Extract numbers if present. Direct answer first:"""
         for filler in fillers:
             answer = re.sub(filler, "", answer, flags=re.IGNORECASE)
         
-        # v3.3.2: Allow up to 100 words to avoid cutting mid-sentence/number
+        # v4.0.0: Avoid mid-sentence truncation and currency cut-offs.
         words = answer.split()
-        if len(words) > 100:
-            answer = " ".join(words[:100])
-            # Try to end at sentence boundary
-            last_period = answer.rfind(".")
-            if last_period > len(answer) * 0.5:
-                answer = answer[:last_period + 1]
-            elif not answer.rstrip().endswith(('.', '!', '?')):
+        WORD_LIMIT = 200
+        if len(words) > WORD_LIMIT:
+            truncated = " ".join(words[:WORD_LIMIT])
+            # Prefer to end at the last sentence boundary (., !, ?) within truncated text
+            last_punct = max(truncated.rfind('.'), truncated.rfind('!'), truncated.rfind('?'))
+            if last_punct != -1 and last_punct > int(len(truncated) * 0.4):
+                answer = truncated[:last_punct+1]
+            else:
+                answer = truncated
+            # Avoid leaving trailing isolated currency markers like 'Rs.' or 'Rs'
+            if answer.rstrip().endswith(('Rs.', 'Rs', 'Rupees', 'rupees', 'Rs,', 'Rs;')):
+                # append the next word(s) from original to complete the currency mention if possible
+                remaining_words = words[WORD_LIMIT:WORD_LIMIT+3]
+                if remaining_words:
+                    answer = answer + " " + " ".join(remaining_words)
+            # Ensure sentence termination
+            if not answer.rstrip().endswith(('.', '!', '?')):
                 answer = answer.rstrip(".!?,;") + "."
-        
+
         answer = answer.strip()
         
         # Add clean citation
@@ -728,9 +751,14 @@ def chat():
         }
     """
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         query = data.get('query', '').strip()
-        session_id = data.get('session_id', 'widget-session')
+        # Prefer client-provided session_id, else use server-side session id, else create one
+        session_id = data.get('session_id') or session.get('session_id')
+        if not session_id:
+            import uuid
+            session_id = str(uuid.uuid4())
+            session['session_id'] = session_id
         clear_memory = data.get('clear_memory', False)
         exact_mode = data.get('exact_mode', False)
         use_groq = data.get('use_groq', False)
@@ -928,6 +956,13 @@ def chat():
         suggested_questions = generate_contextual_followups(query, final_answer, query_class)
         
         print(f"[Widget API] Response generated ({len(final_answer)} chars, mode: {response_mode})")
+        # Detailed logging for auditing: who asked, session id, classification, mode, answer snippet
+        try:
+            user_ip = request.remote_addr or 'unknown'
+        except Exception:
+            user_ip = 'unknown'
+        print(f"[Widget API][AUDIT] Session:{session_id[:12]} UserIP:{user_ip} Class:{query_class}/{getattr(classification, 'subcategory', '')} Mode:{response_mode} AnswerLen:{len(final_answer)}")
+        print(f"[Widget API][AUDIT] Answer snippet: {final_answer[:140].replace('\n',' ')}")
         
         return jsonify({
             'answer': final_answer,
@@ -1174,6 +1209,76 @@ def admin_statistics():
         # Per-session breakdown
         session_details = []
         for sid, msgs in session_memory.items():
+            username = session_users.get(sid, session.get('user_name', 'Anonymous'))
+            session_details.append({
+                'session_id': sid[:12] + '...',
+                'username': username,
+                'message_count': len(msgs),
+                'last_activity': msgs[-1].get('timestamp', 'N/A') if msgs else 'N/A'
+            })
+        
+        # Feedback stats (count files in feedback folders)
+        feedback_dir = os.path.join(os.path.dirname(__file__), 'feedback')
+        feedback_stats = {}
+        for star in ['1_star', '2_star', '3_star', '4_star', '5_star']:
+            star_dir = os.path.join(feedback_dir, star)
+            if os.path.exists(star_dir):
+                feedback_stats[star] = len(os.listdir(star_dir))
+            else:
+                feedback_stats[star] = 0
+        
+        # Log stats
+        log_dir = os.path.join(os.path.dirname(__file__), 'logs')
+        log_count = len(glob.glob(os.path.join(log_dir, '*.log'))) if os.path.exists(log_dir) else 0
+        
+        return jsonify({
+            'status': 'ok',
+            'timestamp': datetime.now().isoformat(),
+            'system': {
+                'version': '2.5.0',
+                'memory_mb': round(memory_mb, 2),
+                'cpu_percent': round(cpu_percent, 2),
+                'pid': os.getpid()
+            },
+            'sessions': {
+                'active_count': active_sessions,
+                'total_messages': total_messages,
+                'max_per_session': MAX_MEMORY_MESSAGES,
+                'details': session_details[:10]  # Top 10 sessions
+            },
+            'feedback': feedback_stats,
+            'logs': {
+                'log_files': log_count
+            },
+            'services': {
+                'model_loaded': model is not None,
+                'classifier_loaded': classifier is not None,
+                'groq_available': GROQ_AVAILABLE
+            }
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    """
+    Admin endpoint - returns comprehensive usage statistics.
+    For dashboard monitoring.
+    """
+    try:
+        import psutil
+        import glob
+        
+        # System stats
+        process = psutil.Process(os.getpid())
+        memory_mb = process.memory_info().rss / 1024 / 1024
+        cpu_percent = process.cpu_percent()
+        
+        # Session stats
+        active_sessions = len(session_memory)
+        total_messages = sum(len(msgs) for msgs in session_memory.values())
+        
+        # Per-session breakdown
+        session_details = []
+        for sid, msgs in session_memory.items():
             session_details.append({
                 'session_id': sid[:12] + '...',
                 'message_count': len(msgs),
@@ -1275,6 +1380,73 @@ def admin_groq_status():
         status['connection'] = 'library_not_installed'
     
     return jsonify(status)
+
+
+@app.route('/admin/dashboard')
+def admin_dashboard_page():
+    """Serve a simple admin dashboard page showing live stats and session usernames. Requires admin auth."""
+    if not session.get('admin_authenticated'):
+        return "<h2>Unauthorized</h2><p>Please authenticate as admin to view this dashboard.</p>", 401
+    try:
+        with open(os.path.join(os.path.dirname(__file__), 'public', 'html', 'admin-dashboard.html'), 'r', encoding='utf-8') as f:
+            return f.read(), 200, {'Content-Type': 'text/html'}
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/feedback/submit', methods=['POST'])
+def feedback_submit():
+    """
+    Accept feedback submissions from users.
+    Request JSON: { rating: int (1-5), feedback: str (optional), session_id: str (optional), name: str (optional) }
+    Writes to feedback/feedback.jsonl
+    """
+    try:
+        data = request.get_json() or {}
+        rating = int(data.get('rating', 0))
+        feedback_text = data.get('feedback', '').strip()
+        session_id = data.get('session_id') or session.get('session_id') or 'unknown'
+        name = data.get('name') or session.get('user_name') or session_users.get(session_id) or 'Anonymous'
+
+        if rating < 1 or rating > 5:
+            return jsonify({'success': False, 'error': 'Rating must be between 1 and 5'}), 400
+
+        feedback_dir = os.path.join(os.path.dirname(__file__), 'feedback')
+        if not os.path.exists(feedback_dir):
+            os.makedirs(feedback_dir, exist_ok=True)
+        out_path = os.path.join(feedback_dir, 'feedback.jsonl')
+        entry = {
+            'timestamp': datetime.now().isoformat(),
+            'session_id': session_id,
+            'name': name,
+            'rating': rating,
+            'feedback': feedback_text
+        }
+        with open(out_path, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + '\n')
+
+        print(f"[Widget API] Feedback saved: session {session_id[:8]} name={name} rating={rating}")
+        return jsonify({'success': True, 'message': 'Thanks for your feedback'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+
+
+@app.route('/admin/feedback-count')
+def admin_feedback_count():
+    """Return total submitted feedback count."""
+    feedback_dir = os.path.join(os.path.dirname(__file__), 'feedback')
+    out_path = os.path.join(feedback_dir, 'feedback.jsonl')
+    count = 0
+    if os.path.exists(out_path):
+        try:
+            with open(out_path, 'r', encoding='utf-8') as f:
+                for _ in f:
+                    count += 1
+        except Exception:
+            count = -1
+    return jsonify({'count': count})
 
 
 @app.route('/admin/groq-toggle', methods=['POST'])
@@ -1425,33 +1597,33 @@ def admin_run_stats():
 @app.route('/admin/run-calibration', methods=['POST'])
 def admin_run_calibration():
     """
-    Launch the calibration test suite.
+    Launch the calibration test suite (300 questions).
     """
     import subprocess
-    
+        
     try:
         data = request.get_json() or {}
         password = data.get('password', '')
-        
+            
         if password != ADMIN_PASSWORD:
             return jsonify({'success': False, 'message': 'Invalid password'}), 401
-        
+            
         # Start calibration test in new window
         # Use dynamic base path to work on any PC
         base_dir = os.path.dirname(os.path.abspath(__file__))
         bat_path = os.path.join(base_dir, 'scripts', 'setup', 'run_calibration_test.bat')
-        
+            
         # Fallback: try root directory if not in scripts/setup
         if not os.path.exists(bat_path):
             bat_path = os.path.join(base_dir, '..', 'scripts', 'setup', 'run_calibration_test.bat')
             bat_path = os.path.abspath(bat_path)
-        
+            
         if not os.path.exists(bat_path):
             return jsonify({
                 'success': False,
                 'error': f'Calibration test script not found. Searched: {bat_path}'
             }), 404
-        
+            
         # Launch in new CMD window
         subprocess.Popen([
             'cmd.exe',
@@ -1461,7 +1633,7 @@ def admin_run_calibration():
             '/k',
             bat_path
         ])
-        
+            
         return jsonify({
             'success': True,
             'message': 'Calibration test launched successfully',
@@ -1471,6 +1643,64 @@ def admin_run_calibration():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+
+@app.route('/admin/run-quick-test', methods=['POST'])
+def admin_run_quick_test():
+    """
+    Launch the quick 25-question smoke test in a new window.
+    """
+    import subprocess
+    try:
+        data = request.get_json() or {}
+        password = data.get('password', '')
+            
+        if password != ADMIN_PASSWORD:
+            return jsonify({'success': False, 'message': 'Invalid password'}), 401
+            
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        script_path = os.path.join(base_dir, 'tests', 'quick_25_test.py')
+        if not os.path.exists(script_path):
+            return jsonify({'success': False, 'error': f'Quick test not found at {script_path}'}), 404
+            
+        # Launch python quick test in new CMD window so output is visible
+        subprocess.Popen([
+            'cmd.exe', '/c', 'start', 'cmd.exe', '/k', 'python', script_path
+        ])
+            
+        return jsonify({'success': True, 'message': 'Quick test launched in a new window', 'details': '25-question smoke test is running.'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/session/set-name', methods=['POST'])
+def session_set_name():
+    """
+    Set the display name for the current session (stored in Flask session and session_users map).
+    Request: { "name": "User Name", "session_id": "optional-uuid" }
+    """
+    try:
+        data = request.get_json() or {}
+        name = data.get('name', '').strip()
+        session_id = data.get('session_id')
+        if not name:
+            return jsonify({'success': False, 'error': 'Name required'}), 400
+            
+        # Ensure session has an id
+        if not session_id:
+            # use stored session id or create one
+            if not session.get('session_id'):
+                import uuid
+                session['session_id'] = str(uuid.uuid4())
+            session_id = session['session_id']
+        else:
+            session['session_id'] = session_id
+        
+        session['user_name'] = name
+        session_users[session_id] = name
+        print(f"[Widget API] Session name set: {session_id[:8]} => {name}")
+        return jsonify({'success': True, 'session_id': session_id, 'name': name})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/admin/open-dev-widget', methods=['POST'])
 def admin_open_dev_widget():
@@ -1512,7 +1742,7 @@ def get_local_ip():
 
 if __name__ == '__main__':
     local_ip = get_local_ip()
-    port = 5000
+    port = 5001
     
     print("\n" + "="*60)
     print("  PDBOT Widget API Server v2.5.0")

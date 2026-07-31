@@ -53,8 +53,8 @@ The backend (Flask API with RAG) needs separate hosting:
 3. New Project > Deploy from GitHub repo
 4. Select `athem135-source/PCBot`
 5. Configure:
-   - Start Command: `python widget_api.py`
-   - Environment: Add `PORT=5000`
+   - Start Command (Windows): `scripts\setup\run_backend.bat`  (Linux: `python widget_api.py`)
+   - Environment: Add `PORT=5001`
 6. Deploy
 7. Copy your Railway URL (e.g., `https://pcbot-production.up.railway.app`)
 
@@ -64,7 +64,7 @@ The backend (Flask API with RAG) needs separate hosting:
 3. Connect GitHub > Select PCBot
 4. Configure:
    - Build Command: `pip install -r requirements.txt`
-   - Start Command: `python widget_api.py`
+   - Start Command (Windows): `scripts\setup\run_backend.bat`  (Linux: `python widget_api.py`)
 5. Deploy
 6. Copy your Render URL
 
@@ -72,9 +72,9 @@ The backend (Flask API with RAG) needs separate hosting:
 If you have a static IP:
 1. Install Python, Qdrant, Ollama on server
 2. Run `setup.bat`
-3. Configure firewall: Allow port 5000
-4. Run `python widget_api.py`
-5. Use: `http://your-ip:5000`
+3. Configure firewall: Allow port 5001
+4. Run `scripts\setup\run_backend.bat` (Windows) or `python widget_api.py` (Linux)
+5. Use: `http://your-ip:5001`
 
 ---
 

@@ -4,7 +4,7 @@ PDBOT Answer Validation Harness
 Tests /chat endpoint against expected outputs from approval_limits.json.
 
 Run: python tests/validate_answers.py
-Requires: API running on localhost:5000
+Requires: API running on localhost:5001
 """
 
 import json
@@ -98,7 +98,7 @@ TEST_CASES: List[Tuple[str, List[str], List[str]]] = [
     ("What is mega project?", ["mega", "project"], []),
 ]
 
-API_URL = "http://localhost:5000/chat"
+API_URL = "http://localhost:5001/chat"
 
 def test_query(query: str, expected: List[str], must_not: List[str]) -> Tuple[bool, str]:
     """Test a single query against expected substrings."""

@@ -57,4 +57,4 @@ Contact & support
 -----------------
 If you prefer, this release can be packaged into a GitHub release with the prebuilt artifacts and a more detailed changelog. Reply to this issue/comment with: "Create release now" and confirm you are signed in to GitHub CLI on this machine.
 
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+

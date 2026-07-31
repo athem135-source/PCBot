@@ -26,7 +26,7 @@ A shareable, standalone webpage that embeds the PCBot widget. Perfect for:
 
 3. **Open in browser:**
    ```
-   http://localhost:5000/widget-standalone.html
+   http://localhost:5001/widget-standalone.html
    ```
 
 ---
@@ -39,7 +39,7 @@ A shareable, standalone webpage that embeds the PCBot widget. Perfect for:
 
 **Step 2:** Expose your local server:
 ```powershell
-ngrok http 5000
+ngrok http 5001
 ```
 
 You'll get a URL like: `https://abc123.ngrok.io`
@@ -62,7 +62,7 @@ https://abc123.ngrok.io/widget-standalone.html
 
 **Step 2:** Create tunnel:
 ```powershell
-cloudflared tunnel --url http://localhost:5000
+cloudflared tunnel --url http://localhost:5001
 ```
 
 You'll get: `https://random-name.trycloudflare.com`
@@ -140,7 +140,7 @@ CORS(app, resources={
 ### Auto-Detection (Default)
 
 The widget automatically detects:
-- `localhost` → Uses `http://localhost:5000`
+- `localhost` → Uses `http://localhost:5001`
 - Other domains → Uses same origin or `window.WIDGET_API_URL`
 
 ### Manual Configuration
@@ -178,7 +178,7 @@ If you need to override the API URL, add this **before** the widget loads:
 
 Check if the widget is working:
 
-1. **Backend Running**: Visit `http://localhost:5000/health` (should return OK)
+1. **Backend Running**: Visit `http://localhost:5001/health` (should return OK)
 2. **Widget Loading**: Open browser console, check for errors
 3. **API Calls**: Network tab should show successful `/api/chat` requests
 
@@ -187,13 +187,13 @@ Check if the widget is working:
 ## 🆘 Troubleshooting
 
 **Widget doesn't load:**
-- Check backend is running: `http://localhost:5000/health`
+- Check backend is running: `http://localhost:5001/health`
 - Check browser console for errors
 - Verify CORS settings in `widget_api.py`
 
 **Can't access from other devices:**
 - Use ngrok or cloudflare tunnel (not just localhost)
-- Check firewall isn't blocking port 5000
+- Check firewall isn't blocking port 5001
 
 **Google Sites embed not working:**
 - Use iframe method instead of direct embed

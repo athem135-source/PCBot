@@ -35,7 +35,7 @@
 [dev]
   # Local development server
   command = "python widget_api.py"
-  targetPort = 5000
+targetPort = 5001
   port = 8888
   publish = "public"
   autoLaunch = true

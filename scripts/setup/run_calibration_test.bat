@@ -24,18 +24,19 @@ if %ERRORLEVEL% neq 0 (
 
 REM Check if API is running
 echo [1/4] Checking API status...
-curl -s http://localhost:5000/health >nul 2>&1
+curl -s http://localhost:5001/health >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo.
-    echo [WARNING] API not running at localhost:5000
+    echo [WARNING] API not running at localhost:5001
     echo.
     echo Starting API server in new window...
-    start "PDBOT API" cmd /c "cd /d "%~dp0" && python widget_api.py"
+    REM Use backend wrapper for consistent startup and logging
+start "PDBOT API" "%~dp0\run_backend.bat"
     echo Waiting 30 seconds for API to initialize...
     timeout /t 30 /nobreak >nul
     
     REM Check again
-    curl -s http://localhost:5000/health >nul 2>&1
+    curl -s http://localhost:5001/health >nul 2>&1
     if %ERRORLEVEL% neq 0 (
         echo [ERROR] Failed to start API. Please start manually.
         pause
@@ -49,6 +50,12 @@ echo.
 echo [2/4] Running 300-question test suite...
 echo      This may take 20-30 minutes...
 echo.
+cd /d "%~dp0\..\.."
+if not exist "tests\comprehensive_300_test.py" (
+    echo [ERROR] tests\comprehensive_300_test.py not found in %CD%
+    pause
+    exit /b 1
+)
 python tests\comprehensive_300_test.py
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Test execution failed

@@ -21,7 +21,7 @@ import os
 from datetime import datetime
 from typing import Dict, List, Any
 
-API_URL = "http://localhost:5000"
+API_URL = "http://localhost:5001"
 
 # ============================================
 # TEST QUESTIONS BY CATEGORY

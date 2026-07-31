@@ -74,7 +74,7 @@ try {
 }
 
 # Start API server in background
-Write-Host "[3/4] Starting Widget API Server (port 5000)..." -ForegroundColor Cyan
+Write-Host "[3/4] Starting Widget API Server (port 5001)..." -ForegroundColor Cyan
 
 Start-Process -FilePath "python" -ArgumentList "widget_api.py" -NoNewWindow -PassThru | Out-Null
 

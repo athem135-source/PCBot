@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Security](https://img.shields.io/badge/Security-Policy-red?style=for-the-badge&logo=shield&logoColor=white)
-![Version](https://img.shields.io/badge/Version-3.4.0-006600?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-4.0.0-006600?style=for-the-badge)
 
 **PCBot Security Guidelines & Vulnerability Reporting**
 
@@ -15,7 +15,7 @@
 
 | Version | Status | Support Level |
 |---------|--------|---------------|
-| 3.4.0 | ✅ Current | Full support - security patches & features |
+| 4.0.0 | ✅ Current | Full support - security patches & features |
 | 3.3.x | ⚠️ Legacy | Critical security fixes only |
 | < 3.3.0 | ❌ Unsupported | Please upgrade to latest version |
 
@@ -56,7 +56,7 @@
 | **Violence/Hate Speech** | 15+ patterns | ✅ Active |
 | **Off-Scope Query Handling** | Polite rejection | ✅ Active |
 
-### API Security (v3.4.0)
+### API Security (v4.0.0)
 
 | Endpoint | Protection | Access |
 |----------|------------|--------|
@@ -68,7 +68,7 @@
 | `/admin/groq-toggle` | Admin only | Restricted |
 | `/feedback/*` | Session validated | Public |
 
-### Authentication & Access Control (v3.4.0)
+### Authentication & Access Control (v4.0.0)
 
 | Feature | Implementation | Status |
 |---------|----------------|--------|
@@ -78,7 +78,7 @@
 | **No Client Secrets** | Zero passwords or keys in JavaScript | ✅ Active |
 | **Virtual Env Isolation** | All packages in isolated .venv | ✅ Active |
 
-### Network Security (v3.4.0)
+### Network Security (v4.0.0)
 
 | Feature | Implementation | Status |
 |---------|----------------|--------|
@@ -159,7 +159,7 @@ If you discover a security vulnerability in PDBOT:
 - [ ] Verify admin password is not default "nufc"
 - [ ] Review and update all dependencies
 - [ ] Run security vulnerability scan
-- [ ] Configure firewall rules (allow ports: 5000, 6338, 11434)
+- [ ] Configure firewall rules (allow ports: 5001, 6338, 11434)
 - [ ] Set up monitoring and alerting
 - [ ] Secure Groq API key in environment
 - [ ] Test virtual environment isolation

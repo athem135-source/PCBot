@@ -1,4 +1,5 @@
 @echo off
+REM [DEPRECATED] start_pdbot.bat - archived by cleanup process. Original content removed.
 REM ============================================
 REM PDBOT Unified Launcher v3.3.4
 REM Developer: M. Hassan Arif Afridi
@@ -141,8 +142,9 @@ if %ERRORLEVEL% equ 0 (
 )
 
 REM Step 3: Start Flask API
-echo [3/4] Starting Widget API (port 5000)...
-start "PDBOT Widget API" /min cmd /c "cd /d %~dp0 && call .venv\Scripts\activate.bat && python widget_api.py"
+echo [3/4] Starting Widget API (port 5001)...
+REM Use backend wrapper to ensure UTF-8 and logging
+start "PDBOT Widget API" /min "%~dp0\run_backend.bat"
 timeout /t 10 /nobreak >nul
 echo       API started
 

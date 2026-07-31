@@ -174,7 +174,8 @@ echo       This will download embedding models on first run...
 timeout /t 2 /nobreak >nul
 
 echo       Starting backend for initialization...
-start "PCBot Initial Setup" cmd /c "cd /d "%~dp0" && call .venv\Scripts\activate.bat && python widget_api.py"
+REM Use backend wrapper for consistent startup and logging during initial setup
+start "PCBot Initial Setup" "scripts\setup\run_backend.bat"
 
 echo       Waiting for models to download and warm up (30 seconds)...
 timeout /t 30 /nobreak >nul

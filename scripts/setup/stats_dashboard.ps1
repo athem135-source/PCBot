@@ -7,7 +7,7 @@
 # ============================================================================
 
 param(
-    [string]$ApiUrl = "http://localhost:5000",
+    [string]$ApiUrl = "http://localhost:5001",
     [switch]$Watch,
     [int]$Interval = 5
 )

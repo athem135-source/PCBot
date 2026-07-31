@@ -1,4 +1,4 @@
-@echo off
+@echo on
 REM PCBot Widget Standalone - Quick Share
 title PCBot Widget Standalone
 cd /d "%~dp0"
@@ -124,26 +124,25 @@ echo.
 echo Creating public tunnel (capturing public URL)...
 echo.
 set "TUNNEL_OUTPUT=%TEMP%\pcbot_tunnel_output.txt"
-set "TUNNEL_URL_FILE=%TEMP%\pcbot_tunnel_url.txt"
-if exist "%TUNNEL_URL_FILE%" del "%TUNNEL_URL_FILE%" >nul 2>nul
-if not exist "%TUNNEL_OUTPUT%" (
-    echo Creating tunnel output file: %TUNNEL_OUTPUT%
-    echo. > "%TUNNEL_OUTPUT%"
-) else (
-    echo Tunnel output file already exists: %TUNNEL_OUTPUT% (will be monitored)
-)
+if exist "%TUNNEL_OUTPUT%" del "%TUNNEL_OUTPUT%" >nul 2>nul
+
+echo Creating tunnel output file: %TUNNEL_OUTPUT%
+echo. > "%TUNNEL_OUTPUT%"
+echo Starting cloudflared quick tunnel in background (output -> %TUNNEL_OUTPUT%)...
 echo Starting cloudflared quick tunnel in a new PowerShell window (output -> %TUNNEL_OUTPUT%)...
 start "PCBot Tunnel" powershell -NoExit -Command "cloudflared tunnel --url 'http://127.0.0.1:5001' --no-autoupdate 2>&1 | Tee-Object -FilePath '%TUNNEL_OUTPUT%'"
 
 echo Waiting for tunnel URL (60s timeout)...
+
 set /a attempts=0
 set /a max_attempts=40
 set "TUNNEL_URL="
-:tunnel_poll
+:wait_tunnel
 set /a attempts+=1
-powershell -NoProfile -Command "try { if (Test-Path -Path '%TUNNEL_OUTPUT%') { $txt = Get-Content -Raw -Path '%TUNNEL_OUTPUT%'; if ($txt -match 'https://[A-Za-z0-9\-\.]+trycloudflare.com[^\s\"]*') { Set-Content -LiteralPath '%TUNNEL_URL_FILE%' -Value $Matches[0] -Encoding ASCII; exit 0 } } } catch {} ; exit 1"
-if exist "%TUNNEL_URL_FILE%" (
-    set /p TUNNEL_URL=<"%TUNNEL_URL_FILE%"
+set "TUNNEL_URL="
+if exist "%TUNNEL_OUTPUT%" (
+    rem Use PowerShell to read output and extract the trycloudflare URL (handles Unicode/UTF-16/UTF-8)
+    for /f "usebackq delims=" %%U in (`powershell -NoProfile -Command "if (Test-Path -Path '%TUNNEL_OUTPUT%') { $txt = Get-Content -Raw -Path '%TUNNEL_OUTPUT%'; if ($txt -match 'https://[A-Za-z0-9\-\.]+trycloudflare.com[^\s\"]*') { Write-Output $Matches[0]; exit 0 } else { exit 1 } } else { exit 2 }"`) do set "TUNNEL_URL=%%U"
 )
 if defined TUNNEL_URL (
     echo [TUNNEL] Public URL detected: %TUNNEL_URL%
@@ -159,7 +158,7 @@ if %attempts% geq %max_attempts% (
 )
 echo Waiting for tunnel... (attempt %attempts%/%max_attempts%)
 timeout /t 3 /nobreak >nul
-goto tunnel_poll
+goto wait_tunnel
 
 :tunnel_done
 echo Tunnel process started (check %TUNNEL_OUTPUT% for details). When tunnel is closed, close the tunnel window to shutdown.
@@ -167,5 +166,6 @@ echo.
 REM Do not force-close backend here; let user stop it manually.
 pause
 goto :EOF
+
 
 

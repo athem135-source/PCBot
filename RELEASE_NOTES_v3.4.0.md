@@ -1,4 +1,4 @@
-# PCBot v3.4.0 - Major Release 🚀
+# PCBot v4.0.0 - Major Release 🚀
 
 ## Platform Modernization & Deployment Excellence
 
@@ -201,7 +201,7 @@ PCBot/
   - Security header configuration
 
 #### Updated README
-- v3.4.0 feature highlights
+- v4.0.0 feature highlights
 - New deployment options section
 - Updated system architecture
 - Enhanced security documentation
@@ -349,6 +349,6 @@ Permitted: Evaluation, Academic Research, GoP Internal Use (with approval)
 
 ### 🇵🇰 Built with ❤️ for the Government of Pakistan
 
-**PCBot v3.4.0** | Planning Commission Intelligent Assistant
+**PCBot v4.0.0** | Planning Commission Intelligent Assistant
 
 </div>

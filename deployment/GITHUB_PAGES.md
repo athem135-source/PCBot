@@ -1,4 +1,4 @@
-# GitHub Pages Deployment Guide for PCBot v3.4
+# GitHub Pages Deployment Guide for PCBot v4.0
 
 ## Overview
 This guide shows how to deploy PCBot's frontend to GitHub Pages for free static hosting. The backend (Flask API) will need separate deployment.
@@ -51,7 +51,7 @@ git push origin main
 4. Select `athem135-source/PCBot`
 5. Add environment variables:
    ```
-   PORT=5000
+   PORT=5001
    QDRANT_HOST=localhost
    QDRANT_PORT=6338
    ```
@@ -66,7 +66,7 @@ git push origin main
 3. Select `PCBot` repository
 4. Configure:
    - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `python widget_api.py`
+   - **Start Command (Windows):** `scripts\setup\run_backend.bat`  (Linux: `python widget_api.py`)
    - **Environment Variables:** Same as Railway
 5. Deploy
 6. Copy your Render URL
@@ -76,14 +76,14 @@ If you have a static IP or domain:
 
 1. Install Python, Qdrant, Ollama on server
 2. Run `setup.bat` to install dependencies
-3. Configure firewall to allow port 5000
+3. Configure firewall to allow port 5001
 4. Start services:
    ```bash
    qdrant.exe
    ollama serve
-   python widget_api.py
+   # Windows: scripts\setup\run_backend.bat    # Linux: python widget_api.py
    ```
-5. Use your server URL: `http://your-domain.com:5000`
+5. Use your server URL: `http://your-domain.com:5001`
 
 ## Connect Frontend to Backend
 
@@ -192,7 +192,7 @@ After deployment, your site will be accessible at:
 # Terminal 1: Start backend
 run_widget_standalone.bat
 
-# Browser: Open http://localhost:5000
+# Browser: Open http://localhost:5001
 ```
 
 ### Deploy to Production

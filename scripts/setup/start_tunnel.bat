@@ -1,6 +1,6 @@
 @echo off
 REM PDBOT Cloudflare Tunnel v3.3.9
-REM Creates 1 tunnel: Everything served from API (5000)
+REM Creates 1 tunnel: Everything served from API (5001)
 title PDBOT External Tunnel
 cd /d "%~dp0"
 
@@ -20,14 +20,15 @@ if %ERRORLEVEL% neq 0 (
 )
 
 REM Check and start API service
-echo [1/2] Checking Widget API (port 5000)...
-powershell -Command "try { Invoke-RestMethod -Uri 'http://localhost:5000/health' -TimeoutSec 3 | Out-Null; exit 0 } catch { exit 1 }"
+echo [1/2] Checking Widget API (port 5001)...
+powershell -Command "try { Invoke-RestMethod -Uri 'http://localhost:5001/health' -TimeoutSec 3 | Out-Null; exit 0 } catch { exit 1 }"
 if %ERRORLEVEL% neq 0 (
     echo       Starting API...
-    start "PDBOT API" /min cmd /c "cd /d %~dp0 && .venv\Scripts\python.exe widget_api.py"
+    REM Use backend wrapper for consistent startup and logging
+start "PDBOT API" /min "%~dp0\run_backend.bat"
     timeout /t 15 /nobreak >nul
 )
-echo       [OK] API running on port 5000
+echo       [OK] API running on port 5001
 
 echo [2/2] Starting Cloudflare Tunnel...
 echo.
@@ -46,7 +47,7 @@ echo  ========================================
 echo.
 
 REM Start tunnel
-start "PDBOT Tunnel" cmd /k "echo ======== PDBOT TUNNEL ======== && echo. && echo Share this URL for external access: && echo. && cloudflared tunnel --url http://localhost:5000"
+start "PDBOT Tunnel" cmd /k "echo ======== PDBOT TUNNEL ======== && echo. && echo Share this URL for external access: && echo. && cloudflared tunnel --url http://127.0.0.1:5001"
 
 echo.
 echo  ========================================
@@ -60,7 +61,7 @@ echo  ========================================
 echo.
 pause
 echo.
-echo   API URL (5000): For mobile.html backend
+echo   API URL (5001): For mobile.html backend
 echo   Widget URL (3000): React chatbot widget
 echo   Streamlit URL (8501): Full desktop UI
 echo  ========================================

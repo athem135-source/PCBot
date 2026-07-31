@@ -17,9 +17,9 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-echo Starting tunnel to localhost:5000...
+echo Starting tunnel to localhost:5001...
 echo.
 echo Share the URL below to access on phone!
 echo.
 
-cloudflared tunnel --url http://localhost:5000
+cloudflared tunnel --url http://localhost:5001

@@ -11,7 +11,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 function AdminPanel({ isOpen, onClose }) {
   const [status, setStatus] = useState(null);
@@ -138,7 +138,7 @@ function AdminPanel({ isOpen, onClose }) {
                 type="text"
                 value={customApiUrl}
                 onChange={e => setCustomApiUrl(e.target.value)}
-                placeholder="http://localhost:5000"
+                placeholder="http://localhost:5001"
               />
             </div>
             <div className="pdbot-admin-input-group">

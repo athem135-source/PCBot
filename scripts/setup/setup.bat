@@ -19,7 +19,12 @@ echo  - Python dependencies (Flask, Qdrant, etc.)
 echo  - Node.js dependencies (React Widget)
 echo  - Docker container (Qdrant vector DB)
 echo.
-pause
+if not defined AUTO_SETUP set "AUTO_SETUP=1"
+if "%AUTO_SETUP%"=="1" (
+    echo [INFO] AUTO_SETUP=1 -> running non-interactively (no pauses). Set AUTO_SETUP=0 to enable interactive mode.
+) else (
+    pause
+)
 
 REM ============================================
 REM Step 1: Check Python
@@ -174,7 +179,8 @@ echo       This will download embedding models on first run...
 timeout /t 2 /nobreak >nul
 
 echo       Starting backend for initialization...
-start "PCBot Initial Setup" cmd /c "cd /d "%~dp0" && call .venv\Scripts\activate.bat && python widget_api.py"
+REM Use the backend wrapper to ensure UTF-8 and logging during initial setup
+start "PCBot Initial Setup" "%~dp0\run_backend.bat"
 
 echo       Waiting for models to download and warm up (30 seconds)...
 timeout /t 30 /nobreak >nul
@@ -207,7 +213,13 @@ echo   First-time users: run_widget_standalone.bat
 echo.
 echo  ========================================
 echo.
-pause
+if "%AUTO_SETUP%"=="1" (
+    echo [INFO] AUTO_SETUP detected: launching widget launcher in background...
+    start "PCBot Widget Launcher" "%~dp0\..\..\run_widget_standalone.bat"
+    echo [INFO] Widget launcher started. Setup finished.
+) else (
+    pause
+)
 goto :end
 
 :error
