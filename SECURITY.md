@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Security](https://img.shields.io/badge/Security-Policy-red?style=for-the-badge&logo=shield&logoColor=white)
-![Version](https://img.shields.io/badge/Version-4.0.0-006600?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-4.0.1-006600?style=for-the-badge)
 
 **PCBot Security Guidelines & Vulnerability Reporting**
 
@@ -13,11 +13,13 @@
 
 ## 🛡️ Supported Versions
 
+Only the current v4.0.x release line is supported. Older versions (v3.x and earlier) are archived and no longer receive security patches, bug fixes, or deployment support.
+
 | Version | Status | Support Level |
 |---------|--------|---------------|
-| 4.0.0 | ✅ Current | Full support - security patches & features |
-| 3.3.x | ⚠️ Legacy | Critical security fixes only |
-| < 3.3.0 | ❌ Unsupported | Please upgrade to latest version |
+| 4.0.1 | ✅ Current | Full support - security patches & features |
+| 4.0.0 | ⚠️ Legacy | No active fixes; upgrade recommended |
+| 3.x and earlier | ❌ Unsupported | Please upgrade to the latest v4.0.x release |
 
 ---
 

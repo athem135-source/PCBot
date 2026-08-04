@@ -9,7 +9,7 @@ cd /d "%~dp0"
 
 echo.
 echo  ============================================
-echo   PDBOT v4.0.0 - Docker Engine Setup
+echo   PDBOT v4.0.1 - Docker Engine Setup
 echo   Windows Server Edition
 echo  ============================================
 echo.
@@ -116,7 +116,7 @@ if %ERRORLEVEL% equ 0 (
 
 REM Inform user - Ollama Docker on Windows Server is optional
 echo       Note: Ollama in Docker requires significant resources
-echo       For Windows Server, its recommended to run Ollama on the host
+echo       For Windows Server, it's recommended to run Ollama on the host
 echo.
 set /p OLLAMA_DOCKER="Do you want to start Ollama in Docker? (y/n): "
 

@@ -11,7 +11,7 @@
 
 ---
 
-![Version](https://img.shields.io/badge/Version-4.0.0-006600?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-4.0.1-006600?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![React](https://img.shields.io/badge/React-18.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-DC382D?style=for-the-badge)
@@ -46,6 +46,8 @@
 
 </div>
 
+> **Support policy:** Only the current v4.0.x release is supported. Older versions (v3.x and earlier) are archived and no longer receive fixes, security updates, or deployment support.
+
 ## 📋 Table of Contents
 
 - [Executive Summary](#-executive-summary)
@@ -55,6 +57,7 @@
 - [Evaluation & Metrics](#-evaluation--metrics)
 - [300-Question Calibration Test](#-300-question-calibration-test)
 - [Verification Methodology](#-verification-methodology)
+- [What's New in v4.0.1](#-whats-new-in-v401)
 - [What's New in v4.0.0](#-whats-new-in-v400)
 - [Version History](#-version-history)
 - [Screenshots & Interface](#-screenshots--interface-overview)
@@ -377,6 +380,14 @@ After running `run_widget_standalone.bat`, choose your mode:
 # - Creates Cloudflare tunnel
 ```
 
+#### **Option 1B: Windows Server + Docker Engine**
+```powershell
+.\setup_docker_engine.bat
+# - Uses Docker Engine for Qdrant
+# - Optional Docker Ollama
+# - Creates Python venv and warms backend
+```
+
 #### **Option 2: GitHub Pages (Static Frontend)**
 ```bash
 # Push to GitHub - auto-deploys via GitHub Actions
@@ -421,15 +432,14 @@ qdrant
 ollama serve
 
 # 5. Run backend
-Windows: run_pcbot.bat (recommended) or scripts\setup\run_backend.bat — Linux: python widget_api.py
+Windows: run_pcbot.bat (recommended) or scripts\setup\run_backend.bat
+Linux: python widget_api.py
 ```
+
+#### Docker-based setup (Windows Server)
+```powershell
 docker run -p 6338:6333 -p 6337:6334 qdrant/qdrant
-
-# 4. Start Ollama
-ollama run mistral
-
-# 5. Run PDBOT
-.\run_widget.ps1
+docker run -p 11434:11434 ollama/ollama
 ```
 
 ---
@@ -1605,6 +1615,7 @@ python generate_report.py
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v4.0.1** | Aug 4, 2026 | Windows Server Docker Engine setup, support policy cleanup, release hardening |
 | **v4.0.0** | Jul 29, 2026 | Mode selector, GitHub Pages, venv automation, animations |
 | **v3.3.4** | Dec 9, 2025 | Full chat image export, enhanced download options |
 | **v3.3.2** | Dec 9, 2025 | Answer truncation fix, 100-word limit |
@@ -1626,6 +1637,22 @@ python generate_report.py
   Oct 31: v1.1 Classifier           Nov 20: Enterprise            Dec 8: v3.3.0 RAG
                                                                    Dec 9: v3.3.4
 ```
+
+---
+
+## 🆕 What's New in v4.0.1
+
+**Windows Server + Docker Engine setup**
+- Added `setup_docker_engine.bat` for one-button setup on Windows Server.
+- Uses Docker Engine for Qdrant and optionally Docker Ollama.
+- Keeps the native `setup.bat` path separate for non-Docker environments.
+
+**Support policy cleanup**
+- README and security docs now clearly mark v3.x and earlier as unsupported.
+- Current support is focused on the latest v4.0.x release only.
+
+**Release note**
+- Full details: `RELEASE_NOTES_4.0.1.md`
 
 ---
 
