@@ -366,9 +366,9 @@ Answer in 45-70 words. Extract numbers if present. Direct answer first:"""
         for filler in fillers:
             answer = re.sub(filler, "", answer, flags=re.IGNORECASE)
         
-        # v4.0.0: Avoid mid-sentence truncation and currency cut-offs.
+        # v4.0.0/v4.0.2: Restore strict length target (45-70 words) while preventing currency/number cutoffs.
         words = answer.split()
-        WORD_LIMIT = 200
+        WORD_LIMIT = 70  # enforce upper bound 45-70 words; use 70 as truncation cutoff
         if len(words) > WORD_LIMIT:
             truncated = " ".join(words[:WORD_LIMIT])
             # Prefer to end at the last sentence boundary (., !, ?) within truncated text
@@ -378,11 +378,17 @@ Answer in 45-70 words. Extract numbers if present. Direct answer first:"""
             else:
                 answer = truncated
             # Avoid leaving trailing isolated currency markers like 'Rs.' or 'Rs'
-            if answer.rstrip().endswith(('Rs.', 'Rs', 'Rupees', 'rupees', 'Rs,', 'Rs;')):
-                # append the next word(s) from original to complete the currency mention if possible
-                remaining_words = words[WORD_LIMIT:WORD_LIMIT+3]
-                if remaining_words:
-                    answer = answer + " " + " ".join(remaining_words)
+            currency_markers = ('Rs.', 'Rs', 'Rupees', 'rupees', 'Rs,', 'Rs;', '₹', 'PKR')
+            if answer.rstrip().endswith(currency_markers):
+                # Append following words until a numeric token is included (or up to 5 words)
+                remaining_words = words[WORD_LIMIT:WORD_LIMIT+5]
+                appended = []
+                for w in remaining_words:
+                    appended.append(w)
+                    if re.search(r'\d', w):
+                        break
+                if appended:
+                    answer = answer + " " + " ".join(appended)
             # Ensure sentence termination
             if not answer.rstrip().endswith(('.', '!', '?')):
                 answer = answer.rstrip(".!?,;") + "."
